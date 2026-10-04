@@ -130,6 +130,54 @@ def cmd_prices(a):
     prices.sync(range_=a.range, fonte=a.fonte)
 
 
+# ----------------------------------------------------------------- UOL ------
+def cmd_uol_descobrir(a):
+    """Passo 1: catalogo de tickers da listagem paginada."""
+    from . import uol
+    db.init()
+    uol.descobrir(paginas_max=a.paginas)
+
+
+def cmd_uol_sondar(a):
+    """Passo 2: busca o data-id e valida se o papel tem serie utilizavel."""
+    from . import uol
+    cats = tuple(a.categorias.split(",")) if a.categorias else (uol.ACAO,)
+    uol.sondar(categorias=cats, limite=a.limite, resondar=a.resondar)
+
+
+def cmd_uol_coletar(a):
+    """Passo 3: baixa as cotacoes dos ATIVOS, com origem=uol."""
+    from . import uol
+    tk = [x.strip().upper() for x in a.ticker.split(",")] if a.ticker else None
+    if a.intraday:
+        if not tk:
+            print("--intraday exige --ticker (a API so da a ultima sessao)")
+            return
+        print(f"-> {uol.coletar_intraday(tk)} barras de 1 min gravadas")
+        return
+    r = uol.coletar(tickers=tk, periodo=a.periodo, limite=a.limite)
+    print(f"-> {r['papeis']} papeis, {r['barras']} barras gravadas")
+
+
+def cmd_uol_estado(a):
+    """Relatorio de aceite: contagem por categoria e por status."""
+    from . import uol
+    e = uol.estado()
+    print("por categoria:")
+    for k, v in e["por_categoria"].items():
+        print(f"  {k:<12}{v:>6}")
+    print("por status:")
+    for k, v in e["por_status"].items():
+        print(f"  {k:<12}{v:>6}")
+    print(f"papeis com barra gravada pela UOL: {e['com_barras']}")
+    if e["sem_dado"]:
+        print(f"\nSEM DADO / DESCONTINUADO ({len(e['sem_dado'])}) -- "
+              f"confira se algum papel bom caiu aqui:")
+        for r in e["sem_dado"]:
+            print(f"  {r['ticker']:<10}{r['categoria']:<10}"
+                  f"{str(r['barras'] or ''):>6}  {r['motivo'] or ''}")
+
+
 def cmd_signals(a):
     sigs = aggregate.run(scorer=a.scorer)
     print(f"{'PAPEL':<7} {'z':>7} {'n_eff':>7} {'P_alta':>8} {'P_queda':>8} {'base_alta':>10} {'art':>4}")
@@ -464,6 +512,28 @@ def main(argv=None):
     s = add("prices", cmd_prices, help="sincroniza cotacoes")
     s.add_argument("--range", default="1mo")
     s.add_argument("--fonte", default="auto", choices=["auto", "brapi", "yahoo"])
+    # --- UOL: largura (~1.800 tickers) e OHLCV com volume. NAO e backfill:
+    # o teto dela e 5 anos de diario e o banco ja tem 10 (docs/precos-fontes.md).
+    s = add("uol-descobrir", cmd_uol_descobrir,
+            help="catalogo de tickers da UOL (passo 1)")
+    s.add_argument("--paginas", type=int, default=60,
+                   help="teto de paginas; para sozinho apos 3 vazias seguidas")
+    s = add("uol-sondar", cmd_uol_sondar,
+            help="busca o data-id e valida quem tem serie (passo 2)")
+    s.add_argument("--categorias", default="acao",
+                   help="acao,bdr,etf_fii,outro — separadas por virgula")
+    s.add_argument("--limite", type=int, default=None)
+    s.add_argument("--resondar", action="store_true",
+                   help="refaz tambem quem ja foi sondado ha menos de 30 dias")
+    s = add("uol-coletar", cmd_uol_coletar,
+            help="baixa cotacoes dos papeis ativos (passo 3)")
+    s.add_argument("--ticker", default="", help="lista separada por virgula")
+    s.add_argument("--periodo", default="years", choices=["years", "months"])
+    s.add_argument("--limite", type=int, default=None)
+    s.add_argument("--intraday", action="store_true",
+                   help="serie de 1 min da ultima sessao; exige --ticker")
+    add("uol-estado", cmd_uol_estado,
+        help="contagem por categoria e status, e a lista de SEM_DADO")
     s = add("signals", cmd_signals, help="calcula sinal e probabilidades")
     s.add_argument("--scorer", default=None, choices=SCORERS_CLI, help=AJUDA_SCORER)
     s = add("label", cmd_label, help="rotula com retorno anormal futuro")

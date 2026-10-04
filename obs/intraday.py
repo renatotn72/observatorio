@@ -35,6 +35,9 @@ SCHEMA = """
 CREATE TABLE IF NOT EXISTS intraday (
   simbolo TEXT NOT NULL, intervalo TEXT NOT NULL, ts INTEGER NOT NULL,
   close REAL NOT NULL,
+  -- volume DA BARRA, ja diferenciado quando a fonte entrega acumulado do dia
+  -- (e o caso da UOL; ver obs/uol.py). origem = procedencia do ponto.
+  volume REAL, origem TEXT,
   PRIMARY KEY (simbolo, intervalo, ts)
 );
 """

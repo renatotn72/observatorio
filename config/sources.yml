@@ -87,3 +87,44 @@ rss:
   - https://www.seudinheiro.com/feed/
   - https://www.suno.com.br/noticias/feed/
   - https://einvestidor.estadao.com.br/feed/
+
+# ---------------------------------------------------------------- PRECOS ---
+# Fontes de COTACAO. Separadas dos feeds acima porque sao outra coisa: feed de
+# noticia tem peso de veiculo, fonte de preco tem alcance e ajuste. O peso aqui
+# nao existe; o que importa e o alcance real e se a serie e ajustada.
+#
+# A coluna `prices.origem` carimba cada barra. Sem isso, misturar fontes com
+# regras de ajuste diferentes produz salto onde nao houve evento.
+precos:
+  yahoo:
+    rotulo: Yahoo Finance
+    ativo: true
+    ajustada: provavel        # medido: nenhum salto > 35% em 10 anos
+    alcance:
+      diario: 10 anos
+      1h: 2 anos
+      15m: 1 mes
+      5m: 1 mes
+      1m: 5 dias
+    ohlcv: false              # so fechamento
+  brapi:
+    rotulo: brapi.dev
+    ativo: true
+    ajustada: sim             # usa adjustedClose quando disponivel
+    alcance:
+      diario: 1 mes sem token; longo com BRAPI_TOKEN
+    ohlcv: parcial
+    nota: cota por janela no tier gratuito; nao cobre 10 papeis sem token
+  uol:
+    rotulo: UOL Economia
+    ativo: true
+    ajustada: desconhecida    # ver obs/uol.py:conferir_ajuste
+    alcance:
+      diario: 5 anos (teto fixo)
+      1m: so a ultima sessao
+    ohlcv: true               # com VOLUME -- o filtro de liquidez que falta
+    universo: ~1800 tickers catalogados
+    nota: >
+      NAO e fonte de backfill: e mais curta que o Yahoo em toda granularidade.
+      Vale por LARGURA e por VOLUME. Tres armadilhas de mapeamento travadas em
+      scripts/test_uol.py -- ver o docstring de obs/uol.py.

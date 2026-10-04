@@ -118,6 +118,12 @@ JOBS={
  # Profundidade controlavel pelo painel: ops_config.backfill_paginas.
  "backfill_rss":{"label":"Carregar histórico de notícias (RSS)","schedule":False},
  "refresh_prices":{"label":"Atualizar preços","schedule":True},
+ # UOL: largura e OHLCV. Os tres passos sao jobs separados de proposito --
+ # descobrir e sondar sao caros e raros (catalogo nao muda todo dia), coletar
+ # e a rotina. Juntar os tres faria a rotina pagar o scraping do catalogo.
+ "uol_descobrir":{"label":"UOL: descobrir papéis (catálogo)","schedule":False},
+ "uol_sondar":{"label":"UOL: sondar papéis (data-id + validação)","schedule":False},
+ "uol_coletar":{"label":"UOL: coletar cotações","schedule":True},
  "refresh_drivers":{"label":"Atualizar drivers","schedule":True},
  "refresh_cvm_registry":{"label":"Atualizar cadastro CVM","schedule":True},
  "refresh_ri":{"label":"Descobrir documentos de RI","schedule":True},
@@ -208,6 +214,9 @@ def execute(job):
     if job=="backfill_rss":
         return _run_cli(["backfill-rss","--paginas",str(get_config("backfill_paginas", 150))])
     if job=="refresh_prices": return _run_cli(["prices","--range","2y"])
+    if job=="uol_descobrir": return _run_cli(["uol-descobrir"])
+    if job=="uol_sondar": return _run_cli(["uol-sondar","--categorias","acao"])
+    if job=="uol_coletar": return _run_cli(["uol-coletar","--periodo","months"])
     if job=="refresh_drivers": return _run_cli(["drivers","--range","2y"])
     if job in ("refresh_cvm_registry","refresh_universe"): return _run_cli(["universe-cvm"])
     if job=="refresh_ri":
@@ -244,6 +253,9 @@ GRUPOS = {
     "collect_intraday": "mercado",
     "backfill_rss": "rss",
     "refresh_prices": "mercado", "refresh_drivers": "mercado",
+    # mesmo grupo: sondar depende do catalogo, coletar depende da sondagem.
+    # O grupo e o que garante a ordem (ver o comentario de GRUPOS).
+    "uol_descobrir": "uol", "uol_sondar": "uol", "uol_coletar": "uol",
     "refresh_cvm_registry": "cadastro", "refresh_universe": "cadastro",
     "refresh_ri": "documento", "sync_itr": "documento", "sync_dfp": "documento",
     "extract_reports": "documento", "analyze_reports_local": "documento",

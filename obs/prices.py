@@ -1,8 +1,22 @@
-"""Precos diarios da B3 via brapi.dev.
+"""Precos diarios: uma interface, varias fontes.
 
-Sem token: range maximo ~1mo (21 pregoes). Com BRAPI_TOKEN no ambiente:
-historico longo + indices (^BVSP, BOVA11). O calibrador EXIGE centenas de
-eventos, logo para pesquisa serie voce vai querer o token (ou outra fonte).
+CADA FONTE DEVOLVE O MESMO FORMATO -- lista de barras
+    {"date": "YYYY-MM-DD", "close": float,
+     "open": float|None, "high": float|None, "low": float|None,
+     "volume": float|None}
+e a gravacao carimba a ORIGEM em cada barra. Sem a origem, misturar fontes com
+regras de ajuste diferentes produz salto onde nao houve evento e ninguem
+consegue dizer de onde veio o ponto torto.
+
+ALCANCE REAL DE CADA UMA, medido no banco (docs/precos-fontes.md):
+    yahoo  diario 10 anos | 1h 2 anos | 15m e 5m 1 mes | 1m 5 dias
+    brapi  sem token ~1mo; com BRAPI_TOKEN, historico longo e indices
+    uol    diario 5 anos (teto fixo) | 1m so a ultima sessao
+           MAS: ~1.800 tickers contra os 10 da watchlist, e OHLCV com VOLUME,
+           que e o filtro de liquidez que falta para ampliar o universo.
+
+Ou seja: a UOL nao e fonte de backfill -- e mais curta que o que ja temos em
+toda granularidade. Ela vale por LARGURA e por VOLUME.
 """
 from __future__ import annotations
 import concurrent.futures as cf
@@ -55,7 +69,10 @@ def fetch(tickers: list[str], range_: str = "1mo") -> dict[str, list[tuple[str, 
         for res in data.get("results", []):
             sym = res.get("symbol")
             hist = res.get("historicalDataPrice") or []
-            series = [(date_str(h["date"]), float(h.get("adjustedClose") or h["close"]))
+            series = [{"date": date_str(h["date"]),
+                       "close": float(h.get("adjustedClose") or h["close"]),
+                       "open": h.get("open"), "high": h.get("high"),
+                       "low": h.get("low"), "volume": h.get("volume")}
                       for h in hist if h.get("close") or h.get("adjustedClose")]
             if series:
                 out[sym] = series
@@ -98,10 +115,45 @@ def fetch_yahoo(tickers: list[str], range_: str = "2y") -> dict[str, list[tuple[
         for i, ts in enumerate(res["timestamp"]):
             c = q["close"][i]
             if c:
-                ser.append((date_str(ts), float(c)))
+                ser.append({"date": date_str(ts), "close": float(c),
+                            "open": q.get("open", [None] * (i + 1))[i],
+                            "high": q.get("high", [None] * (i + 1))[i],
+                            "low": q.get("low", [None] * (i + 1))[i],
+                            "volume": q.get("volume", [None] * (i + 1))[i]})
         if ser:
             out[t] = ser
     return out
+
+
+def grava_diario(series: dict[str, list[dict]], origem: str) -> int:
+    """Grava barras diarias carimbando a origem. Idempotente por (ticker,date).
+
+    `INSERT OR REPLACE` apaga a linha e insere outra, entao TODAS as colunas
+    entram -- omitir uma zeraria o que ja estava la. Acrescentar coluna a
+    `prices` obriga a acrescentar aqui.
+    """
+    con = connect()
+    n = 0
+    with con:
+        for sym, rows in series.items():
+            for b in rows:
+                cur = con.execute(
+                    "INSERT OR REPLACE INTO prices"
+                    "(ticker,date,close,open,high,low,volume,origem)"
+                    " VALUES (?,?,?,?,?,?,?,?)",
+                    (sym, b["date"], b["close"], b.get("open"), b.get("high"),
+                     b.get("low"), b.get("volume"), origem))
+                n += cur.rowcount
+    con.close()
+    return n
+
+
+# Registro de fontes. `diario(tickers, range_)` e a unica forma que o resto do
+# sistema conhece; trocar de fonte nao toca em mais nada.
+FONTES = {
+    "brapi": {"diario": fetch, "rotulo": "brapi.dev"},
+    "yahoo": {"diario": fetch_yahoo, "rotulo": "Yahoo Finance"},
+}
 
 
 def sync(range_: str = "1mo", fonte: str = "auto") -> int:
@@ -110,23 +162,18 @@ def sync(range_: str = "1mo", fonte: str = "auto") -> int:
     if bench != "__crosssec__":
         tkrs = tkrs + [bench]
 
+    n = 0
     series = {}
     if fonte in ("auto", "brapi"):
         series = fetch(tkrs, range_)
+        if series:
+            n += grava_diario(series, "brapi")
     faltando = [t for t in tkrs if t not in series]
     if faltando and fonte in ("auto", "yahoo"):
         print(f"  [prices] {len(faltando)} papeis sem brapi -> Yahoo")
-        series.update(fetch_yahoo(faltando, "2y" if range_ in ("1mo", "2y") else range_))
-    con = connect()
-    n = 0
-    with con:
-        for sym, rows in series.items():
-            for d, c in rows:
-                cur = con.execute(
-                    "INSERT OR REPLACE INTO prices(ticker,date,close) VALUES (?,?,?)",
-                    (sym, d, c))
-                n += cur.rowcount
-    con.close()
+        y = fetch_yahoo(faltando, "2y" if range_ in ("1mo", "2y") else range_)
+        series.update(y)
+        n += grava_diario(y, "yahoo")
     print(f"-> {len(series)} papeis, {n} cotacoes gravadas")
     return n
 

@@ -90,8 +90,38 @@ CREATE TABLE IF NOT EXISTS prices (
   ticker TEXT NOT NULL,
   date   TEXT NOT NULL,
   close  REAL NOT NULL,
+  -- OHLCV: nulo nas fontes que so dao fechamento (Yahoo, brapi). `volume` e o
+  -- insumo de LIQUIDEZ, que e o filtro que docs/universo.md pede desde o
+  -- inicio para ampliar o universo de 10 para 150-300 papeis.
+  open   REAL, high REAL, low REAL, volume REAL,
+  -- PROCEDENCIA POR BARRA. Sem isto, misturar fontes com regras de ajuste
+  -- diferentes produz salto onde nao houve evento, e ninguem consegue dizer
+  -- de onde veio o ponto torto.
+  origem TEXT,
   PRIMARY KEY (ticker, date)
 );
+
+-- Cadastro de ativos negociados: ticker -> id interno da fonte -> estado.
+-- Separado de `prices` porque o id e o status sao CADASTRO, nao serie: o id
+-- nao muda a cada coleta e reextrai-lo por barra seria pagar scraping de
+-- pagina para cada cotacao.
+CREATE TABLE IF NOT EXISTS ativos (
+  ticker       TEXT PRIMARY KEY,
+  fonte        TEXT NOT NULL,      -- de onde veio o id (uol, ...)
+  id_externo   TEXT,               -- data-id da UOL
+  nome         TEXT,
+  -- acao | bdr | etf_fii | outro. Guardada, nunca descartada: BDR fica de
+  -- fora por padrao mas o usuario pode reincluir por opcao.
+  categoria    TEXT NOT NULL,
+  -- nao_sondado | ativo | sem_dado | descontinuado
+  status       TEXT NOT NULL DEFAULT 'nao_sondado',
+  barras       INTEGER,            -- quantas a sondagem encontrou
+  ultima_barra TEXT,               -- data da mais recente
+  motivo       TEXT,               -- por que caiu em sem_dado
+  sondado_ts   INTEGER,            -- quando foi sondado (nao resondar < 30d)
+  visto_ts     INTEGER             -- quando apareceu no catalogo pela ultima vez
+);
+CREATE INDEX IF NOT EXISTS ix_ativos_cat ON ativos(categoria, status);
 
 -- Rotulos: retorno ANORMAL (vs benchmark) classificado em alta/neutro/queda
 CREATE TABLE IF NOT EXISTS labels (
@@ -177,6 +207,21 @@ def _migra(con) -> list[str]:
     if "scorer" not in cols:
         con.execute("ALTER TABLE signals ADD COLUMN scorer TEXT")
         feitas.append("signals.scorer")
+    # OHLCV e procedencia nos precos (obs/prices.py, provedores por fonte)
+    cols = {r["name"] for r in con.execute("PRAGMA table_info(prices)")}
+    for nome, tipo in (("open", "REAL"), ("high", "REAL"), ("low", "REAL"),
+                       ("volume", "REAL"), ("origem", "TEXT")):
+        if nome not in cols:
+            con.execute(f"ALTER TABLE prices ADD COLUMN {nome} {tipo}")
+            feitas.append(f"prices.{nome}")
+    # `intraday` e criada por obs/intraday.py, nao pelo SCHEMA daqui. Se ainda
+    # nao existe, PRAGMA devolve vazio e o ALTER quebraria com "no such table".
+    cols = {r["name"] for r in con.execute("PRAGMA table_info(intraday)")}
+    if cols:
+        for nome, tipo in (("volume", "REAL"), ("origem", "TEXT")):
+            if nome not in cols:
+                con.execute(f"ALTER TABLE intraday ADD COLUMN {nome} {tipo}")
+                feitas.append(f"intraday.{nome}")
     return feitas
 
 

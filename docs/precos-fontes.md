@@ -143,6 +143,79 @@ o problema do pré-2016, e para isso o candidato é a B3, não a UOL.
 
 ---
 
+## Implementado em 4 de outubro de 2026
+
+O provedor da UOL está escrito, testado e ligado ao painel. **Falta só rodar**
+— ver o bloqueio de rede abaixo.
+
+### Os três passos, em comandos
+
+```bash
+python3 -m obs.cli uol-descobrir              # 1. catálogo de tickers
+python3 -m obs.cli uol-sondar --categorias acao   # 2. data-id + validação
+python3 -m obs.cli uol-coletar                # 3. cotações dos ativos
+python3 -m obs.cli uol-estado                 # relatório de aceite
+```
+
+Pelo painel: Central de Operações tem os três como tarefas
+(`uol_descobrir`, `uol_sondar`, `uol_coletar`), no mesmo grupo para a ordem
+ficar garantida.
+
+### O que foi implementado, item por item
+
+| item | onde |
+|---|---|
+| catálogo paginado, para só após **3 páginas vazias seguidas** | `uol.catalogo` |
+| classificação ação / BDR / ETF-FII / outro, **antes** de qualquer requisição | `uol.classifica` |
+| categoria **guardada**, nunca descartada (dá para reincluir BDR) | `ativos.categoria` |
+| `data-id` extraído da div e **cacheado no banco** | `uol.extrai_id`, `ativos.id_externo` |
+| validação ≥ 60 barras e última ≤ 10 pregões | `uol.avalia` |
+| não resondar antes de 30 dias | `uol.pendentes` |
+| relatório por categoria e status, com a lista nominal dos SEM_DADO | `uol.estado` |
+| User-Agent de browser, requisições serializadas com pausa | `uol.CABECALHO`, `uol.PAUSA_S` |
+| OHLCV com volume | `prices(open, high, low, volume)` |
+| **origem por barra** | `prices.origem`, `intraday.origem` |
+| idempotência por (ticker, data) e (símbolo, intervalo, ts) | `INSERT OR REPLACE` com PK composta |
+| registro em `config/sources.yml` | seção `precos:` |
+
+### As três armadilhas, travadas por teste
+
+`scripts/test_uol.py` — **48 verificações, sem rede**, com respostas gravadas
+que reproduzem os valores medidos na sondagem. Teste que depende da API estar
+de pé não roda em CI e, quando falha, não diz se o defeito é nosso ou da fonte.
+
+1. **`price` é o fechamento da barra; `close` é o da sessão anterior.** O teste
+   não confere só o mapeamento — ele **prova** o deslocamento: verifica que o
+   `close` de uma barra é igual ao `price` da barra anterior. Mapear
+   `close→close` deslocaria a série inteira em um dia, sem nada no dado
+   denunciar.
+2. **No intraday não há OHLC.** O mapeador **não devolve** `high`/`low`/`open`,
+   porque a API dá valor de sessão, não de barra. O volume da barra é a
+   diferença entre acumulados consecutivos.
+3. **Ajuste por proventos desconhecido.** `uol.conferir_ajuste` detecta salto
+   acima de 35% num pregão e a coleta avisa, com a razão (4:1, 2:1…). Não
+   recusa: a origem por barra permite separar depois.
+
+### Dois defeitos meus que o teste pegou antes de rodar
+
+1. **BDR não patrocinado escapava da classificação.** `A1FL34` não casa com
+   `[A-Z]{4}` por causa do dígito — os quatro primeiros caracteres são
+   alfanuméricos, não letras. Eles cairiam em `outro` e entrariam na coleta
+   como desconhecidos. A página 2 da listagem é inteira disso.
+2. **Página "vazia" estava definida errado.** Eu contava como vazia toda página
+   sem ticker **novo**; a especificação diz **0 tickers**. Uma página que só
+   repetisse o que já foi visto encurtaria a varredura — exatamente o erro que
+   o critério das 3 páginas existe para evitar.
+
+### Teste de ponta a ponta, com rede falsa
+
+A cadeia inteira — descobrir → sondar → coletar → intraday → relatório — roda
+contra um `http_get` falso e banco isolado, e o teste confere **as linhas
+gravadas**: origem carimbada, `close` vindo do `price`, OHLCV preenchido,
+volume de 1 min já diferenciado, e recoleta que não duplica.
+
+É o que separa "o código compila" de "a ingestão grava certo".
+
 ## O que me impede de seguir agora
 
 A política de rede deste contêiner **nega todos os hosts externos** relevantes.
