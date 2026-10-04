@@ -104,6 +104,28 @@ h1{margin:0;font-size:28px;letter-spacing:-.015em;line-height:1.1}
 #chart .mk.up{fill:var(--up)}#chart .mk.down{fill:var(--down)}#chart .mk.flat{fill:var(--flat)}
 #chart .stem.up{stroke:var(--up)}#chart .stem.down{stroke:var(--down)}#chart .stem.flat{stroke:var(--flat)}
 #chart .ring{fill:none;stroke:var(--accent);stroke-width:2.5}
+/* marcador VAZADO: o tipo macro. A cor continua dizendo o lado, o preenchimento
+   diz a natureza -- sem isso macro e corporativo seriam o mesmo triangulo. */
+#chart .mk.vazado{fill:none;stroke-width:2}
+#chart .mk.vazado.up{stroke:var(--up)}#chart .mk.vazado.down{stroke:var(--down)}
+#chart .mk.vazado.flat{stroke:var(--flat)}
+/* marca temporal: fica ao lado do marcador, menor e mais discreta, porque e
+   dimensao SECUNDARIA -- quem domina a leitura e o tipo e o lado. */
+#chart .orient{fill:none;stroke-width:1.4;opacity:.75;pointer-events:none}
+#chart .orient.up{stroke:var(--up)}#chart .orient.down{stroke:var(--down)}
+#chart .orient.flat{stroke:var(--flat)}
+#chart .orient-dot{stroke:none;opacity:.75;pointer-events:none}
+#chart .orient-dot.up{fill:var(--up)}#chart .orient-dot.down{fill:var(--down)}
+#chart .orient-dot.flat{fill:var(--flat)}
+.legend button{border:1px solid var(--border);background:var(--panel);min-height:30px;
+  padding:3px 9px;border-radius:999px;cursor:pointer;font-size:12.5px;color:var(--muted);
+  display:inline-flex;align-items:center;gap:5px;font-weight:600}
+.legend button[aria-pressed="false"]{opacity:.42;text-decoration:line-through}
+.legend button:hover{border-color:var(--accent)}
+.legend .lg{display:flex;gap:7px;flex-wrap:wrap;align-items:center}
+.legend .lgt{font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);
+  opacity:.8;margin-right:2px;font-weight:650}
+.legend .ct{font-weight:500;font-size:11.5px;opacity:.8}
 #chart .bar.up{fill:var(--up)}#chart .bar.down{fill:var(--down)}#chart .bar.flat{fill:var(--flat)}
 #chart .dot{fill:var(--line);stroke:var(--panel);stroke-width:2}
 #chart .lbl{font-size:11px;fill:var(--muted);text-transform:uppercase;letter-spacing:.05em}
@@ -210,10 +232,11 @@ footer{margin-top:28px;font-size:12px;color:var(--muted);border-top:1px solid va
     <div class="seg" role="group" aria-label="Período" id="ranges"></div>
     <div class="seg" role="group" aria-label="Filtrar notícias" id="filters"></div>
     <div class="legend" aria-label="Legenda">
-      <span><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 1 11 10H1z" fill="var(--up)"/></svg>puxa para subida</span>
-      <span><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M1 2h10L6 11z" fill="var(--down)"/></svg>puxa para descida</span>
-      <span><svg viewBox="0 0 12 12" aria-hidden="true"><circle cx="6" cy="6" r="4.5" fill="var(--flat)"/></svg>neutra</span>
-      <span>tamanho = peso da notícia</span>
+      <div class="lg" id="lg-tipo" role="group" aria-label="Filtrar por tipo de evento"></div>
+      <div class="lg" id="lg-orient" role="group" aria-label="Filtrar por orientação temporal"></div>
+      <div class="lg"><span><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 1 11 10H1z" fill="var(--up)"/></svg>sobe</span>
+        <span><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M1 2h10L6 11z" fill="var(--down)"/></svg>desce</span>
+        <span>tamanho = peso</span></div>
     </div>
   </div>
 
@@ -312,6 +335,71 @@ const ICON = {
   down: '<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M1 2h10L6 10.5z" fill="currentColor"/></svg>',
   flat: '<svg viewBox="0 0 12 12" aria-hidden="true"><circle cx="6" cy="6" r="4" fill="currentColor"/></svg>'
 };
+/* ---------- duas dimensoes do evento (obs/evento.py) ----------
+   LEG vem de /api/chart.legenda: rotulo, icone, forma e ajuda. Nada disso e
+   escrito a mao aqui, pelo mesmo motivo que os numeros de qualidade moram em
+   medidas.py -- fonte unica. Se o back-end acrescentar um tipo, a legenda e o
+   grafico passam a desenha-lo sem tocar neste arquivo. */
+let LEG = { tipos: [], orientacoes: [] };
+const legTipo = id => LEG.tipos.find(x => x.id === id) || null;
+const formaDe = id => (legTipo(id) || {}).forma || "direcional";
+
+/* GEOMETRIA do marcador, por forma. Recebe o centro e o raio e devolve o
+   atributo de um elemento SVG. Por que geometria e nao glifo unicode: em 8px
+   "§" e "⚖" variam de largura por fonte e "📅" cai em emoji colorido em parte
+   dos sistemas -- forma deixa de ser legivel, que e o oposto do pedido. */
+function glifo(forma, dir, x, y, r) {
+  const k = r * 1.1;
+  switch (forma) {
+    case "triangulo_vazado":            // macro: aponta pelo efeito NO PAPEL
+      if (dir === "up")   return `<path class="mk vazado up" d="M${x},${y - k * 1.15} L${x + k},${y + k * .8} L${x - k},${y + k * .8}Z"`;
+      if (dir === "down") return `<path class="mk vazado down" d="M${x - k},${y - k * .8} L${x + k},${y - k * .8} L${x},${y + k * 1.15}Z"`;
+      return `<circle class="mk vazado flat" cx="${x}" cy="${y}" r="${r * .85}"`;
+    case "diamante":                    // judicial / regulatorio
+      return `<path class="mk ${dir}" d="M${x},${y - k * 1.2} L${x + k * 1.05},${y} L${x},${y + k * 1.2} L${x - k * 1.05},${y}Z"`;
+    case "bandeira": {                  // legislativo / politica publica
+      const h = k * 1.35, w = k * 1.25;
+      return `<path class="mk ${dir}" d="M${x - w * .45},${y + h} L${x - w * .45},${y - h} L${x + w},${y - h * .45} L${x - w * .45},${y + h * .15}Z"`;
+    }
+    case "calendario": {                // calendario contabil: agenda, nao fato
+      const a = k * 1.05;
+      return `<path class="mk ${dir}" d="M${x - a},${y - a} h${2 * a} v${2 * a} h${-2 * a}Z M${x - a},${y - a * .35} h${2 * a}"`;
+    }
+    default:                            // corporativo: o marcador historico
+      if (dir === "up")   return `<path class="mk up" d="M${x},${y - k * 1.15} L${x + k},${y + k * .8} L${x - k},${y + k * .8}Z"`;
+      if (dir === "down") return `<path class="mk down" d="M${x - k},${y - k * .8} L${x + k},${y - k * .8} L${x},${y + k * 1.15}Z"`;
+      return `<circle class="mk flat" cx="${x}" cy="${y}" r="${r * .85}"`;
+  }
+}
+
+/* MARCA TEMPORAL ao lado do marcador: ← passado, ● presente, → futuro.
+   Desenhadas lado a lado quando ha mais de uma, que e o caso que o pedido
+   destaca -- decisao ja proferida (passado) + recurso pendente (futuro). */
+function marcasOrient(orient, dir, x, y, r) {
+  const lista = (orient || []).filter(o => ORIENT_ORDEM.includes(o))
+    .sort((a, b) => ORIENT_ORDEM.indexOf(a) - ORIENT_ORDEM.indexOf(b));
+  if (!lista.length) return "";
+  const s = Math.max(2.4, r * .55);           // meia-largura do chevron
+  const passo = s * 1.75;
+  // COLADO no glifo. A versao anterior afastava em r + s*1.9 e, na regiao
+  // densa, o grupo de marcas de um marcador encostava no marcador seguinte --
+  // o leitor nao sabia de quem era a marca. Atribuicao errada e pior que
+  // marca ausente.
+  let gx = x + r * .95 + s;
+  let out = "";
+  for (const o of lista) {
+    if (o === "passado")      out += `<path class="orient ${dir}" d="M${gx + s * .5},${y - s} L${gx - s * .5},${y} L${gx + s * .5},${y + s}"/>`;
+    else if (o === "futuro")  out += `<path class="orient ${dir}" d="M${gx - s * .5},${y - s} L${gx + s * .5},${y} L${gx - s * .5},${y + s}"/>`;
+    else                      out += `<circle class="orient-dot ${dir}" cx="${gx}" cy="${y}" r="${s * .52}"/>`;
+    gx += passo;
+  }
+  return out;
+}
+const ORIENT_ORDEM = ["passado", "presente", "futuro"];
+const orientMarca = o => (LEG.orientacoes.find(x => x.id === o) || {}).marca || "";
+const orientRotulo = o => (LEG.orientacoes.find(x => x.id === o) || {}).rotulo || o;
+const tipoRotulo = id => (legTipo(id) || {}).rotulo || id || "—";
+
 const RANGES = [[7, "1S"], [30, "1M"], [90, "3M"], [180, "6M"], [365, "1A"], [730, "2A"], [1825, "5A"], [0, "Máx"]];
 // GRANULARIDADE. `max_dias` reflete a RETENCAO da fonte, nao capricho: o Yahoo
 // guarda 5 dias de barras de 1 minuto, 1 mes de 5 minutos e 2 anos de 1 hora.
@@ -373,6 +461,10 @@ const S = {
   // null = mostra tudo. Arrastar e dar zoom mexem aqui, nao recarregam dado.
   vista: null,
   filter: "all", nsort: store.get("newsSort", "recent"),
+  // CONJUNTOS de tipos e orientacoes ativos. null = "todos", que e diferente
+  // de "conjunto cheio": se o back-end acrescentar um tipo, null continua
+  // mostrando tudo em vez de esconder o tipo novo.
+  tipos: store.get("fTipos", null), orients: store.get("fOrients", null),
   data: null, prices: [], news: [], sig: null, sel: null, hoverIdx: null,
   favs: new Set(store.get("favs", [])), ctl: null,
 };
@@ -396,7 +488,14 @@ async function load() {
     $("#errbox").innerHTML = "";
     S.data = d;
     S.prices = (d.prices || []).filter(p => isNum(p[1])).map(([date, close]) => ({ date, t: dateTs(date), close }));
-    S.news = (d.news || []).map((n, i) => ({ ...n, id: i, t: num(n.ts) * 1000, dir: dirOf(num(n.s)), next: nextReturn(num(n.ts) * 1000) }));
+    LEG = d.legenda || { tipos: [], orientacoes: [] };
+    // `dir` sai de s_papel, nao de s: o grafico mostra o EFEITO NO PAPEL. Para
+    // noticia que chegou pela cadeia de afetacao os dois diferem pelo sinal do
+    // beta -- alta do petroleo e boa para PETR4 e ruim para quem consome
+    // combustivel. Para noticia que cita a empresa, s_papel == s.
+    S.news = (d.news || []).map((n, i) => ({ ...n, id: i, t: num(n.ts) * 1000,
+      dir: dirOf(num(n.s_papel !== undefined ? n.s_papel : n.s)),
+      next: nextReturn(num(n.ts) * 1000) }));
     if (S.sel != null && !S.news[S.sel]) S.sel = null;
     // CENTRO PRESERVADO entre granularidades: so da para aplicar aqui, porque
     // depende da extensao da serie nova. Se o centro antigo cair fora do que
@@ -623,8 +722,77 @@ function renderControls() {
   $("#filters").innerHTML = F.map(([k, l]) => `<button type="button" data-f="${k}" aria-pressed="${S.filter === k}">${k !== "all" ? `<span style="color:var(--${k === "flat" ? "flat" : k})">${ICON[k]}</span>` : ""}${l} <span class="ct">${fmt(c[k])}</span></button>`).join("");
   $("#filters").querySelectorAll("svg").forEach(s => { s.style.width = "11px"; s.style.height = "11px"; });
   $("#nsort").value = S.nsort;
+  renderLegenda();
 }
-const shownNews = () => S.news.filter(n => S.filter === "all" || n.dir === S.filter);
+
+/* CONTAGEM para a legenda. Cada dimensao conta sobre o conjunto filtrado
+   pelas OUTRAS dimensoes -- senao o numero ao lado do rotulo mentiria: diria
+   "9 judiciais" quando o filtro de direcao em vigor deixa 2 visiveis. */
+function contaPor(dim) {
+  const c = {};
+  for (const n of S.news) {
+    if (S.filter !== "all" && n.dir !== S.filter) continue;
+    if (dim !== "tipo" && !tipoAtivo(n.tipo_evento)) continue;
+    if (dim !== "orient" && !orientAtivo(n.orientacao)) continue;
+    if (dim === "tipo") c[n.tipo_evento] = (c[n.tipo_evento] || 0) + 1;
+    else for (const o of (n.orientacao || [])) c[o] = (c[o] || 0) + 1;
+  }
+  return c;
+}
+
+/* A legenda DESENHA A MESMA GEOMETRIA do marcador, em miniatura. Legenda com
+   glifo diferente do grafico deixa de ser legenda. */
+function amostra(forma) {
+  const g = glifo(forma, "up", 9, 9, 5.5).replace(/class="mk/, 'class="mk up');
+  return `<svg viewBox="0 0 18 18" width="13" height="13" aria-hidden="true" style="color:var(--flat)">${g} fill-opacity="1"/></svg>`;
+}
+
+function renderLegenda() {
+  const ct = contaPor("tipo"), co = contaPor("orient");
+  $("#lg-tipo").innerHTML = `<span class="lgt">Tipo</span>` + LEG.tipos.map(x =>
+    `<button type="button" data-tipo="${esc(x.id)}" aria-pressed="${tipoAtivo(x.id)}"
+       title="${esc(x.ajuda || "")}">${amostra(x.forma)}${esc(x.rotulo)}
+       <span class="ct">${fmt(ct[x.id] || 0)}</span></button>`).join("");
+  $("#lg-orient").innerHTML = `<span class="lgt">Tempo</span>` + LEG.orientacoes.map(x =>
+    `<button type="button" data-orient="${esc(x.id)}" aria-pressed="${orientAtivo([x.id])}"
+       title="${esc(x.ajuda || "")}"><b style="font-size:13px">${esc(x.marca)}</b>${esc(x.rotulo)}
+       <span class="ct">${fmt(co[x.id] || 0)}</span></button>`).join("");
+}
+
+/* null = todos. Ver o comentario do estado. */
+const tipoAtivo = id => !S.tipos || S.tipos.includes(id);
+/* Orientacao e CONJUNTO: a noticia aparece se QUALQUER marca dela estiver
+   ativa. Exigir que todas estejam esconderia o caso passado+futuro sempre que
+   o usuario desligasse uma das duas -- e esse e o caso de interesse. */
+const orientAtivo = orient => {
+  if (!S.orients) return true;
+  const l = orient || [];
+  return !l.length || l.some(o => S.orients.includes(o));
+};
+
+function alterna(dim, id) {
+  const todas = dim === "tipo" ? LEG.tipos.map(x => x.id) : LEG.orientacoes.map(x => x.id);
+  let atual = (dim === "tipo" ? S.tipos : S.orients) || todas.slice();
+  atual = atual.includes(id) ? atual.filter(x => x !== id) : [...atual, id];
+  // desligar tudo nao mostra nada, o que parece defeito: volta para "todos"
+  if (!atual.length) atual = null;
+  else if (todas.every(x => atual.includes(x))) atual = null;
+  if (dim === "tipo") { S.tipos = atual; store.set("fTipos", atual); }
+  else { S.orients = atual; store.set("fOrients", atual); }
+  S.sel = null;
+  renderControls(); renderChart(); renderList(); renderStats();
+}
+
+$("#lg-tipo").addEventListener("click", e => {
+  const b = e.target.closest("button[data-tipo]"); if (b) alterna("tipo", b.dataset.tipo);
+});
+$("#lg-orient").addEventListener("click", e => {
+  const b = e.target.closest("button[data-orient]"); if (b) alterna("orient", b.dataset.orient);
+});
+
+const shownNews = () => S.news.filter(n =>
+  (S.filter === "all" || n.dir === S.filter) && tipoAtivo(n.tipo_evento)
+  && orientAtivo(n.orientacao));
 
 /* ---------- gráfico ---------- */
 let G = null; // geometria do último desenho
@@ -734,11 +902,13 @@ function renderChart() {
     const p = pos.get(n.id); const r = p.r;
     const op = (0.5 + 0.5 * Math.min(1, Math.abs(num(n.s)) / 0.6)).toFixed(2);
     if (n.dir !== "flat") out += `<line class="stem ${n.dir}" x1="${p.x}" x2="${p.x}" y1="${p.yl}" y2="${p.y}"/>`;
-    let shape;
-    if (n.dir === "up") shape = `<path class="mk up" d="M${p.x},${p.y - r * 1.15} L${p.x + r * 1.1},${p.y + r * 0.8} L${p.x - r * 1.1},${p.y + r * 0.8}Z"`;
-    else if (n.dir === "down") shape = `<path class="mk down" d="M${p.x - r * 1.1},${p.y - r * 0.8} L${p.x + r * 1.1},${p.y - r * 0.8} L${p.x},${p.y + r * 1.15}Z"`;
-    else shape = `<circle class="mk flat" cx="${p.x}" cy="${p.y}" r="${r * 0.85}"`;
+    // FORMA pelo tipo de evento, COR e sentido pelo efeito no papel. As duas
+    // dimensoes do pedido convivem num marcador so: forma responde "que
+    // natureza de fato e este", cor e sentido respondem "para que lado".
+    const shape = glifo(formaDe(n.tipo_evento), n.dir, p.x, p.y, r);
     out += `${shape} fill-opacity="${op}" data-id="${n.id}" data-ni="${n.id}"/>`;
+    // marca temporal ao lado: ← passado, ● presente, → futuro (pode ter duas)
+    out += marcasOrient(n.orientacao, n.dir, p.x, p.y, r);
     marks.push({ id: n.id, ...p });
   }
   if (S.sel != null && pos.has(S.sel)) { const p = pos.get(S.sel); out += `<circle class="ring" cx="${p.x}" cy="${p.y}" r="${p.r + 6}"/>`; }
@@ -838,8 +1008,10 @@ function dayTip(i) {
 function newsTip(n) {
   return `<div class="muted">${esc(fmtDT(n.t))} · ${esc(n.domain || "")}</div>
     <div class="tt">${esc(n.title)}</div>
-    <div class="row"><span>Direção sugerida</span><b class="${n.dir === "up" ? "up-t" : n.dir === "down" ? "down-t" : ""}">${DIRLBL[n.dir]} (s ${esc(sgn(num(n.s), 2))})</b></div>
-    <div class="row"><span>Tipo</span><span>${esc(evtLabel(n.event_type))}</span></div>
+    <div class="row"><span>Direção sugerida</span><b class="${n.dir === "up" ? "up-t" : n.dir === "down" ? "down-t" : ""}">${DIRLBL[n.dir]} (s ${esc(sgn(num(n.s_papel !== undefined ? n.s_papel : n.s), 2))})</b></div>
+    ${n.driver && num(n.s_papel) !== num(n.s) ? `<div class="row"><span>Efeito no papel</span><span class="muted">texto ${esc(sgn(num(n.s), 2))} · invertido por ${esc(n.driver)} (β&lt;0)</span></div>` : ""}
+    <div class="row"><span>Tipo</span><span>${esc(tipoRotulo(n.tipo_evento))} <span class="muted">· ${esc(evtLabel(n.event_type))}</span></span></div>
+    <div class="row"><span>Tempo do conteúdo</span><span>${(n.orientacao || []).map(o => `${esc(orientMarca(o))} ${esc(orientRotulo(o))}`).join(" + ") || "—"}</span></div>
     <div class="row"><span>Peso</span><span>${esc(fmt(num(n.w), 3))}</span></div>
     ${nextLine(n, true)}`;
 }
@@ -898,7 +1070,9 @@ chartEl.addEventListener("blur", () => { hideTip(); });
 /* ---------- lista ---------- */
 function renderList() {
   const N = shownNews();
-  const SK = { recent: (a, b) => b.t - a.t, w: (a, b) => num(b.w) - num(a.w), pos: (a, b) => num(b.s) - num(a.s), neg: (a, b) => num(a.s) - num(b.s) };
+  // ordena por EFEITO NO PAPEL, a mesma grandeza que o marcador desenha
+  const sp = n => num(n.s_papel !== undefined ? n.s_papel : n.s);
+  const SK = { recent: (a, b) => b.t - a.t, w: (a, b) => num(b.w) - num(a.w), pos: (a, b) => sp(b) - sp(a), neg: (a, b) => sp(a) - sp(b) };
   const L = [...N].sort(SK[S.nsort] || SK.recent);
   const maxW = Math.max(1e-9, ...S.news.map(n => num(n.w)));
   $("#newsTitle").textContent = `Notícias (${fmt(N.length)})`;
@@ -908,9 +1082,11 @@ function renderList() {
     return;
   }
   $("#news").innerHTML = L.map(n => `<li class="ni ${S.sel === n.id ? "on" : ""}" data-id="${n.id}">
-      <button type="button" class="badge ${n.dir}" data-loc="${n.id}" aria-label="Mostrar no gráfico: notícia que ${n.dir === "up" ? "puxa para subida" : n.dir === "down" ? "puxa para descida" : "é neutra"}">${ICON[n.dir]}${DIRLBL[n.dir]}<span class="sv">${esc(sgn(num(n.s), 2))}</span></button>
+      <button type="button" class="badge ${n.dir}" data-loc="${n.id}" aria-label="Mostrar no gráfico: notícia que ${n.dir === "up" ? "puxa para subida" : n.dir === "down" ? "puxa para descida" : "é neutra"}">${ICON[n.dir]}${DIRLBL[n.dir]}<span class="sv">${esc(sgn(sp(n), 2))}</span></button>
       <a href="${esc(safeUrl(n.url))}" target="_blank" rel="noopener noreferrer">${esc(n.title || "(sem título)")}</a>
       <div class="meta"><span title="${esc(fmtDT(n.t))}">${esc(fmtDT(n.t))}</span><span>${esc(n.domain || "")}</span>
+        <span class="etype" title="${esc((legTipo(n.tipo_evento) || {}).ajuda || "")}">${esc((legTipo(n.tipo_evento) || {}).icone || "")} ${esc(tipoRotulo(n.tipo_evento))}</span>
+        <span class="etype" title="tempo a que o conteúdo se refere">${(n.orientacao || []).map(o => esc(orientMarca(o))).join("") || "—"}</span>
         <span class="etype">${esc(evtLabel(n.event_type))}</span>
         <span title="Peso ${esc(fmt(num(n.w), 3))}">peso<span class="wbar"><i style="width:${(100 * num(n.w) / maxW).toFixed(0)}%"></i></span></span>
         ${num(n.cluster_size) > 1 ? `<span>+${esc(fmt(num(n.cluster_size) - 1))} similares</span>` : ""}</div>

@@ -53,10 +53,10 @@ import os
 import re
 import time
 
-from . import llm_client
+from . import evento, llm_client
 from .db import connect
 from .dedupe import novelty
-from .util import norm
+from .util import norm, sem_html
 
 # ---------------------------------------------------------------- lexicon ----
 POS = {
@@ -197,7 +197,11 @@ def _aliases_norm(ticker: str) -> list[str]:
 
 def score_lexicon(title: str, body: str | None = None, ticker: str = "") -> dict:
     """Soma ponderada com negacao local e desconto de hedge."""
-    text = norm(f"{title} {(body or '')[:600]}")
+    # sem_html antes do corte: 73% dos corpos comecam com <img src="...">, e a
+    # tag empurra texto real para fora da janela. MEDIDO: a mediana de texto
+    # util nestes 600 chars sobe de 352 para 384 caracteres (+9%).
+    # Ver obs/util.py:sem_html.
+    text = norm(f"{title} {sem_html(body)[:600]}")
     toks = text.split()
     total, hits = 0.0, 0
 
@@ -270,6 +274,10 @@ Responda SOMENTE um JSON:
  "magnitude": <0..1 materialidade frente ao tamanho da empresa>,
  "event_type": "<earnings|guidance|mna|rating|dividend|equity_offer|regulatory|
                  operational|management|distress|subsidio|retrospectiva|outro>",
+ "orientacao": [<"passado" se relata fato consumado, "presente" se o fato esta
+                 em curso, "futuro" se e guidance, projecao, risco prospectivo
+                 ou processo ainda a decidir. PODE TER MAIS DE UMA: decisao ja
+                 proferida mais recurso pendente = ["passado","futuro"]>],
  "ja_precificado": <true se for rotina esperada, etapa procedimental de algo ja
                     anunciado, repercussao de fato antigo, ou retrospectiva>,
  "is_rumor": <true se for boato, fonte anonima ou especulacao>,
@@ -290,7 +298,14 @@ Regras:
 - "apenas_citada" quando a empresa serve de contexto e o fato nao muda o
   resultado dela; nesse caso use s proximo de 0 e magnitude baixa.
 - Coerencia obrigatoria: "prejudicada" exige s < 0; "beneficiada" exige s > 0.
-  Se nao conseguir sustentar isso com um trecho do texto, use "neutra"."""
+  Se nao conseguir sustentar isso com um trecho do texto, use "neutra".
+- "orientacao" e CONJUNTO, nao escolha unica. A pergunta nao e "quando saiu a
+  materia", e "a que tempo o CONTEUDO se refere". Exemplo real: recurso
+  protocolado na segunda contestando decisao de quarta tem os dois tempos --
+  a decisao e o protocolo sao consumados (passado) e o recurso ainda pode
+  mudar o resultado (futuro). Responda ["passado","futuro"].
+- Retrospectiva de preco e "passado". Guidance e "futuro". Data de divulgacao
+  ainda por vir e "futuro"."""
 
 
 # --------------------------------------------------- infraestrutura do LLM ---
@@ -323,8 +338,10 @@ def _zera_contadores() -> None:
 
 
 def _chave_cache(ticker: str, title: str, body: str | None, modelo: str) -> str:
+    # O MESMO texto que vai ao modelo, ja limpo. Chavear pelo corpo cru faria
+    # duas copias com markup diferente e texto identico pagarem duas leituras.
     bruto = "|".join([PROMPT_VERSAO, modelo, (ticker or "").upper(),
-                      title or "", (body or "")[:LIMITE_CORPO]])
+                      title or "", sem_html(body)[:LIMITE_CORPO]])
     return hashlib.sha256(bruto.encode("utf-8")).hexdigest()
 
 
@@ -383,12 +400,25 @@ def _llm_para_score(obj: dict) -> dict:
     if papel == "apenas_citada":
         mag *= 0.30          # a empresa e contexto, nao parte do fato
 
+    # ORIENTACAO: conjunto, validado contra os tres valores aceitos. Modelo
+    # que responde "ontem" ou "Q3" nao entra na coluna -- cai para a regra.
+    orient = obj.get("orientacao")
+    if isinstance(orient, str):
+        orient = [orient]
+    if isinstance(orient, (list, tuple)):
+        validos = {evento.PASSADO, evento.PRESENTE, evento.FUTURO}
+        orient = sorted({str(x).strip().lower() for x in orient}
+                        & validos) or None
+    else:
+        orient = None
+
     raw = dict(obj)
     raw["magnitude_bruta"] = round(mag_bruta, 4)
     if incoerencia:
         raw["incoerencia"] = incoerencia
     return {"s": round(s, 4), "magnitude": round(mag, 4),
             "event_type": obj.get("event_type", "outro"),
+            "orientacao_llm": orient,
             "papel_no_fato": papel,
             "ja_precificado": 1 if obj.get("ja_precificado") else 0,
             "is_rumor": 1 if obj.get("is_rumor") else 0,
@@ -428,8 +458,9 @@ def score_llm(title: str, body: str | None = None, ticker: str = "",
             "ou pontue com --scorer lexicon.")
 
     texto = f"Empresa: {ticker}\nTitulo: {title}"
-    if body:
-        texto += f"\nTexto: {body[:LIMITE_CORPO]}"
+    corpo = sem_html(body)          # markup gasta janela e nao carrega fato
+    if corpo:
+        texto += f"\nTexto: {corpo[:LIMITE_CORPO]}"
 
     erro = ""
     for tentativa in range(TENTATIVAS):
@@ -681,18 +712,54 @@ def run(scorer: str | None = None, limit: int = 5000, min_relevance: float = 0.3
                 continue
         seguidas = 0
         nov = novelty(con, r["article_id"])
+
+        # CLASSIFICACAO EM DUAS DIMENSOES (obs/evento.py). Recalculada do
+        # texto DESTE artigo, nunca copiada do vizinho de cluster: a copia
+        # reaproveita a LEITURA (s, magnitude), que e caro, mas tipo e
+        # orientacao saem de regex sobre o proprio titulo e custam nada --
+        # e o titulo da republicacao nao e identico ao do original.
+        #
+        # QUEM DECIDE O QUE, e por que:
+        #   tipo_evento -> REGRA. A ordem dela e o conserto documentado
+        #     ("judicial vence operacional"), e "TRF", "liminar" ou "projeto
+        #     de lei" sao inequivocos: nao precisam de modelo.
+        #   orientacao  -> LLM quando ele leu; regra como piso. Tempo verbal
+        #     mora em oracao subordinada ("recurso protocolado na segunda
+        #     contestando decisao de quarta" tem dois tempos e nenhuma
+        #     palavra-chave os separa), e isso exige leitura.
+        # Divergencia entre os dois fica gravada no `raw`, contavel por
+        # GROUP BY -- se for frequente, uma das duas esta errada.
+        cls = evento.de_texto(r["title"], r["body"], out.get("event_type"))
+        orient_llm = out.get("orientacao_llm")
+        orientacao = orient_llm or cls["orientacao"]
+        if orient_llm and orient_llm != cls["orientacao"]:
+            try:
+                _raw = json.loads(out.get("raw") or "{}")
+                if isinstance(_raw, dict):
+                    _raw["orientacao_regra"] = cls["orientacao"]
+                    out["raw"] = json.dumps(_raw, ensure_ascii=False)
+            except Exception:                                # noqa: BLE001
+                pass
         # COMMIT POR LINHA, nao um no fim da rodada. Com o lexico dava na
         # mesma; com o LLM, cada linha ja foi PAGA -- abortar no meio e perder
         # a transacao jogaria fora leitura comprada. O cache cobre a releitura,
         # mas commit por linha e o que garante que a nota ja esta no banco.
         with con:
+            # TODAS as colunas, de proposito. INSERT OR REPLACE APAGA a linha e
+            # insere outra, entao coluna omitida volta para NULL -- e era assim
+            # que `limpar --aplicar` zerava `tipo_evento` e `orientacao` de
+            # todo o acervo sem ninguem ver. Acrescentar coluna a `scores`
+            # obriga a acrescentar aqui.
             con.execute(
                 "INSERT OR REPLACE INTO scores"
                 "(article_id,ticker,scorer,s,magnitude,event_type,novelty,"
+                " tipo_evento,orientacao,"
                 " papel_no_fato,ja_precificado,is_rumor,quote,raw)"
-                " VALUES (?,?,?,?,?,?,?,?,?,?,?,?)",
+                " VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
                 (r["article_id"], r["ticker"], scorer, out["s"], out["magnitude"],
-                 out["event_type"], nov, out.get("papel_no_fato"),
+                 out["event_type"], nov,
+                 cls["tipo_evento"], ",".join(orientacao),
+                 out.get("papel_no_fato"),
                  out.get("ja_precificado"), out.get("is_rumor"),
                  out.get("quote"), out.get("raw")))
         n += 1

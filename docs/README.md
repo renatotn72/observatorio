@@ -25,6 +25,10 @@ A documentação separa quatro estados:
 - [Log de decisões](decision-log.md): escolhas, bugs corrigidos e portas.
 - [API](api.md): endpoints locais.
 - [Canal de notícias](canal-noticias.md): plano de medição contra retorno realizado.
+- [Classificação de eventos](eventos.md): orientação temporal e tipo de evento,
+  as duas dimensões independentes que o gráfico desenha.
+- [Fontes prospectivas](fontes-prospectivas.md): avaliação do radar judicial,
+  legislativo e do calendário contábil — recomendação, nada implementado.
 - [Psicologia e propagação](psicologia.md): hipóteses do TCC de 2013 convertidas em features testáveis.
 - [Macro e pesos](macro.md): drivers, surpresas domésticas e eventos internacionais.
 - [Direção](direcao.md): hipóteses para elevar acerto sem multiplicar testes.

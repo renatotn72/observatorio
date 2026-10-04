@@ -101,6 +101,12 @@ def score_mod_run(scorer):
     return score.run(scorer=scorer)
 
 
+def cmd_classificar(a):
+    """Recomputa tipo de evento e orientacao temporal no acervo."""
+    from . import evento
+    evento.reclassificar(scorer=a.scorer, aplicar=a.aplicar)
+
+
 def cmd_score_estado(a):
     """Quem le a noticia, com que autorizacao e com que cobertura."""
     from . import score
@@ -446,6 +452,12 @@ def main(argv=None):
                    help=AJUDA_SCORER)
     add("score-estado", cmd_score_estado,
         help="quem le a noticia agora, autorizacao e cobertura")
+    s = add("classificar", cmd_classificar,
+            help="recomputa tipo de evento e orientacao temporal no acervo "
+                 "(passado/presente/futuro); SIMULA sem --aplicar")
+    s.add_argument("--aplicar", action="store_true", help="grava as mudancas")
+    s.add_argument("--scorer", default=None, choices=SCORERS_CLI,
+                   help="limita a um leitor; vazio = todos")
     s = add("pontuar", cmd_pontuar,
             help="liga, agrupa e pontua o que ja esta no banco (sem rede de noticia)")
     s.add_argument("--scorer", default=None, choices=SCORERS_CLI, help=AJUDA_SCORER)

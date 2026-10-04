@@ -72,6 +72,30 @@ diferentes e nenhuma medição é reproduzível.
   `/api/status.scorer` devolve `validado: false` até o teste da seção 7 de
   `docs/parecer.md` passar.
 
+### Classificação de evento ligada ao pipeline (2026-10-04)
+**Decisão:** `score.run` passa a chamar `evento.classifica` e gravar
+`tipo_evento` e `orientacao` em toda pontuação.
+
+**Motivo — era código morto:** `obs/evento.py` existia com as duas dimensões
+implementadas e **nenhum módulo o importava**. As colunas estavam no esquema e
+ficaram congeladas no momento em que alguém rodou a classificação à mão;
+matéria nova entrava com as duas em `NULL`.
+
+**Defeito corrigido junto:** `INSERT OR REPLACE` apaga a linha e insere outra,
+então coluna omitida volta a `NULL`. A inserção de `score.run` não listava
+`tipo_evento` nem `orientacao` — ou seja, `limpar --aplicar` zerava a
+classificação do acervo inteiro, em silêncio.
+
+**Órgão como ator x órgão como fonte:** o balde `regulatory` do `event_type`
+legado mapeava para `judicial` sem distinguir "ANP aprova delimitação" de
+"produção supera marca, diz ANP". O segundo é a agência como fonte do dado e
+não é evento judicial. `evento._orgao_como_ator` exige ato administrativo
+perto do nome do órgão, ou disputa contra ele.
+
+**Limite do corpo escolhido por medição:** 300 caracteres de corpo limpo. Em
+300 os casos de duas marcas chegam ao máximo (341) e as três marcas ficam sob
+10%; acima disso só a marcação inútil cresce. Tabela em `obs/evento.py`.
+
 ## Inconsistências que exigem registro
 
 ### Registrada em 2026-10-04: a correção que não rodava

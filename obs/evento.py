@@ -31,7 +31,7 @@ de quarta" tem dois tempos e nenhuma palavra-chave os separa.
 from __future__ import annotations
 import re
 
-from .util import norm
+from .util import norm, sem_html
 
 # ------------------------------------------------------------- orientacao ---
 PASSADO, PRESENTE, FUTURO = "passado", "presente", "futuro"
@@ -94,6 +94,50 @@ TIPOS = [
      r"|payroll|fed|banco central|politica monetaria)\b"),
 ]
 
+# ORGAO COMO ATOR x ORGAO COMO FONTE -- a distincao que faltava.
+#
+# O DEFEITO (medido em 2026-10-04): "Producao de petroleo e gas natural no
+# Brasil supera marca inedita de 6 milhoes de boe/dia, DIZ ANP" vinha
+# classificada como JUDICIAL. Nenhuma regra judicial casou; quem decidiu foi o
+# fallback pelo `event_type` legado, que marca "anp" como `regulatory` e o
+# mapa manda `regulatory -> judicial`. Ali a ANP e a FONTE da estatistica, nao
+# autora de ato nenhum.
+#
+# O pedido e explicito sobre o que o icone judicial deve significar: "acoes,
+# liminares, decisoes de agencia". Decisao de agencia entra; boletim de
+# agencia nao.
+ORGAOS = (r"\b(anp|aneel|anatel|cvm|cade|ibama|bacen|banco central|susep|antt"
+          r"|anvisa|ancine|receita federal|tcu|cgu)\b")
+# Verbo de ATO administrativo. "diz", "informa", "divulga", "segundo" e
+# "de acordo com" ficam DE FORA de proposito: sao verbos de reporte.
+ACOES_ORGAO = (r"\b(aprov(?:a|ou|ar)|autoriz(?:a|ou)|neg(?:a|ou)|suspend(?:e|eu)"
+               r"|multa(?:r|ou)?|autu(?:a|ou)|determin(?:a|ou)|decid(?:e|iu)"
+               r"|notific(?:a|ou)|embarg(?:a|ou)|interdit(?:a|ou)|cancel(?:a|ou)"
+               r"|revog(?:a|ou)|homolog(?:a|ou)|abre processo|instaur(?:a|ou)"
+               r"|condicion(?:a|ou)|veda(?:r|ou)?|exig(?:e|iu)|avanca para"
+               r"|impugn(?:a|ou))\b")
+JANELA_ORGAO = 80       # caracteres entre o orgao e o ato
+
+
+def _orgao_como_ator(texto_norm: str) -> bool:
+    """O orgao APARECE AGINDO, ou so e citado como fonte?
+
+    Procura ato administrativo perto do nome do orgao, nas duas direcoes:
+    "ANP aprova" e "aprovado pela ANP" sao o mesmo fato.
+    """
+    import itertools
+    orgaos = [(m.start(), m.end()) for m in re.finditer(ORGAOS, texto_norm)]
+    if not orgaos:
+        return False
+    atos = [(m.start(), m.end()) for m in re.finditer(ACOES_ORGAO, texto_norm)]
+    for (o0, o1), (a0, a1) in itertools.product(orgaos, atos):
+        if min(abs(a0 - o1), abs(o0 - a1)) <= JANELA_ORGAO:
+            return True
+    # disputa CONTRA o orgao tambem e materia judicial/regulatoria
+    return bool(re.search(r"\bcontra\b.{0,40}" + ORGAOS, texto_norm)
+                or re.search(ORGAOS + r".{0,40}\bcontra\b", texto_norm))
+
+
 # Mapa do event_type antigo -> tipo novo, para nao perder o que ja existe.
 DE_EVENT_TYPE = {
     "earnings": CORPORATIVO, "guidance": CORPORATIVO, "mna": CORPORATIVO,
@@ -122,13 +166,22 @@ def orientacao(texto: str) -> list[str]:
 
 
 def tipo(texto: str, event_type_antigo: str | None = None) -> str:
-    """Tipo do evento. Regra primeiro; o event_type antigo e o fallback."""
+    """Tipo do evento. Regra primeiro; o event_type antigo e o fallback.
+
+    O FALLBACK PARA JUDICIAL E CONDICIONAL. O balde `regulatory` do legado
+    mistura ato de agencia com agencia citada como fonte de dado, e so o
+    primeiro e judicial/regulatorio. Sem esta guarda, boletim de producao da
+    ANP ganhava icone de processo. Ver `_orgao_como_ator`.
+    """
     t = norm(texto)
     for nome, pad in TIPOS:
         if re.search(pad, t):
             return nome
     if event_type_antigo:
-        return DE_EVENT_TYPE.get(event_type_antigo, CORPORATIVO)
+        alvo = DE_EVENT_TYPE.get(event_type_antigo, CORPORATIVO)
+        if alvo == JUDICIAL and not _orgao_como_ator(t):
+            return CORPORATIVO
+        return alvo
     return CORPORATIVO
 
 
@@ -137,17 +190,188 @@ def classifica(texto: str, event_type_antigo: str | None = None) -> dict:
             "tipo_evento": tipo(texto, event_type_antigo)}
 
 
-# Rotulos e icones que a tela usa. Ficam aqui, e nao no HTML, pela mesma razao
-# que os numeros de qualidade ficam em medidas.py: fonte unica.
+# Rotulos, icones e FORMAS que a tela usa. Ficam aqui, e nao no HTML, pela
+# mesma razao que os numeros de qualidade ficam em medidas.py: fonte unica.
+#
+# `icone`  -- glifo unicode, para terminal, lista de noticias e tooltip.
+# `forma`  -- chave da geometria que o SVG desenha. Existe porque glifo
+#             unicode em marcador de 8px nao e confiavel: "§" e "⚖" variam de
+#             largura por fonte e "📅" cai em emoji colorido em parte dos
+#             sistemas, o que destroi a leitura de forma num grafico. A
+#             legenda desenha a MESMA geometria do marcador, senao a legenda
+#             deixa de ser legenda.
+# `ordem`  -- ordem de exibicao na legenda, do mais frequente ao mais raro.
 ICONES = {
-    CORPORATIVO: {"rotulo": "Corporativo", "icone": "●"},
-    MACRO: {"rotulo": "Macroeconômico", "icone": "▲"},
-    JUDICIAL: {"rotulo": "Judicial / regulatório", "icone": "§"},
-    LEGISLATIVO: {"rotulo": "Legislativo / política", "icone": "⚖"},
-    CALENDARIO: {"rotulo": "Calendário contábil", "icone": "📅"},
+    CORPORATIVO: {"rotulo": "Corporativo", "icone": "●", "forma": "direcional",
+                  "ordem": 1,
+                  "ajuda": "Fato da empresa: resultado, provento, M&A, gestao. "
+                           "Mantem o marcador historico -- triangulo para cima "
+                           "ou para baixo pela direcao, circulo quando neutra."},
+    MACRO: {"rotulo": "Macroeconômico", "icone": "▲", "forma": "triangulo_vazado",
+            "ordem": 2,
+            "ajuda": "Sinal macro que chega ao papel pela cadeia de afetacao. "
+                     "O triangulo aponta pelo efeito NO PAPEL, nao pelo tom do "
+                     "texto: alta do petroleo e favoravel a PETR4 (beta +) e "
+                     "adversa a quem consome combustivel (beta -)."},
+    JUDICIAL: {"rotulo": "Judicial / regulatório", "icone": "§", "forma": "diamante",
+               "ordem": 3,
+               "ajuda": "Acao judicial, liminar, recurso, decisao de agencia "
+                        "ou de orgao de controle."},
+    LEGISLATIVO: {"rotulo": "Legislativo / política", "icone": "⚖", "forma": "bandeira",
+                  "ordem": 4,
+                  "ajuda": "Projeto de lei, medida provisoria, consulta publica, "
+                           "tomada de subsidio, votacao."},
+    CALENDARIO: {"rotulo": "Calendário contábil", "icone": "📅", "forma": "calendario",
+                 "ordem": 5,
+                 "ajuda": "Data de divulgacao de resultado, fato relevante CVM, "
+                          "agenda contabil. E agenda, nao fato consumado."},
 }
 MARCAS_ORIENTACAO = {
-    PASSADO: {"rotulo": "Passado", "marca": "←"},
-    PRESENTE: {"rotulo": "Presente", "marca": "●"},
-    FUTURO: {"rotulo": "Futuro", "marca": "→"},
+    PASSADO: {"rotulo": "Passado", "marca": "←", "ordem": 1,
+              "ajuda": "Relata fato consumado. Deveria explicar movimento JA "
+                       "ocorrido, nao prever o proximo."},
+    PRESENTE: {"rotulo": "Presente", "marca": "●", "ordem": 2,
+               "ajuda": "Fato em curso agora: negociacao, disputa, processo em "
+                        "tramitacao."},
+    FUTURO: {"rotulo": "Futuro", "marca": "→", "ordem": 3,
+             "ajuda": "Guidance, projecao, risco prospectivo, processo ainda a "
+                      "decidir. E a marca de interesse para radar: o fato "
+                      "ainda nao aconteceu."},
 }
+
+
+def legenda() -> dict:
+    """Mapas para a tela. O HTML nao escreve rotulo nem forma a mao."""
+    return {
+        "tipos": [{"id": k, **v} for k, v in
+                  sorted(ICONES.items(), key=lambda kv: kv[1]["ordem"])],
+        "orientacoes": [{"id": k, **v} for k, v in
+                        sorted(MARCAS_ORIENTACAO.items(),
+                               key=lambda kv: kv[1]["ordem"])],
+        "nota": ("Nenhuma das duas dimensoes entra no sinal: elas descrevem e "
+                 "filtram. Classificacao errada polui a leitura da tela, nao a "
+                 "medicao."),
+    }
+
+
+# Caracteres de CORPO LIMPO que entram na classificacao. Escolhido por
+# medicao, nao por gosto -- sobre os 777 scores do banco, contando quantas
+# noticias recebem 2 marcas (o caso informativo, "decisao passada + recurso
+# pendente") contra 3 marcas (que nao informa nada: tudo marcado como tudo):
+#
+#   limite   1 marca   2 marcas   3 marcas   tres %
+#        0       691         83          3     0,4%   <- so manchete: perde o corpo
+#      120       490        246         41     5,3%
+#      200       421        300         56     7,2%
+#      300       359        341         77     9,9%   <- 2 marcas no maximo
+#      450       340        341         96    12,4%   <- 2 marcas para; 3 sobe
+#      600       338        339        100    12,9%
+#
+# Em 300 os casos de duas marcas chegam ao maximo e as tres marcas ficam sob
+# 10%. Acima disso so a marcacao inutil cresce: 2 marcas fica parado em 341
+# enquanto 3 marcas vai de 77 a 100. Por isso 300, e nao os 600 de
+# `score_lexicon`.
+#
+# A tabela e com corpo LIMPO (util.sem_html). Com o markup dentro, as tres
+# marcas iam a 18,5% em 600 chars contra 12,9% limpo. A limpeza muda a
+# orientacao de 17 dos 684 corpos (2%) -- efeito modesto e medido, nao
+# suposto; ver o docstring de util.sem_html para o que ela NAO conserta.
+LIMITE_CORPO = 300
+
+
+def de_texto(titulo: str, corpo: str | None = None,
+             event_type_antigo: str | None = None) -> dict:
+    """Classifica a partir do par (titulo, corpo), que e como a base guarda.
+
+    O CORPO ENTRA, limpo de HTML e truncado. Orientacao temporal depende de
+    oracao subordinada -- "contestando a decisao de quarta" mora no corpo, nao
+    na manchete -- e e exatamente o caso do bloco FZA-M-59.
+
+    `sem_html` entra antes do corte porque 73% dos corpos COMECAM com uma tag
+    <img>, que empurra texto real para fora da janela. Medido: a limpeza muda
+    a orientacao de 17 dos 684 corpos (2%). Ver obs/util.py:sem_html.
+    """
+    return classifica(f"{titulo} {sem_html(corpo)[:LIMITE_CORPO]}",
+                      event_type_antigo)
+
+
+# ---------------------------------------------------------- reclassificar ---
+def reclassificar(scorer: str | None = None, aplicar: bool = False,
+                  verbose: bool = True) -> dict:
+    """Recomputa tipo_evento e orientacao no acervo, sob as regras ATUAIS.
+
+    POR QUE ISTO E NECESSARIO E NAO OPCIONAL
+    `score.run` so pontua par (artigo,ticker) que ainda NAO tem score. Logo,
+    mudar uma regra aqui nao recalcula nada do que ja esta gravado -- o mesmo
+    defeito que obs/limpeza.py documenta para o lexico. E pior: enquanto nada
+    chamava este modulo, a classificacao do banco ficou CONGELADA no momento
+    em que alguem a rodou a mao, e materia nova entrava com as duas colunas em
+    NULL.
+
+    SIMULA por padrao, como todo o resto do projeto. `aplicar=True` escreve.
+
+    Idempotente: rodar duas vezes seguidas devolve 0 alteracoes na segunda.
+    """
+    from .db import connect
+
+    con = connect()
+    onde, args = "", []
+    if scorer:
+        onde, args = "WHERE sc.scorer = ?", [scorer]
+    rows = con.execute(f"""
+        SELECT sc.article_id, sc.ticker, sc.scorer, sc.event_type,
+               sc.tipo_evento, sc.orientacao, a.title, a.body
+        FROM scores sc JOIN articles a ON a.id = sc.article_id
+        {onde}""", args).fetchall()
+
+    antes_t, antes_o = {}, {}
+    depois_t, depois_o = {}, {}
+    mudancas, nulos, exemplos = [], 0, []
+    for r in rows:
+        at, ao = r["tipo_evento"], r["orientacao"]
+        antes_t[at] = antes_t.get(at, 0) + 1
+        antes_o[ao] = antes_o.get(ao, 0) + 1
+        if at is None or ao is None:
+            nulos += 1
+        cls = de_texto(r["title"], r["body"], r["event_type"])
+        dt_, do_ = cls["tipo_evento"], ",".join(cls["orientacao"])
+        depois_t[dt_] = depois_t.get(dt_, 0) + 1
+        depois_o[do_] = depois_o.get(do_, 0) + 1
+        if at != dt_ or ao != do_:
+            mudancas.append((r["article_id"], r["ticker"], r["scorer"], dt_, do_))
+            if len(exemplos) < 12:
+                exemplos.append({"id": r["article_id"], "ticker": r["ticker"],
+                                 "titulo": r["title"][:88],
+                                 "de": f"{at} / {ao}", "para": f"{dt_} / {do_}"})
+
+    if aplicar and mudancas:
+        with con:
+            con.executemany(
+                "UPDATE scores SET tipo_evento=?, orientacao=? "
+                "WHERE article_id=? AND ticker=? AND scorer=?",
+                [(dt_, do_, aid, tkr, sc) for aid, tkr, sc, dt_, do_ in mudancas])
+    con.close()
+
+    out = {"aplicou": aplicar, "scores": len(rows), "sem_classificacao": nulos,
+           "alteracoes": len(mudancas), "exemplos": exemplos,
+           "antes": {"tipo": antes_t, "orientacao": antes_o},
+           "depois": {"tipo": depois_t, "orientacao": depois_o}}
+    if verbose:
+        print(f"scores examinados        : {len(rows)}")
+        print(f"sem classificacao (NULL) : {nulos}")
+        print(f"alteracoes {'aplicadas' if aplicar else 'que seriam feitas'}: "
+              f"{len(mudancas)}")
+        print("\ntipo de evento:")
+        for k in sorted(set(antes_t) | set(depois_t), key=lambda x: str(x)):
+            print(f"  {str(k):<16}{antes_t.get(k,0):>6} -> {depois_t.get(k,0):>6}")
+        print("\norientacao temporal:")
+        for k in sorted(set(antes_o) | set(depois_o), key=lambda x: str(x)):
+            print(f"  {str(k):<28}{antes_o.get(k,0):>6} -> {depois_o.get(k,0):>6}")
+        if exemplos:
+            print("\nexemplos de mudanca:")
+            for e in exemplos:
+                print(f"  {e['ticker']:<6} {e['de']:<28} -> {e['para']}")
+                print(f"         {e['titulo']}")
+        if not aplicar and mudancas:
+            print("\nPara gravar: python3 -m obs.cli classificar --aplicar")
+    return out

@@ -141,6 +141,23 @@ a primeira porta; o ciclo ao vivo vai substituindo por rótulo limpo. Se o skill
 de Brier vier negativo, a porta barra e o painel continua mostrando
 `não calibrado` — isso é resultado válido, não falha.
 
+## 3.1 Classificar os eventos
+
+Duas dimensões independentes por notícia — tipo (corporativo, macro, judicial,
+legislativo, calendário) e tempo do conteúdo (passado, presente, futuro, podendo
+ser mais de um). Entram sozinhas em toda pontuação nova.
+
+O acervo que já estava no banco precisa de uma passada:
+
+```bash
+python3 -m obs.cli classificar              # simula, não grava
+python3 -m obs.cli classificar --aplicar    # grava
+```
+
+No gráfico de `acao.html`, a legenda **TIPO** e **TEMPO** é clicável e filtra.
+Deixar só `→ Futuro` ligado é a leitura de radar: o que ainda pode acontecer.
+Detalhe em `docs/eventos.md`.
+
 ## 4. Rotina diária
 
 Na Central de Operações, ligue:

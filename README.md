@@ -95,6 +95,9 @@ dedupe.py        →  cluster de quase-duplicatas → POPULARIDADE e NOVIDADE
        ↓
 score.py         →  texto → {s, magnitude, event_type}   [llm | ensemble | lexicon]
        ↓               padrão: llm. Sem proxy, cai para lexicon DIZENDO que caiu
+evento.py        →  tipo (corporativo|macro|judicial|legislativo|calendário)
+       ↓               + orientação temporal (CONJUNTO de passado/presente/futuro)
+       ↓               descreve e filtra; NÃO entra no sinal
        ↓
 aggregate.py     →  w = veículo × relevância × novidade × materialidade × decaimento
        ↓               z = Σ(s·w)/Σw      n_eff = Σw

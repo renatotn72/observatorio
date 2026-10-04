@@ -56,6 +56,18 @@ Drivers de mercado ─┘                                      │
    - Estado da evidência: **implementado, não validado**. O ganho de leitura
      ainda não foi medido contra retorno realizado (`docs/parecer.md`, seção 4).
 
+4b. **Classificação do evento** (`obs/evento.py`)
+   - Duas dimensões **independentes**, gravadas em `scores`:
+     `tipo_evento` (corporativo, macro, judicial, legislativo, calendário) e
+     `orientacao` (conjunto de passado, presente, futuro).
+   - `orientacao` é CONJUNTO: decisão proferida mais recurso pendente é
+     `passado,futuro`. Campo único obrigaria a escolher, e a resposta certa
+     são os dois.
+   - **Nenhuma das duas entra no sinal.** Elas descrevem e filtram. Errar aqui
+     polui a leitura da tela, não a medição — diferente do `s`, onde errar o
+     lado estraga o resultado.
+   - Ver `docs/eventos.md`.
+
 5. **Cadeia de afetação**
    - `obs/drivers.py` estima exposição por regressão ridge usando somente dados anteriores ao ponto `asof`.
    - Cada exposição possui `beta`, `share`, `r2` e número de observações.

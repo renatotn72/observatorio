@@ -92,6 +92,7 @@ def compute(ticker: str, scorer: str | None = None, asof: int | None = None,
 
     rows = con.execute("""
         SELECT sc.s, sc.magnitude, sc.novelty, sc.event_type, sc.article_id,
+               sc.tipo_evento, sc.orientacao,
                m.relevance, m.driver, m.peso_driver, m.sinal_driver,
                a.domain, a.title, a.published_ts, a.url
         FROM scores sc
@@ -123,6 +124,8 @@ def compute(ticker: str, scorer: str | None = None, asof: int | None = None,
                       "s": round(s_eff, 4), "s_bruto": r["s"], "driver": r["driver"],
                       "peso_driver": r["peso_driver"],
                       "w": round(w, 4), "event_type": r["event_type"],
+                      "tipo_evento": r["tipo_evento"],
+                      "orientacao": (r["orientacao"] or "").split(",") if r["orientacao"] else [],
                       "novelty": round(r["novelty"], 3), "age_h": round(age_h, 1),
                       "cluster_size": cluster_size(con, r["article_id"])})
 

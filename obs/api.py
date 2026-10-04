@@ -22,8 +22,8 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import parse_qs, urlparse
 
 from . import (aggregate, alarms as alarm_mod, config, contabil, drivers,
-               externo, medidas, notify, pergunta, reports, surpresa, ops,
-               score as score_mod)
+               evento, externo, medidas, notify, pergunta, reports, surpresa,
+               ops, score as score_mod)
 from .config import ROOT
 from .db import connect
 from .dedupe import cluster_size
@@ -276,7 +276,9 @@ def _chart_diario(tkr: str, dias: int) -> dict:
         (tkr, cut_date)).fetchall()]
     rows = con.execute("""
         SELECT a.id, a.published_ts, a.title, a.url, a.domain,
-               sc.s, sc.magnitude, sc.novelty, sc.event_type, m.relevance
+               sc.s, sc.magnitude, sc.novelty, sc.event_type,
+               sc.tipo_evento, sc.orientacao,
+               m.relevance, m.driver, m.peso_driver, m.sinal_driver
         FROM scores sc
         JOIN mentions m ON m.article_id=sc.article_id AND m.ticker=sc.ticker
         JOIN articles a ON a.id=sc.article_id
@@ -286,15 +288,37 @@ def _chart_diario(tkr: str, dias: int) -> dict:
     for r in rows:
         w = (aggregate.source_weight(r["domain"], src_cfg) * r["relevance"]
              * r["novelty"] * r["magnitude"])
+        # EFEITO NO PAPEL, nao tom do texto. Para noticia que chegou pela
+        # cadeia de afetacao, o sinal do beta inverte: alta do petroleo e
+        # favoravel a PETR4 (beta +) e adversa a quem consome combustivel
+        # (beta -). O triangulo macro do grafico aponta por ISTO -- a MESMA
+        # regra que aggregate.compute aplica em `s_eff`, senao grafico e
+        # sinal contariam historias diferentes sobre a mesma materia.
+        s_papel = r["s"]
+        if r["driver"] and (r["sinal_driver"] or 1) < 0:
+            s_papel = -s_papel
+        if r["driver"]:
+            w *= max(0.0, float(r["peso_driver"] or 0.0))
         news.append({"ts": r["published_ts"], "when": iso(r["published_ts"]),
                      "title": r["title"], "url": r["url"], "domain": r["domain"],
-                     "s": r["s"], "magnitude": r["magnitude"], "novelty": round(r["novelty"], 3),
+                     "s": r["s"], "s_papel": round(s_papel, 4),
+                     "magnitude": r["magnitude"], "novelty": round(r["novelty"], 3),
                      "relevance": round(r["relevance"], 3), "event_type": r["event_type"],
+                     # as duas dimensoes de obs/evento.py. `orientacao` e
+                     # LISTA: um evento pode ser passado E futuro.
+                     "tipo_evento": r["tipo_evento"] or evento.CORPORATIVO,
+                     "orientacao": (r["orientacao"] or evento.PRESENTE).split(","),
+                     "driver": r["driver"], "peso_driver": r["peso_driver"],
+                     "sinal_driver": r["sinal_driver"],
                      "w": round(w, 4), "cluster_size": cluster_size(con, r["id"])})
     con.close()
     m = config.tickers().get(tkr, {}) or {}
     return {"ticker": tkr, "name": m.get("name", tkr), "sector": m.get("sector"),
             "dias": dias, "scorer": _scorer_ativo(), "prices": prices, "news": news,
+            # Rotulo, icone e FORMA de cada tipo, e as marcas temporais. Vem
+            # daqui pelo mesmo motivo que os selos de qualidade vem de
+            # medidas.py: o HTML nao escreve rotulo nem geometria a mao.
+            "legenda": evento.legenda(),
             # datas REAIS de divulgacao de resultado (protocolo na CVM), para
             # o grafico marcar. Diferente da data do IPCA, que e aproximada.
             "divulgacoes": contabil.calendario(tkr)}
