@@ -29,6 +29,10 @@ A documentação separa quatro estados:
   as duas dimensões independentes que o gráfico desenha.
 - [Orientação x retorno](orientacao-medicao.md): a notícia de passado explica o
   passado? A de futuro prevê? Medido — nada passa.
+- [Tipos de evento x retorno](tipos-medicao.md): judicial, legislativo e
+  calendário acertam quanto? Medido — **não dá para medir** (16, 3 e 1
+  matérias), e a auditoria à mão achou dois defeitos de classificação que
+  estatística nenhuma acharia.
 - [Fontes de preço](precos-fontes.md): o que já existe, diagnóstico do banco
   por papel e granularidade, e o alcance real da fonte atual.
 - [Fontes prospectivas](fontes-prospectivas.md): avaliação do radar judicial,

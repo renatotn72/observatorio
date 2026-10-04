@@ -158,6 +158,36 @@ Mas **não está verificado** se no intraday eles são por barra ou da sessão �
 é plausível. `obs/uol.constantes` responde na primeira coleta real e avisa alto;
 até lá a coluna é "implementada não validada", não "medida".
 
+### Registrada em 2026-10-04: o tipo `calendário` tinha 100% de erro
+A regra casava "fato relevante" e "comunicado ao mercado" -- que são os NOMES
+DO DOCUMENTO arquivado na CVM, não tipos de evento, e aparecem no corpo de
+quase qualquer anúncio corporativo. Das 6 matérias marcadas `calendario` no
+acervo, 6 eram outra coisa: descoberta de gás, fábrica de baterias, venda de
+operação, plano de investimento, aquisição. Uma só era de calendário, e por
+acidente.
+
+Idem `legislativo` com `congresso` e `senado` soltos: medido, 53 artigos citam
+"congresso" e só 7 citam "Congresso Nacional" (87% são congresso de área, entre
+eles "Congresso IBGC: o ser humano na liderança da transformação", marcado como
+ato legislativo); 103 citam "senado" e a maioria é cobertura eleitoral. As duas
+regras passaram a exigir, respectivamente, construção que anuncia data/agenda e
+a casa agindo.
+
+**O defeito foi achado LENDO os 6 casos, não medindo.** Com n=6 a margem de
+erro de qualquer taxa passa de 60 pontos; nenhuma estatística o acharia. Fica
+registrado como o argumento de por que `scripts/tipo_evento_test.py` roda uma
+auditoria à mão junto com a medição, e não em vez dela.
+
+Efeito: calendário 6 -> 1, legislativo 6 -> 3, corporativo 611 -> 619. Os dois
+tipos pedidos ficaram MENORES -- que é a resposta certa.
+
+### Registrada em 2026-10-04: comparador errado na tabela de volatilidade
+`em_100` comparava a precisão no topo 20% com 50 em 100. Mas nessa tabela
+"acertar" é o papel ter ficado entre os 20% que mais se mexeram, e chutar às
+cegas acerta ~20 em 100, não 50. O texto dizia "acerta menos que a moeda" para
+resultado que estava acima do chute real. Corrigido: o comparador é a taxa-base
+da própria pergunta, e o cabeçalho avisa qual é a régua.
+
 A configuração e a documentação podem divergir. Sempre declarar:
 1. o que o código está fazendo;
 2. o que a evidência validou;

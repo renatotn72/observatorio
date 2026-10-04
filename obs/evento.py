@@ -82,13 +82,39 @@ TIPOS = [
      r"|decisao judicial|juiz|desembargador|processo judicial|acao judicial"
      r"|interdito|tutela|agravo)\b"),
     (LEGISLATIVO,
+     # "congresso" SOZINHO foi retirado. Medido em 2026-10-04: 53 artigos do
+     # acervo contem a palavra e so 7 contem "congresso nacional" -- 87% sao
+     # congresso DE AREA ("Congresso IBGC: o ser humano na lideranca da
+     # transformacao" vinha marcada como ato legislativo). Na imprensa de
+     # negocios a palavra significa evento, nao Legislativo.
      r"\b(projeto de lei|pl \d+|pec|medida provisoria|mp \d+|camara dos deputados"
-     r"|senado|congresso|relator|votacao no plenario|sancao presidencial"
+     # "senado" SOZINHO tambem fica de fora, e pelo mesmo motivo medido:
+     # 103 artigos do acervo citam a palavra e a maioria e COBERTURA
+     # ELEITORAL ("Quem esta na frente para senador em Pernambuco?"), nao ato
+     # legislativo. Vale a casa agindo, nao a casa mencionada.
+     r"|senado federal|senado (?:aprov|rejeit|vot)\w*"
+     r"|camara (?:aprov|rejeit|vot)\w*|congresso nacional|relator do projeto"
+     r"|votacao no plenario|sancao presidencial"
      r"|decreto|consulta publica|tomada de subsidio|audiencia publica)\b"),
     (CALENDARIO,
-     r"\b(calendario de (?:eventos|resultados)|data de divulgacao"
-     r"|divulgara (?:o )?(?:balanco|resultado)|agenda de resultados"
-     r"|fato relevante|comunicado ao mercado)\b"),
+     # ESTA REGRA ESTAVA ERRADA, e errada de um jeito que inutilizava o tipo.
+     # Ela casava "fato relevante" e "comunicado ao mercado", que sao os NOMES
+     # DO VEICULO de arquivamento na CVM, nao eventos de calendario: aparecem
+     # no corpo de praticamente qualquer anuncio corporativo. Resultado
+     # medido: 6 de 6 materias marcadas `calendario` no acervo eram outra
+     # coisa -- descoberta de gas, fabrica de baterias, venda de operacao,
+     # plano de investimento, aquisicao. O tipo tinha 100% de erro.
+     #
+     # O pedido (6.3) e CALENDARIO CONTABIL: quando a empresa divulga, nao o
+     # que ela divulgou. Logo a regra agora exige construcao que ANUNCIA DATA
+     # ou agenda, e nao o nome do documento.
+     r"\b(calendario de (?:eventos|resultados|divulgacao)"
+     r"|agenda de (?:resultados|divulgacao)|data de divulgacao"
+     r"|divulgar[aá] (?:o |os |seu |seus )?(?:balanco|resultado|numero)"
+     r"|divulga(?:cao|r) (?:do |dos )?(?:balanco|resultado)s? (?:em|no dia|na data)"
+     r"|teleconferencia de resultados|data (?:ex|com)-(?:dividendo|direito)"
+     r"|passar[aá] a divulgar|antecipa(?:r|cao d[ao]) divulgacao"
+     r"|reuniao do conselho para aprovar (?:o )?(?:balanco|resultado))\b"),
     (MACRO,
      r"\b(selic|copom|ipca|igp-m|inflacao|pib|cambio|dolar|juros basicos"
      r"|payroll|fed|banco central|politica monetaria)\b"),

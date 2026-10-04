@@ -186,6 +186,55 @@ ok({x["id"] for x in leg["orientacoes"]}
    == {evento.PASSADO, evento.PRESENTE, evento.FUTURO},
    "legenda temporal completa")
 
+print("\n9. o nome do VEICULO nao e o TIPO do evento")
+# DEFEITO MEDIDO em 2026-10-04, na auditoria dos 6 casos `calendario` do
+# acervo: a regra casava "fato relevante" e "comunicado ao mercado", que sao os
+# NOMES DO DOCUMENTO que a empresa arquiva na CVM, nao eventos de calendario.
+# Como esses termos aparecem no corpo de quase qualquer anuncio corporativo,
+# 6 de 6 materias marcadas `calendario` eram outra coisa -- descoberta de gas,
+# fabrica de baterias, venda de operacao, plano de investimento, aquisicao.
+# O tipo tinha 100% de erro, e com n=6 nenhuma estatistica acharia isso.
+veic = [
+    ("Petrobras anuncia descoberta de gás em águas profundas; veja o fato "
+     "relevante", evento.CORPORATIVO, "'fato relevante' é o veículo, não o tipo"),
+    ("WEG anuncia plano de investimento de R$ 840 milhões; comunicado ao "
+     "mercado na CVM", evento.CORPORATIVO, "'comunicado ao mercado' idem"),
+    ("Itaú divulgará o balanço do 3T26 em 5 de novembro",
+     evento.CALENDARIO, "anuncia DATA de divulgação: é calendário"),
+    ("Vale passará a divulgar relatório de vendas junto com resultados",
+     evento.CALENDARIO, "muda a AGENDA de divulgação"),
+    ("Petrobras divulga calendário de eventos de 2027",
+     evento.CALENDARIO, "calendário explícito"),
+]
+for titulo, esperado, porque in veic:
+    got = evento.tipo(titulo)
+    ok(got == esperado, f"{esperado:<12} ({porque})", f"{got} <- {titulo[:46]}")
+
+print("\n10. 'congresso' de area nao e o Congresso Nacional")
+# Medido: 53 artigos do acervo contem "congresso", 7 contem "congresso
+# nacional". 87% sao congresso DE AREA, e um deles -- "Congresso IBGC: o ser
+# humano na lideranca da transformacao" -- estava marcado como ato legislativo.
+# Idem "senado": 103 artigos citam a palavra e a maioria e cobertura
+# ELEITORAL. A regra passou a exigir a casa AGINDO (aprova, rejeita, vota),
+# nao a casa citada.
+cong = [
+    ("Congresso IBGC: o ser humano na liderança da transformação",
+     evento.CORPORATIVO, "congresso de área"),
+    ("Congresso Nacional aprova a LDO de 2027",
+     evento.LEGISLATIVO, "o Legislativo de fato"),
+    ("Projeto de lei muda tributação de dividendos",
+     evento.LEGISLATIVO, "projeto de lei continua valendo"),
+    ("Senado aprova marco legal do mercado de carbono",
+     evento.LEGISLATIVO, "a casa AGINDO continua valendo"),
+    ("Quem está na frente para senador em Pernambuco? Veja as pesquisas",
+     evento.CORPORATIVO, "cobertura eleitoral não é ato legislativo"),
+    ("Eleições 2026: bancada feminina pode chegar a 22 integrantes no Senado",
+     evento.CORPORATIVO, "a casa MENCIONADA não basta"),
+]
+for titulo, esperado, porque in cong:
+    got = evento.tipo(titulo)
+    ok(got == esperado, f"{esperado:<12} ({porque})", f"{got} <- {titulo[:46]}")
+
 print()
 if FALHAS:
     print(f"{len(FALHAS)} caso(s) FALHARAM:")

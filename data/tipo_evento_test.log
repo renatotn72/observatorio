@@ -1,0 +1,1710 @@
+========================================================================================================
+TIPO DE EVENTO x RETORNO -- quanto cada tipo acerta
+========================================================================================================
+
+MATERIAS CLASSIFICADAS POR TIPO (a restricao que manda em tudo):
+  judicial        16   NAO da para medir  <- pedido
+  legislativo      3   NAO da para medir  <- pedido
+  calendario       1   NAO da para medir  <- pedido
+  macro          138   no limite
+  corporativo    619   da para medir
+
+QUANTAS CELULAS SERIAM NECESSARIAS (teste de proporcao vs 50%, poder 80%):
+  para provar vantagem de  3 acertos em 100:   2178 celulas
+  para provar vantagem de  5 acertos em 100:    783 celulas
+  para provar vantagem de 10 acertos em 100:    194 celulas
+  para provar vantagem de 15 acertos em 100:     85 celulas
+  para provar vantagem de 20 acertos em 100:     47 celulas
+
+
+########################################################################################################
+#  DIRECAO (o papel sobe ou cai?)
+#  grafico separado, como pedido -- um resultado nao autoriza o outro
+########################################################################################################
+
+========================================================================================================
+1 MINUTO — DIRECAO (o papel sobe ou cai?)
+========================================================================================================
+tipo         janela       h  papeis  celulas       IC      p  acerto em 100  chute    IC95 do acerto  veredito
+judicial     passado    -60       4        1        —      —              —      —                 —  menos de 8 celulas: nao calcula
+judicial     passado    -15       4        1        —      —              —      —                 —  menos de 8 celulas: nao calcula
+judicial     passado     -5       4        1        —      —              —      —                 —  menos de 8 celulas: nao calcula
+judicial     futuro       5       4        5        —      —              —      —                 —  menos de 8 celulas: nao calcula
+judicial     futuro      15       4        5        —      —              —      —                 —  menos de 8 celulas: nao calcula
+judicial     futuro      60       4        5        —      —              —      —                 —  menos de 8 celulas: nao calcula
+legislativo  passado    -60       2        0        —      —              —      —                 —  menos de 8 celulas: nao calcula
+legislativo  passado    -15       2        0        —      —              —      —                 —  menos de 8 celulas: nao calcula
+legislativo  passado     -5       2        0        —      —              —      —                 —  menos de 8 celulas: nao calcula
+legislativo  futuro       5       2        2        —      —              —      —                 —  menos de 8 celulas: nao calcula
+legislativo  futuro      15       2        2        —      —              —      —                 —  menos de 8 celulas: nao calcula
+legislativo  futuro      60       2        2        —      —              —      —                 —  menos de 8 celulas: nao calcula
+calendario   passado    -60       1        1        —      —              —      —                 —  menos de 8 celulas: nao calcula
+calendario   passado    -15       1        1        —      —              —      —                 —  menos de 8 celulas: nao calcula
+calendario   passado     -5       1        1        —      —              —      —                 —  menos de 8 celulas: nao calcula
+calendario   futuro       5       1        1        —      —              —      —                 —  menos de 8 celulas: nao calcula
+calendario   futuro      15       1        1        —      —              —      —                 —  menos de 8 celulas: nao calcula
+calendario   futuro      60       1        1        —      —              —      —                 —  menos de 8 celulas: nao calcula
+macro        passado    -60      10       21  -0.1509  0.528           42.1   51.7   [ 23.1 –  63.7]  DESCRITIVO (n=21 < 120)
+macro        passado    -15      10       23  +0.2088  0.331           61.9   51.7   [ 40.9 –  79.2]  DESCRITIVO (n=23 < 120)
+macro        passado     -5      10       26  +0.1441  0.491           58.3   50.8   [ 38.8 –  75.5]  DESCRITIVO (n=26 < 120)
+macro        futuro       5      10       35  +0.0983  0.584           48.4   50.7   [ 32.0 –  65.2]  DESCRITIVO (n=35 < 120)
+macro        futuro      15      10       32  +0.1674  0.368           50.0   51.8   [ 32.6 –  67.4]  DESCRITIVO (n=32 < 120)
+macro        futuro      60      10       30  +0.2043  0.276           73.1   51.8   [ 53.9 –  86.3]  DESCRITIVO (n=30 < 120)
+corporativo  passado    -60      10       62  -0.0522  0.695           46.2   51.7   [ 31.6 –  61.4]  DESCRITIVO (n=62 < 120)
+corporativo  passado    -15      10       77  -0.1047  0.370           53.2   51.7   [ 39.2 –  66.7]  DESCRITIVO (n=77 < 120)
+corporativo  passado     -5      10       82  +0.0706  0.537           59.2   50.8   [ 45.2 –  71.8]  DESCRITIVO (n=82 < 120)
+corporativo  futuro       5      10       92  -0.0301  0.789           54.2   50.7   [ 41.7 –  66.3]  DESCRITIVO (n=92 < 120)
+corporativo  futuro      15      10       87  -0.0484  0.652           50.9   51.8   [ 38.3 –  63.4]  DESCRITIVO (n=87 < 120)
+corporativo  futuro      60      10       71  -0.0902  0.452           49.0   51.8   [ 35.6 –  62.5]  DESCRITIVO (n=71 < 120)
+
+--------------------------------------------------------------------------------------------------------
+1 MINUTO — DIRECAO (o papel sobe ou cai?) — EM ACERTOS POR 100
+--------------------------------------------------------------------------------------------------------
+
+  MACRO, passado, h=-60  (21 celulas, 10 papel(is))
+    acertou 42 em 100.  Chutar sempre o lado mais comum deste papel acerta 52 em 100.
+    perdeu do chute por 10 acertos em 100.
+    MAS a margem de erro vai de 23 a 64 em 100 (largura de 41 pontos).
+    -> o chute (52 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+    para esta vantagem virar resultado seriam ~209 celulas; ha 21.
+
+  MACRO, passado, h=-15  (23 celulas, 10 papel(is))
+    acertou 62 em 100.  Chutar sempre o lado mais comum deste papel acerta 52 em 100.
+    vantagem: +10 acertos em 100.
+    MAS a margem de erro vai de 41 a 79 em 100 (largura de 38 pontos).
+    -> o chute (52 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+    para esta vantagem virar resultado seriam ~186 celulas; ha 23.
+
+  MACRO, passado, h=-5  (26 celulas, 10 papel(is))
+    acertou 58 em 100.  Chutar sempre o lado mais comum deste papel acerta 51 em 100.
+    vantagem: +8 acertos em 100.
+    MAS a margem de erro vai de 39 a 76 em 100 (largura de 37 pontos).
+    -> o chute (51 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+    para esta vantagem virar resultado seriam ~346 celulas; ha 26.
+
+  MACRO, futuro, h=5  (35 celulas, 10 papel(is))
+    acertou 48 em 100.  Chutar sempre o lado mais comum deste papel acerta 51 em 100.
+    perdeu do chute por 2 acertos em 100.
+    MAS a margem de erro vai de 32 a 65 em 100 (largura de 33 pontos).
+    -> o chute (51 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+    para esta vantagem virar resultado seriam ~783 celulas; ha 35.
+
+  MACRO, futuro, h=15  (32 celulas, 10 papel(is))
+    acertou 50 em 100.  Chutar sempre o lado mais comum deste papel acerta 52 em 100.
+    perdeu do chute por 2 acertos em 100.
+    MAS a margem de erro vai de 33 a 67 em 100 (largura de 35 pontos).
+    -> o chute (52 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+    para esta vantagem virar resultado seriam ~783 celulas; ha 32.
+
+  MACRO, futuro, h=60  (30 celulas, 10 papel(is))
+    acertou 73 em 100.  Chutar sempre o lado mais comum deste papel acerta 52 em 100.
+    vantagem: +21 acertos em 100.
+    MAS a margem de erro vai de 54 a 86 em 100 (largura de 32 pontos).
+    -> a margem toda fica acima do chute. Aqui ha algo, sujeito a correcao de teste multiplo.
+    para esta vantagem virar resultado seriam ~41 celulas; ha 30.
+
+  CORPORATIVO, passado, h=-60  (62 celulas, 10 papel(is))
+    acertou 46 em 100.  Chutar sempre o lado mais comum deste papel acerta 52 em 100.
+    perdeu do chute por 6 acertos em 100.
+    MAS a margem de erro vai de 32 a 61 em 100 (largura de 30 pontos).
+    -> o chute (52 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+    para esta vantagem virar resultado seriam ~627 celulas; ha 62.
+
+  CORPORATIVO, passado, h=-15  (77 celulas, 10 papel(is))
+    acertou 53 em 100.  Chutar sempre o lado mais comum deste papel acerta 52 em 100.
+    vantagem: +2 acertos em 100.
+    MAS a margem de erro vai de 39 a 67 em 100 (largura de 27 pontos).
+    -> o chute (52 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+    para esta vantagem virar resultado seriam ~783 celulas; ha 77.
+
+  CORPORATIVO, passado, h=-5  (82 celulas, 10 papel(is))
+    acertou 59 em 100.  Chutar sempre o lado mais comum deste papel acerta 51 em 100.
+    vantagem: +8 acertos em 100.
+    MAS a margem de erro vai de 45 a 72 em 100 (largura de 27 pontos).
+    -> o chute (51 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+    para esta vantagem virar resultado seriam ~279 celulas; ha 82.
+
+  CORPORATIVO, futuro, h=5  (92 celulas, 10 papel(is))
+    acertou 54 em 100.  Chutar sempre o lado mais comum deste papel acerta 51 em 100.
+    vantagem: +4 acertos em 100.
+    MAS a margem de erro vai de 42 a 66 em 100 (largura de 25 pontos).
+    -> o chute (51 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+    para esta vantagem virar resultado seriam ~783 celulas; ha 92.
+
+  CORPORATIVO, futuro, h=15  (87 celulas, 10 papel(is))
+    acertou 51 em 100.  Chutar sempre o lado mais comum deste papel acerta 52 em 100.
+    perdeu do chute por 1 acertos em 100.
+    MAS a margem de erro vai de 38 a 63 em 100 (largura de 25 pontos).
+    -> o chute (52 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+    para esta vantagem virar resultado seriam ~783 celulas; ha 87.
+
+  CORPORATIVO, futuro, h=60  (71 celulas, 10 papel(is))
+    acertou 49 em 100.  Chutar sempre o lado mais comum deste papel acerta 52 em 100.
+    perdeu do chute por 3 acertos em 100.
+    MAS a margem de erro vai de 36 a 63 em 100 (largura de 27 pontos).
+    -> o chute (52 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+    para esta vantagem virar resultado seriam ~783 celulas; ha 71.
+
+========================================================================================================
+5 MINUTOS — DIRECAO (o papel sobe ou cai?)
+========================================================================================================
+tipo         janela       h  papeis  celulas       IC      p  acerto em 100  chute    IC95 do acerto  veredito
+judicial     passado    -24       4        7        —      —              —      —                 —  menos de 8 celulas: nao calcula
+judicial     passado     -6       4        7        —      —              —      —                 —  menos de 8 celulas: nao calcula
+judicial     passado     -3       4        8  -0.4910  0.211           33.3   50.8   [  9.7 –  70.0]  DESCRITIVO (n=8 < 120)
+judicial     futuro       3       4       11  +0.6606  0.033           87.5   51.5   [ 52.9 –  97.8]  DESCRITIVO (n=11 < 120)
+judicial     futuro       6       4       10  +0.5583  0.114           71.4   50.7   [ 35.9 –  91.8]  DESCRITIVO (n=10 < 120)
+judicial     futuro      24       4       10  -0.0675  0.865           42.9   50.9   [ 15.8 –  75.0]  DESCRITIVO (n=10 < 120)
+legislativo  passado    -24       2        1        —      —              —      —                 —  menos de 8 celulas: nao calcula
+legislativo  passado     -6       2        1        —      —              —      —                 —  menos de 8 celulas: nao calcula
+legislativo  passado     -3       2        1        —      —              —      —                 —  menos de 8 celulas: nao calcula
+legislativo  futuro       3       2        3        —      —              —      —                 —  menos de 8 celulas: nao calcula
+legislativo  futuro       6       2        3        —      —              —      —                 —  menos de 8 celulas: nao calcula
+legislativo  futuro      24       2        3        —      —              —      —                 —  menos de 8 celulas: nao calcula
+calendario   passado    -24       1        1        —      —              —      —                 —  menos de 8 celulas: nao calcula
+calendario   passado     -6       1        1        —      —              —      —                 —  menos de 8 celulas: nao calcula
+calendario   passado     -3       1        1        —      —              —      —                 —  menos de 8 celulas: nao calcula
+calendario   futuro       3       1        1        —      —              —      —                 —  menos de 8 celulas: nao calcula
+calendario   futuro       6       1        1        —      —              —      —                 —  menos de 8 celulas: nao calcula
+calendario   futuro      24       1        1        —      —              —      —                 —  menos de 8 celulas: nao calcula
+macro        passado    -24      10       54  +0.0002  1.000           54.5   50.9   [ 40.1 –  68.3]  DESCRITIVO (n=54 < 120)
+macro        passado     -6      10       62  +0.1243  0.338           56.2   50.8   [ 42.3 –  69.3]  DESCRITIVO (n=62 < 120)
+macro        passado     -3      10       64  +0.1702  0.179           60.0   50.6   [ 46.2 –  72.4]  DESCRITIVO (n=64 < 120)
+macro        futuro       3      10       73  +0.0969  0.414           53.7   50.8   [ 40.6 –  66.3]  DESCRITIVO (n=73 < 120)
+macro        futuro       6      10       71  +0.0488  0.677           51.9   50.7   [ 38.7 –  64.9]  DESCRITIVO (n=71 < 120)
+macro        futuro      24      10       63  +0.0304  0.819           52.1   50.9   [ 38.3 –  65.5]  DESCRITIVO (n=63 < 120)
+corporativo  passado    -24      10      155  -0.1157  0.145           51.0   50.9   [ 41.5 –  60.4]  nulo
+corporativo  passado     -6      10      213  -0.0519  0.447           50.7   50.8   [ 42.4 –  59.0]  nulo
+corporativo  passado     -3      10      229  -0.0733  0.266           45.5   50.6   [ 37.6 –  53.6]  nulo
+corporativo  futuro       3      10      239  +0.0134  0.829           49.7   50.8   [ 41.9 –  57.5]  nulo
+corporativo  futuro       6      10      223  +0.0251  0.713           52.1   50.7   [ 44.0 –  60.0]  nulo
+corporativo  futuro      24      10      163  -0.0381  0.614           52.2   50.9   [ 43.1 –  61.2]  nulo
+
+--------------------------------------------------------------------------------------------------------
+5 MINUTOS — DIRECAO (o papel sobe ou cai?) — EM ACERTOS POR 100
+--------------------------------------------------------------------------------------------------------
+
+  JUDICIAL, passado, h=-3  (8 celulas, 4 papel(is))
+    acertou 33 em 100.  Chutar sempre o lado mais comum deste papel acerta 51 em 100.
+    perdeu do chute por 17 acertos em 100.
+    MAS a margem de erro vai de 10 a 70 em 100 (largura de 60 pontos).
+    -> o chute (51 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+    para esta vantagem virar resultado seriam ~62 celulas; ha 8.
+
+  JUDICIAL, futuro, h=3  (11 celulas, 4 papel(is))
+    acertou 88 em 100.  Chutar sempre o lado mais comum deste papel acerta 52 em 100.
+    vantagem: +36 acertos em 100.
+    MAS a margem de erro vai de 53 a 98 em 100 (largura de 45 pontos).
+    -> a margem toda fica acima do chute. Aqui ha algo, sujeito a correcao de teste multiplo.
+    para esta vantagem virar resultado seriam ~13 celulas; ha 11.
+
+  JUDICIAL, futuro, h=6  (10 celulas, 4 papel(is))
+    acertou 71 em 100.  Chutar sempre o lado mais comum deste papel acerta 51 em 100.
+    vantagem: +21 acertos em 100.
+    MAS a margem de erro vai de 36 a 92 em 100 (largura de 56 pontos).
+    -> o chute (51 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+    para esta vantagem virar resultado seriam ~44 celulas; ha 10.
+
+  JUDICIAL, futuro, h=24  (10 celulas, 4 papel(is))
+    acertou 43 em 100.  Chutar sempre o lado mais comum deste papel acerta 51 em 100.
+    perdeu do chute por 8 acertos em 100.
+    MAS a margem de erro vai de 16 a 75 em 100 (largura de 59 pontos).
+    -> o chute (51 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+    para esta vantagem virar resultado seriam ~304 celulas; ha 10.
+
+  MACRO, passado, h=-24  (54 celulas, 10 papel(is))
+    acertou 55 em 100.  Chutar sempre o lado mais comum deste papel acerta 51 em 100.
+    vantagem: +4 acertos em 100.
+    MAS a margem de erro vai de 40 a 68 em 100 (largura de 28 pontos).
+    -> o chute (51 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+    para esta vantagem virar resultado seriam ~783 celulas; ha 54.
+
+  MACRO, passado, h=-6  (62 celulas, 10 papel(is))
+    acertou 56 em 100.  Chutar sempre o lado mais comum deste papel acerta 51 em 100.
+    vantagem: +5 acertos em 100.
+    MAS a margem de erro vai de 42 a 69 em 100 (largura de 27 pontos).
+    -> o chute (51 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+    para esta vantagem virar resultado seriam ~670 celulas; ha 62.
+
+  MACRO, passado, h=-3  (64 celulas, 10 papel(is))
+    acertou 60 em 100.  Chutar sempre o lado mais comum deste papel acerta 51 em 100.
+    vantagem: +9 acertos em 100.
+    MAS a margem de erro vai de 46 a 72 em 100 (largura de 26 pontos).
+    -> o chute (51 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+    para esta vantagem virar resultado seriam ~221 celulas; ha 64.
+
+  MACRO, futuro, h=3  (73 celulas, 10 papel(is))
+    acertou 54 em 100.  Chutar sempre o lado mais comum deste papel acerta 51 em 100.
+    vantagem: +3 acertos em 100.
+    MAS a margem de erro vai de 41 a 66 em 100 (largura de 26 pontos).
+    -> o chute (51 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+    para esta vantagem virar resultado seriam ~783 celulas; ha 73.
+
+  MACRO, futuro, h=6  (71 celulas, 10 papel(is))
+    acertou 52 em 100.  Chutar sempre o lado mais comum deste papel acerta 51 em 100.
+    vantagem: +1 acertos em 100.
+    MAS a margem de erro vai de 39 a 65 em 100 (largura de 26 pontos).
+    -> o chute (51 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+    para esta vantagem virar resultado seriam ~783 celulas; ha 71.
+
+  MACRO, futuro, h=24  (63 celulas, 10 papel(is))
+    acertou 52 em 100.  Chutar sempre o lado mais comum deste papel acerta 51 em 100.
+    vantagem: +1 acertos em 100.
+    MAS a margem de erro vai de 38 a 66 em 100 (largura de 27 pontos).
+    -> o chute (51 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+    para esta vantagem virar resultado seriam ~783 celulas; ha 63.
+
+  CORPORATIVO, passado, h=-24  (155 celulas, 10 papel(is))
+    acertou 51 em 100.  Chutar sempre o lado mais comum deste papel acerta 51 em 100.
+    vantagem: +0 acertos em 100.
+    MAS a margem de erro vai de 41 a 60 em 100 (largura de 19 pontos).
+    -> o chute (51 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+
+  CORPORATIVO, passado, h=-6  (213 celulas, 10 papel(is))
+    acertou 51 em 100.  Chutar sempre o lado mais comum deste papel acerta 51 em 100.
+    perdeu do chute por 0 acertos em 100.
+    MAS a margem de erro vai de 42 a 59 em 100 (largura de 17 pontos).
+    -> o chute (51 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+
+  CORPORATIVO, passado, h=-3  (229 celulas, 10 papel(is))
+    acertou 46 em 100.  Chutar sempre o lado mais comum deste papel acerta 51 em 100.
+    perdeu do chute por 5 acertos em 100.
+    MAS a margem de erro vai de 38 a 54 em 100 (largura de 16 pontos).
+    -> o chute (51 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+
+  CORPORATIVO, futuro, h=3  (239 celulas, 10 papel(is))
+    acertou 50 em 100.  Chutar sempre o lado mais comum deste papel acerta 51 em 100.
+    perdeu do chute por 1 acertos em 100.
+    MAS a margem de erro vai de 42 a 57 em 100 (largura de 16 pontos).
+    -> o chute (51 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+
+  CORPORATIVO, futuro, h=6  (223 celulas, 10 papel(is))
+    acertou 52 em 100.  Chutar sempre o lado mais comum deste papel acerta 51 em 100.
+    vantagem: +1 acertos em 100.
+    MAS a margem de erro vai de 44 a 60 em 100 (largura de 16 pontos).
+    -> o chute (51 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+
+  CORPORATIVO, futuro, h=24  (163 celulas, 10 papel(is))
+    acertou 52 em 100.  Chutar sempre o lado mais comum deste papel acerta 51 em 100.
+    vantagem: +1 acertos em 100.
+    MAS a margem de erro vai de 43 a 61 em 100 (largura de 18 pontos).
+    -> o chute (51 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+
+========================================================================================================
+15 MINUTOS — DIRECAO (o papel sobe ou cai?)
+========================================================================================================
+tipo         janela       h  papeis  celulas       IC      p  acerto em 100  chute    IC95 do acerto  veredito
+judicial     passado    -16       4        7        —      —              —      —                 —  menos de 8 celulas: nao calcula
+judicial     passado     -4       4        7        —      —              —      —                 —  menos de 8 celulas: nao calcula
+judicial     passado     -2       4        7        —      —              —      —                 —  menos de 8 celulas: nao calcula
+judicial     futuro       2       4       10  -0.5829  0.084           28.6   51.0   [  8.2 –  64.1]  DESCRITIVO (n=10 < 120)
+judicial     futuro       4       4       10  -0.5215  0.132           28.6   52.0   [  8.2 –  64.1]  DESCRITIVO (n=10 < 120)
+judicial     futuro      16       4       10  -0.0184  0.975           42.9   52.6   [ 15.8 –  75.0]  DESCRITIVO (n=10 < 120)
+legislativo  passado    -16       2        1        —      —              —      —                 —  menos de 8 celulas: nao calcula
+legislativo  passado     -4       2        1        —      —              —      —                 —  menos de 8 celulas: nao calcula
+legislativo  passado     -2       2        1        —      —              —      —                 —  menos de 8 celulas: nao calcula
+legislativo  futuro       2       2        3        —      —              —      —                 —  menos de 8 celulas: nao calcula
+legislativo  futuro       4       2        3        —      —              —      —                 —  menos de 8 celulas: nao calcula
+legislativo  futuro      16       2        3        —      —              —      —                 —  menos de 8 celulas: nao calcula
+calendario   passado    -16       1        1        —      —              —      —                 —  menos de 8 celulas: nao calcula
+calendario   passado     -4       1        1        —      —              —      —                 —  menos de 8 celulas: nao calcula
+calendario   passado     -2       1        1        —      —              —      —                 —  menos de 8 celulas: nao calcula
+calendario   futuro       2       1        1        —      —              —      —                 —  menos de 8 celulas: nao calcula
+calendario   futuro       4       1        1        —      —              —      —                 —  menos de 8 celulas: nao calcula
+calendario   futuro      16       1        1        —      —              —      —                 —  menos de 8 celulas: nao calcula
+macro        passado    -16      10       50  +0.1215  0.389           56.1   51.3   [ 41.0 –  70.1]  DESCRITIVO (n=50 < 120)
+macro        passado     -4      10       57  +0.0067  0.962           53.3   51.1   [ 39.1 –  67.1]  DESCRITIVO (n=57 < 120)
+macro        passado     -2      10       59  +0.1654  0.216           55.3   50.6   [ 41.2 –  68.6]  DESCRITIVO (n=59 < 120)
+macro        futuro       2      10       68  -0.0643  0.629           41.2   51.1   [ 28.8 –  54.8]  DESCRITIVO (n=68 < 120)
+macro        futuro       4      10       66  +0.0378  0.771           53.1   50.7   [ 39.4 –  66.3]  DESCRITIVO (n=66 < 120)
+macro        futuro      16      10       59  +0.0152  0.912           55.6   51.7   [ 41.2 –  69.1]  DESCRITIVO (n=59 < 120)
+corporativo  passado    -16      10      121  -0.1531  0.095           40.0   51.3   [ 30.0 –  51.0]  nulo
+corporativo  passado     -4      10      200  -0.0417  0.561           51.2   51.1   [ 42.6 –  59.6]  nulo
+corporativo  passado     -2      10      221  -0.0109  0.868           46.4   50.6   [ 38.3 –  54.7]  nulo
+corporativo  futuro       2      10      229  +0.0395  0.547           51.4   51.1   [ 43.4 –  59.3]  nulo
+corporativo  futuro       4      10      208  +0.0668  0.340           55.4   50.7   [ 47.1 –  63.4]  nulo
+corporativo  futuro      16      10      127  +0.0680  0.440           51.7   51.7   [ 41.4 –  61.9]  nulo
+
+--------------------------------------------------------------------------------------------------------
+15 MINUTOS — DIRECAO (o papel sobe ou cai?) — EM ACERTOS POR 100
+--------------------------------------------------------------------------------------------------------
+
+  JUDICIAL, futuro, h=2  (10 celulas, 4 papel(is))
+    acertou 29 em 100.  Chutar sempre o lado mais comum deste papel acerta 51 em 100.
+    perdeu do chute por 22 acertos em 100.
+    MAS a margem de erro vai de 8 a 64 em 100 (largura de 56 pontos).
+    -> o chute (51 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+    para esta vantagem virar resultado seriam ~37 celulas; ha 10.
+
+  JUDICIAL, futuro, h=4  (10 celulas, 4 papel(is))
+    acertou 29 em 100.  Chutar sempre o lado mais comum deste papel acerta 52 em 100.
+    perdeu do chute por 23 acertos em 100.
+    MAS a margem de erro vai de 8 a 64 em 100 (largura de 56 pontos).
+    -> o chute (52 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+    para esta vantagem virar resultado seriam ~34 celulas; ha 10.
+
+  JUDICIAL, futuro, h=16  (10 celulas, 4 papel(is))
+    acertou 43 em 100.  Chutar sempre o lado mais comum deste papel acerta 53 em 100.
+    perdeu do chute por 10 acertos em 100.
+    MAS a margem de erro vai de 16 a 75 em 100 (largura de 59 pontos).
+    -> o chute (53 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+    para esta vantagem virar resultado seriam ~205 celulas; ha 10.
+
+  MACRO, passado, h=-16  (50 celulas, 10 papel(is))
+    acertou 56 em 100.  Chutar sempre o lado mais comum deste papel acerta 51 em 100.
+    vantagem: +5 acertos em 100.
+    MAS a margem de erro vai de 41 a 70 em 100 (largura de 29 pontos).
+    -> o chute (51 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+    para esta vantagem virar resultado seriam ~783 celulas; ha 50.
+
+  MACRO, passado, h=-4  (57 celulas, 10 papel(is))
+    acertou 53 em 100.  Chutar sempre o lado mais comum deste papel acerta 51 em 100.
+    vantagem: +2 acertos em 100.
+    MAS a margem de erro vai de 39 a 67 em 100 (largura de 28 pontos).
+    -> o chute (51 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+    para esta vantagem virar resultado seriam ~783 celulas; ha 57.
+
+  MACRO, passado, h=-2  (59 celulas, 10 papel(is))
+    acertou 55 em 100.  Chutar sempre o lado mais comum deste papel acerta 51 em 100.
+    vantagem: +5 acertos em 100.
+    MAS a margem de erro vai de 41 a 69 em 100 (largura de 27 pontos).
+    -> o chute (51 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+    para esta vantagem virar resultado seriam ~783 celulas; ha 59.
+
+  MACRO, futuro, h=2  (68 celulas, 10 papel(is))
+    acertou 41 em 100.  Chutar sempre o lado mais comum deste papel acerta 51 em 100.
+    perdeu do chute por 10 acertos em 100.
+    MAS a margem de erro vai de 29 a 55 em 100 (largura de 26 pontos).
+    -> o chute (51 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+    para esta vantagem virar resultado seriam ~196 celulas; ha 68.
+
+  MACRO, futuro, h=4  (66 celulas, 10 papel(is))
+    acertou 53 em 100.  Chutar sempre o lado mais comum deste papel acerta 51 em 100.
+    vantagem: +2 acertos em 100.
+    MAS a margem de erro vai de 39 a 66 em 100 (largura de 27 pontos).
+    -> o chute (51 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+    para esta vantagem virar resultado seriam ~783 celulas; ha 66.
+
+  MACRO, futuro, h=16  (59 celulas, 10 papel(is))
+    acertou 56 em 100.  Chutar sempre o lado mais comum deste papel acerta 52 em 100.
+    vantagem: +4 acertos em 100.
+    MAS a margem de erro vai de 41 a 69 em 100 (largura de 28 pontos).
+    -> o chute (52 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+    para esta vantagem virar resultado seriam ~783 celulas; ha 59.
+
+  CORPORATIVO, passado, h=-16  (121 celulas, 10 papel(is))
+    acertou 40 em 100.  Chutar sempre o lado mais comum deste papel acerta 51 em 100.
+    perdeu do chute por 11 acertos em 100.
+    MAS a margem de erro vai de 30 a 51 em 100 (largura de 21 pontos).
+    -> a margem toda fica abaixo do chute: acerta menos que o chute, de forma consistente.
+
+  CORPORATIVO, passado, h=-4  (200 celulas, 10 papel(is))
+    acertou 51 em 100.  Chutar sempre o lado mais comum deste papel acerta 51 em 100.
+    vantagem: +0 acertos em 100.
+    MAS a margem de erro vai de 43 a 60 em 100 (largura de 17 pontos).
+    -> o chute (51 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+
+  CORPORATIVO, passado, h=-2  (221 celulas, 10 papel(is))
+    acertou 46 em 100.  Chutar sempre o lado mais comum deste papel acerta 51 em 100.
+    perdeu do chute por 4 acertos em 100.
+    MAS a margem de erro vai de 38 a 55 em 100 (largura de 16 pontos).
+    -> o chute (51 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+
+  CORPORATIVO, futuro, h=2  (229 celulas, 10 papel(is))
+    acertou 51 em 100.  Chutar sempre o lado mais comum deste papel acerta 51 em 100.
+    vantagem: +0 acertos em 100.
+    MAS a margem de erro vai de 43 a 59 em 100 (largura de 16 pontos).
+    -> o chute (51 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+
+  CORPORATIVO, futuro, h=4  (208 celulas, 10 papel(is))
+    acertou 55 em 100.  Chutar sempre o lado mais comum deste papel acerta 51 em 100.
+    vantagem: +5 acertos em 100.
+    MAS a margem de erro vai de 47 a 63 em 100 (largura de 16 pontos).
+    -> o chute (51 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+
+  CORPORATIVO, futuro, h=16  (127 celulas, 10 papel(is))
+    acertou 52 em 100.  Chutar sempre o lado mais comum deste papel acerta 52 em 100.
+    vantagem: +0 acertos em 100.
+    MAS a margem de erro vai de 41 a 62 em 100 (largura de 21 pontos).
+    -> o chute (52 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+
+========================================================================================================
+1 HORA — DIRECAO (o papel sobe ou cai?)
+========================================================================================================
+tipo         janela       h  papeis  celulas       IC      p  acerto em 100  chute    IC95 do acerto  veredito
+judicial     passado    -20       4        9  +0.2882  0.460           33.3   51.0   [  9.7 –  70.0]  DESCRITIVO (n=9 < 120)
+judicial     passado     -5       4        9  -0.1695  0.692           33.3   51.4   [  9.7 –  70.0]  DESCRITIVO (n=9 < 120)
+judicial     passado     -1       4       10  -0.4111  0.238           28.6   51.2   [  8.2 –  64.1]  DESCRITIVO (n=10 < 120)
+judicial     futuro       1       4       10  +0.0920  0.817           57.1   50.7   [ 25.0 –  84.2]  DESCRITIVO (n=10 < 120)
+judicial     futuro       5       4        9  +0.5594  0.128           66.7   51.4   [ 30.0 –  90.3]  DESCRITIVO (n=9 < 120)
+judicial     futuro      20       4        8  +0.0000  1.000           40.0   51.3   [ 11.8 –  76.9]  DESCRITIVO (n=8 < 120)
+legislativo  passado    -20       2        3        —      —              —      —                 —  menos de 8 celulas: nao calcula
+legislativo  passado     -5       2        3        —      —              —      —                 —  menos de 8 celulas: nao calcula
+legislativo  passado     -1       2        3        —      —              —      —                 —  menos de 8 celulas: nao calcula
+legislativo  futuro       1       2        3        —      —              —      —                 —  menos de 8 celulas: nao calcula
+legislativo  futuro       5       2        3        —      —              —      —                 —  menos de 8 celulas: nao calcula
+legislativo  futuro      20       2        3        —      —              —      —                 —  menos de 8 celulas: nao calcula
+calendario   passado    -20       1        1        —      —              —      —                 —  menos de 8 celulas: nao calcula
+calendario   passado     -5       1        1        —      —              —      —                 —  menos de 8 celulas: nao calcula
+calendario   passado     -1       1        1        —      —              —      —                 —  menos de 8 celulas: nao calcula
+calendario   futuro       1       1        1        —      —              —      —                 —  menos de 8 celulas: nao calcula
+calendario   futuro       5       1        0        —      —              —      —                 —  menos de 8 celulas: nao calcula
+calendario   futuro      20       1        0        —      —              —      —                 —  menos de 8 celulas: nao calcula
+macro        passado    -20      10       54  -0.0475  0.738           51.4   50.5   [ 35.6 –  67.0]  DESCRITIVO (n=54 < 120)
+macro        passado     -5      10       91  +0.1509  0.169           59.7   50.2   [ 47.7 –  70.6]  DESCRITIVO (n=91 < 120)
+macro        passado     -1      10      101  +0.1528  0.124           58.9   50.1   [ 47.4 –  69.5]  DESCRITIVO (n=101 < 120)
+macro        futuro       1      10      101  -0.0518  0.621           47.9   50.2   [ 36.9 –  59.2]  DESCRITIVO (n=101 < 120)
+macro        futuro       5      10       85  -0.1477  0.174           36.1   50.1   [ 25.2 –  48.6]  DESCRITIVO (n=85 < 120)
+macro        futuro      20      10       48  -0.2964  0.038           29.0   50.4   [ 16.1 –  46.6]  DESCRITIVO (n=48 < 120)
+corporativo  passado    -20      10      140  +0.0370  0.665           55.8   50.5   [ 45.8 –  65.4]  nulo
+corporativo  passado     -5      10      290  -0.0730  0.223           49.8   50.2   [ 42.9 –  56.6]  nulo
+corporativo  passado     -1      10      430  -0.0009  0.989           51.8   50.1   [ 46.2 –  57.4]  nulo
+corporativo  futuro       1      10      428  +0.0298  0.531           51.2   50.2   [ 45.5 –  56.8]  nulo
+corporativo  futuro       5      10      285  +0.0471  0.433           51.3   50.1   [ 44.3 –  58.2]  nulo
+corporativo  futuro      20      10      131  -0.0250  0.785           46.1   50.4   [ 36.1 –  56.4]  nulo
+
+--------------------------------------------------------------------------------------------------------
+1 HORA — DIRECAO (o papel sobe ou cai?) — EM ACERTOS POR 100
+--------------------------------------------------------------------------------------------------------
+
+  JUDICIAL, passado, h=-20  (9 celulas, 4 papel(is))
+    acertou 33 em 100.  Chutar sempre o lado mais comum deste papel acerta 51 em 100.
+    perdeu do chute por 18 acertos em 100.
+    MAS a margem de erro vai de 10 a 70 em 100 (largura de 60 pontos).
+    -> o chute (51 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+    para esta vantagem virar resultado seriam ~61 celulas; ha 9.
+
+  JUDICIAL, passado, h=-5  (9 celulas, 4 papel(is))
+    acertou 33 em 100.  Chutar sempre o lado mais comum deste papel acerta 51 em 100.
+    perdeu do chute por 18 acertos em 100.
+    MAS a margem de erro vai de 10 a 70 em 100 (largura de 60 pontos).
+    -> o chute (51 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+    para esta vantagem virar resultado seriam ~58 celulas; ha 9.
+
+  JUDICIAL, passado, h=-1  (10 celulas, 4 papel(is))
+    acertou 29 em 100.  Chutar sempre o lado mais comum deste papel acerta 51 em 100.
+    perdeu do chute por 23 acertos em 100.
+    MAS a margem de erro vai de 8 a 64 em 100 (largura de 56 pontos).
+    -> o chute (51 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+    para esta vantagem virar resultado seriam ~36 celulas; ha 10.
+
+  JUDICIAL, futuro, h=1  (10 celulas, 4 papel(is))
+    acertou 57 em 100.  Chutar sempre o lado mais comum deste papel acerta 51 em 100.
+    vantagem: +6 acertos em 100.
+    MAS a margem de erro vai de 25 a 84 em 100 (largura de 59 pontos).
+    -> o chute (51 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+    para esta vantagem virar resultado seriam ~472 celulas; ha 10.
+
+  JUDICIAL, futuro, h=5  (9 celulas, 4 papel(is))
+    acertou 67 em 100.  Chutar sempre o lado mais comum deste papel acerta 51 em 100.
+    vantagem: +15 acertos em 100.
+    MAS a margem de erro vai de 30 a 90 em 100 (largura de 60 pontos).
+    -> o chute (51 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+    para esta vantagem virar resultado seriam ~82 celulas; ha 9.
+
+  JUDICIAL, futuro, h=20  (8 celulas, 4 papel(is))
+    acertou 40 em 100.  Chutar sempre o lado mais comum deste papel acerta 51 em 100.
+    perdeu do chute por 11 acertos em 100.
+    MAS a margem de erro vai de 12 a 77 em 100 (largura de 65 pontos).
+    -> o chute (51 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+    para esta vantagem virar resultado seriam ~151 celulas; ha 8.
+
+  MACRO, passado, h=-20  (54 celulas, 10 papel(is))
+    acertou 51 em 100.  Chutar sempre o lado mais comum deste papel acerta 51 em 100.
+    vantagem: +1 acertos em 100.
+    MAS a margem de erro vai de 36 a 67 em 100 (largura de 31 pontos).
+    -> o chute (51 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+    para esta vantagem virar resultado seriam ~783 celulas; ha 54.
+
+  MACRO, passado, h=-5  (91 celulas, 10 papel(is))
+    acertou 60 em 100.  Chutar sempre o lado mais comum deste papel acerta 50 em 100.
+    vantagem: +9 acertos em 100.
+    MAS a margem de erro vai de 48 a 71 em 100 (largura de 23 pontos).
+    -> o chute (50 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+    para esta vantagem virar resultado seriam ~216 celulas; ha 91.
+
+  MACRO, passado, h=-1  (101 celulas, 10 papel(is))
+    acertou 59 em 100.  Chutar sempre o lado mais comum deste papel acerta 50 em 100.
+    vantagem: +9 acertos em 100.
+    MAS a margem de erro vai de 47 a 69 em 100 (largura de 22 pontos).
+    -> o chute (50 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+    para esta vantagem virar resultado seriam ~253 celulas; ha 101.
+
+  MACRO, futuro, h=1  (101 celulas, 10 papel(is))
+    acertou 48 em 100.  Chutar sempre o lado mais comum deste papel acerta 50 em 100.
+    perdeu do chute por 2 acertos em 100.
+    MAS a margem de erro vai de 37 a 59 em 100 (largura de 22 pontos).
+    -> o chute (50 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+    para esta vantagem virar resultado seriam ~783 celulas; ha 101.
+
+  MACRO, futuro, h=5  (85 celulas, 10 papel(is))
+    acertou 36 em 100.  Chutar sempre o lado mais comum deste papel acerta 50 em 100.
+    perdeu do chute por 14 acertos em 100.
+    MAS a margem de erro vai de 25 a 49 em 100 (largura de 23 pontos).
+    -> a margem toda fica abaixo do chute: acerta menos que o chute, de forma consistente.
+    para esta vantagem virar resultado seriam ~98 celulas; ha 85.
+
+  MACRO, futuro, h=20  (48 celulas, 10 papel(is))
+    acertou 29 em 100.  Chutar sempre o lado mais comum deste papel acerta 50 em 100.
+    perdeu do chute por 21 acertos em 100.
+    MAS a margem de erro vai de 16 a 47 em 100 (largura de 30 pontos).
+    -> a margem toda fica abaixo do chute: acerta menos que o chute, de forma consistente.
+    para esta vantagem virar resultado seriam ~41 celulas; ha 48.
+
+  CORPORATIVO, passado, h=-20  (140 celulas, 10 papel(is))
+    acertou 56 em 100.  Chutar sempre o lado mais comum deste papel acerta 51 em 100.
+    vantagem: +5 acertos em 100.
+    MAS a margem de erro vai de 46 a 65 em 100 (largura de 20 pontos).
+    -> o chute (51 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+
+  CORPORATIVO, passado, h=-5  (290 celulas, 10 papel(is))
+    acertou 50 em 100.  Chutar sempre o lado mais comum deste papel acerta 50 em 100.
+    perdeu do chute por 0 acertos em 100.
+    MAS a margem de erro vai de 43 a 57 em 100 (largura de 14 pontos).
+    -> o chute (50 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+
+  CORPORATIVO, passado, h=-1  (430 celulas, 10 papel(is))
+    acertou 52 em 100.  Chutar sempre o lado mais comum deste papel acerta 50 em 100.
+    vantagem: +2 acertos em 100.
+    MAS a margem de erro vai de 46 a 57 em 100 (largura de 11 pontos).
+    -> o chute (50 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+
+  CORPORATIVO, futuro, h=1  (428 celulas, 10 papel(is))
+    acertou 51 em 100.  Chutar sempre o lado mais comum deste papel acerta 50 em 100.
+    vantagem: +1 acertos em 100.
+    MAS a margem de erro vai de 46 a 57 em 100 (largura de 11 pontos).
+    -> o chute (50 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+
+  CORPORATIVO, futuro, h=5  (285 celulas, 10 papel(is))
+    acertou 51 em 100.  Chutar sempre o lado mais comum deste papel acerta 50 em 100.
+    vantagem: +1 acertos em 100.
+    MAS a margem de erro vai de 44 a 58 em 100 (largura de 14 pontos).
+    -> o chute (50 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+
+  CORPORATIVO, futuro, h=20  (131 celulas, 10 papel(is))
+    acertou 46 em 100.  Chutar sempre o lado mais comum deste papel acerta 50 em 100.
+    perdeu do chute por 4 acertos em 100.
+    MAS a margem de erro vai de 36 a 56 em 100 (largura de 20 pontos).
+    -> o chute (50 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+
+========================================================================================================
+1 DIA (pregao) — DIRECAO (o papel sobe ou cai?)
+========================================================================================================
+tipo         janela       h  papeis  celulas       IC      p  acerto em 100  chute    IC95 do acerto  veredito
+judicial     passado    -20       4        4        —      —              —      —                 —  menos de 8 celulas: nao calcula
+judicial     passado     -5       4        8  +0.3172  0.445           60.0   50.1   [ 23.1 –  88.2]  DESCRITIVO (n=8 < 120)
+judicial     passado     -1       4       11  -0.4863  0.131           37.5   50.1   [ 13.7 –  69.4]  DESCRITIVO (n=11 < 120)
+judicial     futuro       1       4       11  +0.1835  0.583           62.5   50.2   [ 30.6 –  86.3]  DESCRITIVO (n=11 < 120)
+judicial     futuro       5       4        7        —      —              —      —                 —  menos de 8 celulas: nao calcula
+judicial     futuro      20       4        3        —      —              —      —                 —  menos de 8 celulas: nao calcula
+legislativo  passado    -20       2        3        —      —              —      —                 —  menos de 8 celulas: nao calcula
+legislativo  passado     -5       2        3        —      —              —      —                 —  menos de 8 celulas: nao calcula
+legislativo  passado     -1       2        3        —      —              —      —                 —  menos de 8 celulas: nao calcula
+legislativo  futuro       1       2        3        —      —              —      —                 —  menos de 8 celulas: nao calcula
+legislativo  futuro       5       2        2        —      —              —      —                 —  menos de 8 celulas: nao calcula
+legislativo  futuro      20       2        2        —      —              —      —                 —  menos de 8 celulas: nao calcula
+calendario   passado    -20       1        1        —      —              —      —                 —  menos de 8 celulas: nao calcula
+calendario   passado     -5       1        1        —      —              —      —                 —  menos de 8 celulas: nao calcula
+calendario   passado     -1       1        1        —      —              —      —                 —  menos de 8 celulas: nao calcula
+calendario   futuro       1       1        0        —      —              —      —                 —  menos de 8 celulas: nao calcula
+calendario   futuro       5       1        0        —      —              —      —                 —  menos de 8 celulas: nao calcula
+calendario   futuro      20       1        0        —      —              —      —                 —  menos de 8 celulas: nao calcula
+macro        passado    -20      10       23  -0.0285  0.897           50.0   51.9   [ 26.8 –  73.2]  DESCRITIVO (n=23 < 120)
+macro        passado     -5      10       46  -0.0124  0.938           56.7   50.6   [ 39.2 –  72.6]  DESCRITIVO (n=46 < 120)
+macro        passado     -1      10       90  -0.0212  0.846           50.8   51.0   [ 38.9 –  62.5]  DESCRITIVO (n=90 < 120)
+macro        futuro       1      10       84  -0.0413  0.709           49.2   51.1   [ 36.8 –  61.6]  DESCRITIVO (n=84 < 120)
+macro        futuro       5      10       37  -0.2820  0.096           30.4   50.9   [ 15.6 –  50.9]  DESCRITIVO (n=37 < 120)
+macro        futuro      20      10       15  -0.3165  0.251           12.5   52.0   [  2.2 –  47.1]  DESCRITIVO (n=15 < 120)
+corporativo  passado    -20      10       52  +0.1410  0.297           56.4   51.9   [ 41.0 –  70.7]  DESCRITIVO (n=52 < 120)
+corporativo  passado     -5      10      118  +0.0502  0.591           46.5   50.6   [ 36.3 –  57.0]  DESCRITIVO (n=118 < 120)
+corporativo  passado     -1      10      291  +0.1135  0.057           52.4   51.0   [ 45.9 –  58.9]  nulo
+corporativo  futuro       1      10      283  +0.0781  0.185           52.5   51.1   [ 45.9 –  59.1]  nulo
+corporativo  futuro       5      10      108  +0.0467  0.647           46.2   50.9   [ 35.5 –  57.1]  DESCRITIVO (n=108 < 120)
+corporativo  futuro      20      10       42  +0.1277  0.434           54.8   52.0   [ 37.8 –  70.8]  DESCRITIVO (n=42 < 120)
+
+--------------------------------------------------------------------------------------------------------
+1 DIA (pregao) — DIRECAO (o papel sobe ou cai?) — EM ACERTOS POR 100
+--------------------------------------------------------------------------------------------------------
+
+  JUDICIAL, passado, h=-5  (8 celulas, 4 papel(is))
+    acertou 60 em 100.  Chutar sempre o lado mais comum deste papel acerta 50 em 100.
+    vantagem: +10 acertos em 100.
+    MAS a margem de erro vai de 23 a 88 em 100 (largura de 65 pontos).
+    -> o chute (50 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+    para esta vantagem virar resultado seriam ~200 celulas; ha 8.
+
+  JUDICIAL, passado, h=-1  (11 celulas, 4 papel(is))
+    acertou 38 em 100.  Chutar sempre o lado mais comum deste papel acerta 50 em 100.
+    perdeu do chute por 13 acertos em 100.
+    MAS a margem de erro vai de 14 a 69 em 100 (largura de 56 pontos).
+    -> o chute (50 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+    para esta vantagem virar resultado seriam ~122 celulas; ha 11.
+
+  JUDICIAL, futuro, h=1  (11 celulas, 4 papel(is))
+    acertou 62 em 100.  Chutar sempre o lado mais comum deste papel acerta 50 em 100.
+    vantagem: +12 acertos em 100.
+    MAS a margem de erro vai de 31 a 86 em 100 (largura de 56 pontos).
+    -> o chute (50 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+    para esta vantagem virar resultado seriam ~128 celulas; ha 11.
+
+  MACRO, passado, h=-20  (23 celulas, 10 papel(is))
+    acertou 50 em 100.  Chutar sempre o lado mais comum deste papel acerta 52 em 100.
+    perdeu do chute por 2 acertos em 100.
+    MAS a margem de erro vai de 27 a 73 em 100 (largura de 46 pontos).
+    -> o chute (52 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+    para esta vantagem virar resultado seriam ~783 celulas; ha 23.
+
+  MACRO, passado, h=-5  (46 celulas, 10 papel(is))
+    acertou 57 em 100.  Chutar sempre o lado mais comum deste papel acerta 51 em 100.
+    vantagem: +6 acertos em 100.
+    MAS a margem de erro vai de 39 a 73 em 100 (largura de 33 pontos).
+    -> o chute (51 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+    para esta vantagem virar resultado seriam ~526 celulas; ha 46.
+
+  MACRO, passado, h=-1  (90 celulas, 10 papel(is))
+    acertou 51 em 100.  Chutar sempre o lado mais comum deste papel acerta 51 em 100.
+    perdeu do chute por 0 acertos em 100.
+    MAS a margem de erro vai de 39 a 63 em 100 (largura de 24 pontos).
+    -> o chute (51 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+    para esta vantagem virar resultado seriam ~783 celulas; ha 90.
+
+  MACRO, futuro, h=1  (84 celulas, 10 papel(is))
+    acertou 49 em 100.  Chutar sempre o lado mais comum deste papel acerta 51 em 100.
+    perdeu do chute por 2 acertos em 100.
+    MAS a margem de erro vai de 37 a 62 em 100 (largura de 25 pontos).
+    -> o chute (51 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+    para esta vantagem virar resultado seriam ~783 celulas; ha 84.
+
+  MACRO, futuro, h=5  (37 celulas, 10 papel(is))
+    acertou 30 em 100.  Chutar sempre o lado mais comum deste papel acerta 51 em 100.
+    perdeu do chute por 20 acertos em 100.
+    MAS a margem de erro vai de 16 a 51 em 100 (largura de 35 pontos).
+    -> a margem toda fica abaixo do chute: acerta menos que o chute, de forma consistente.
+    para esta vantagem virar resultado seriam ~45 celulas; ha 37.
+
+  MACRO, futuro, h=20  (15 celulas, 10 papel(is))
+    acertou 12 em 100.  Chutar sempre o lado mais comum deste papel acerta 52 em 100.
+    perdeu do chute por 40 acertos em 100.
+    MAS a margem de erro vai de 2 a 47 em 100 (largura de 45 pontos).
+    -> a margem toda fica abaixo do chute: acerta menos que o chute, de forma consistente.
+    para esta vantagem virar resultado seriam ~10 celulas; ha 15.
+
+  CORPORATIVO, passado, h=-20  (52 celulas, 10 papel(is))
+    acertou 56 em 100.  Chutar sempre o lado mais comum deste papel acerta 52 em 100.
+    vantagem: +4 acertos em 100.
+    MAS a margem de erro vai de 41 a 71 em 100 (largura de 30 pontos).
+    -> o chute (52 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+    para esta vantagem virar resultado seriam ~783 celulas; ha 52.
+
+  CORPORATIVO, passado, h=-5  (118 celulas, 10 papel(is))
+    acertou 47 em 100.  Chutar sempre o lado mais comum deste papel acerta 51 em 100.
+    perdeu do chute por 4 acertos em 100.
+    MAS a margem de erro vai de 36 a 57 em 100 (largura de 21 pontos).
+    -> o chute (51 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+    para esta vantagem virar resultado seriam ~783 celulas; ha 118.
+
+  CORPORATIVO, passado, h=-1  (291 celulas, 10 papel(is))
+    acertou 52 em 100.  Chutar sempre o lado mais comum deste papel acerta 51 em 100.
+    vantagem: +1 acertos em 100.
+    MAS a margem de erro vai de 46 a 59 em 100 (largura de 13 pontos).
+    -> o chute (51 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+
+  CORPORATIVO, futuro, h=1  (283 celulas, 10 papel(is))
+    acertou 53 em 100.  Chutar sempre o lado mais comum deste papel acerta 51 em 100.
+    vantagem: +1 acertos em 100.
+    MAS a margem de erro vai de 46 a 59 em 100 (largura de 13 pontos).
+    -> o chute (51 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+
+  CORPORATIVO, futuro, h=5  (108 celulas, 10 papel(is))
+    acertou 46 em 100.  Chutar sempre o lado mais comum deste papel acerta 51 em 100.
+    perdeu do chute por 5 acertos em 100.
+    MAS a margem de erro vai de 36 a 57 em 100 (largura de 22 pontos).
+    -> o chute (51 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+    para esta vantagem virar resultado seriam ~783 celulas; ha 108.
+
+  CORPORATIVO, futuro, h=20  (42 celulas, 10 papel(is))
+    acertou 55 em 100.  Chutar sempre o lado mais comum deste papel acerta 52 em 100.
+    vantagem: +3 acertos em 100.
+    MAS a margem de erro vai de 38 a 71 em 100 (largura de 33 pontos).
+    -> o chute (52 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+    para esta vantagem virar resultado seriam ~783 celulas; ha 42.
+
+  RESUMO DIRECAO (o papel sobe ou cai?): 0 linha(s) sobrevivem ao FDR (q=0.1), de 76 calculadas.
+  Dos TIPOS PEDIDOS (judicial, legislativo, calendario): 0 linha(s) chegaram ao piso de 120 celulas.
+
+========================================================================================================
+O MESMO SINAL, EM GRANULARIDADES VIZINHAS — DIRECAO (o papel sobe ou cai?)
+========================================================================================================
+Se o numero fosse medida, mudaria pouco de uma linha para a vizinha.
+Olhe o tamanho do pulo, e o n de cada uma.
+
+  JUDICIAL — noticia sobre movimento FUTURO
+    granularidade      h  celulas  acertou em 100   chute
+    5 MINUTOS          3       11              88      52
+    5 MINUTOS          6       10              71      51
+    5 MINUTOS         24       10              43      51
+    15 MINUTOS         2       10              29      51
+    15 MINUTOS         4       10              29      52
+    15 MINUTOS        16       10              43      53
+    1 HORA             1       10              57      51
+    1 HORA             5        9              67      51
+    1 HORA            20        8              40      51
+    1 DIA (pregao)     1       11              62      50
+    -> variou de 29 a 88 em 100 (59 pontos de pulo) com n entre 8 e 11.
+       NENHUMA linha chega a 120 celulas. O pulo e o tamanho do ruido, nao um efeito de prazo.
+
+  MACRO — noticia sobre movimento FUTURO
+    granularidade      h  celulas  acertou em 100   chute
+    1 MINUTO           5       35              48      51
+    1 MINUTO          15       32              50      52
+    1 MINUTO          60       30              73      52
+    5 MINUTOS          3       73              54      51
+    5 MINUTOS          6       71              52      51
+    5 MINUTOS         24       63              52      51
+    15 MINUTOS         2       68              41      51
+    15 MINUTOS         4       66              53      51
+    15 MINUTOS        16       59              56      52
+    1 HORA             1      101              48      50
+    1 HORA             5       85              36      50
+    1 HORA            20       48              29      50
+    1 DIA (pregao)     1       84              49      51
+    1 DIA (pregao)     5       37              30      51
+    1 DIA (pregao)    20       15              12      52
+    -> variou de 12 a 73 em 100 (61 pontos de pulo) com n entre 15 e 101.
+       NENHUMA linha chega a 120 celulas. O pulo e o tamanho do ruido, nao um efeito de prazo.
+
+  CORPORATIVO — noticia sobre movimento FUTURO
+    granularidade      h  celulas  acertou em 100   chute
+    1 MINUTO           5       92              54      51
+    1 MINUTO          15       87              51      52
+    1 MINUTO          60       71              49      52
+    5 MINUTOS          3      239              50      51
+    5 MINUTOS          6      223              52      51
+    5 MINUTOS         24      163              52      51
+    15 MINUTOS         2      229              51      51
+    15 MINUTOS         4      208              55      51
+    15 MINUTOS        16      127              52      52
+    1 HORA             1      428              51      50
+    1 HORA             5      285              51      50
+    1 HORA            20      131              46      50
+    1 DIA (pregao)     1      283              53      51
+    1 DIA (pregao)     5      108              46      51
+    1 DIA (pregao)    20       42              55      52
+    -> variou de 46 a 55 em 100 (9 pontos de pulo) com n entre 42 e 428.
+
+
+
+########################################################################################################
+#  VOLATILIDADE (o papel se mexe muito?)
+#  grafico separado, como pedido -- um resultado nao autoriza o outro
+########################################################################################################
+
+========================================================================================================
+1 MINUTO — VOLATILIDADE (o papel se mexe muito?)
+========================================================================================================
+tipo         janela       h  papeis  celulas       IC      p  acerto em 100  chute    IC95 do acerto  veredito
+judicial     passado    -60       4        1        —      —              —      —                 —  menos de 8 celulas: nao calcula
+judicial     passado    -15       4        1        —      —              —      —                 —  menos de 8 celulas: nao calcula
+judicial     passado     -5       4        1        —      —              —      —                 —  menos de 8 celulas: nao calcula
+judicial     futuro       5       4        5        —      —              —      —                 —  menos de 8 celulas: nao calcula
+judicial     futuro      15       4        5        —      —              —      —                 —  menos de 8 celulas: nao calcula
+judicial     futuro      60       4        5        —      —              —      —                 —  menos de 8 celulas: nao calcula
+legislativo  passado    -60       2        0        —      —              —      —                 —  menos de 8 celulas: nao calcula
+legislativo  passado    -15       2        0        —      —              —      —                 —  menos de 8 celulas: nao calcula
+legislativo  passado     -5       2        0        —      —              —      —                 —  menos de 8 celulas: nao calcula
+legislativo  futuro       5       2        2        —      —              —      —                 —  menos de 8 celulas: nao calcula
+legislativo  futuro      15       2        2        —      —              —      —                 —  menos de 8 celulas: nao calcula
+legislativo  futuro      60       2        2        —      —              —      —                 —  menos de 8 celulas: nao calcula
+calendario   passado    -60       1        1        —      —              —      —                 —  menos de 8 celulas: nao calcula
+calendario   passado    -15       1        1        —      —              —      —                 —  menos de 8 celulas: nao calcula
+calendario   passado     -5       1        1        —      —              —      —                 —  menos de 8 celulas: nao calcula
+calendario   futuro       5       1        1        —      —              —      —                 —  menos de 8 celulas: nao calcula
+calendario   futuro      15       1        1        —      —              —      —                 —  menos de 8 celulas: nao calcula
+calendario   futuro      60       1        1        —      —              —      —                 —  menos de 8 celulas: nao calcula
+macro        passado    -60      10       21  +0.3214  0.157           25.0   23.8   [  4.6 –  69.9]  DESCRITIVO (n=21 < 120)
+macro        passado    -15      10       23  +0.0851  0.706            0.0   21.7   [  0.0 –  49.0]  DESCRITIVO (n=23 < 120)
+macro        passado     -5      10       26  -0.4374  0.022            0.0   23.1   [  0.0 –  43.4]  DESCRITIVO (n=26 < 120)
+macro        futuro       5      10       35  -0.0725  0.662            0.0   20.0   [  0.0 –  35.4]  DESCRITIVO (n=35 < 120)
+macro        futuro      15      10       32  -0.2105  0.256            0.0   21.9   [  0.0 –  39.0]  DESCRITIVO (n=32 < 120)
+macro        futuro      60      10       30  -0.2429  0.204            0.0   20.0   [  0.0 –  39.0]  DESCRITIVO (n=30 < 120)
+corporativo  passado    -60      10       62  -0.0612  0.631            0.0   21.0   [  0.0 –  24.3]  DESCRITIVO (n=62 < 120)
+corporativo  passado    -15      10       77  -0.0537  0.652            6.7   20.8   [  1.2 –  29.8]  DESCRITIVO (n=77 < 120)
+corporativo  passado     -5      10       82  -0.0604  0.596           18.8   20.7   [  6.6 –  43.0]  DESCRITIVO (n=82 < 120)
+corporativo  futuro       5      10       92  -0.0339  0.750           16.7   20.7   [  5.8 –  39.2]  DESCRITIVO (n=92 < 120)
+corporativo  futuro      15      10       87  +0.0589  0.601           23.5   20.7   [  9.6 –  47.3]  DESCRITIVO (n=87 < 120)
+corporativo  futuro      60      10       71  -0.1189  0.322           14.3   21.1   [  4.0 –  39.9]  DESCRITIVO (n=71 < 120)
+
+--------------------------------------------------------------------------------------------------------
+1 MINUTO — VOLATILIDADE (o papel se mexe muito?) — EM ACERTOS POR 100
+--------------------------------------------------------------------------------------------------------
+  LEMBRE: aqui 'acertar' = o papel ficou entre os 20% que mais
+  se mexeram. Chutar as cegas acerta ~20 em 100, nao 50.
+
+  MACRO, passado, h=-60  (21 celulas, 10 papel(is))
+    acertou 25 em 100 entre os casos que o sinal apontou como mais agitados.
+    Chutar as cegas acerta 24 em 100.
+    vantagem: +1 acertos em 100.
+    MAS a margem de erro vai de 5 a 70 em 100 (largura de 65 pontos).
+    -> o chute (24 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+    para esta vantagem virar resultado seriam ~783 celulas; ha 21.
+
+  MACRO, passado, h=-15  (23 celulas, 10 papel(is))
+    acertou 0 em 100 entre os casos que o sinal apontou como mais agitados.
+    Chutar as cegas acerta 22 em 100.
+    perdeu do chute por 22 acertos em 100.
+    MAS a margem de erro vai de 0 a 49 em 100 (largura de 49 pontos).
+    -> o chute (22 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+    para esta vantagem virar resultado seriam ~40 celulas; ha 23.
+
+  MACRO, passado, h=-5  (26 celulas, 10 papel(is))
+    acertou 0 em 100 entre os casos que o sinal apontou como mais agitados.
+    Chutar as cegas acerta 23 em 100.
+    perdeu do chute por 23 acertos em 100.
+    MAS a margem de erro vai de 0 a 43 em 100 (largura de 43 pontos).
+    -> o chute (23 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+    para esta vantagem virar resultado seriam ~35 celulas; ha 26.
+
+  MACRO, futuro, h=5  (35 celulas, 10 papel(is))
+    acertou 0 em 100 entre os casos que o sinal apontou como mais agitados.
+    Chutar as cegas acerta 20 em 100.
+    perdeu do chute por 20 acertos em 100.
+    MAS a margem de erro vai de 0 a 35 em 100 (largura de 35 pontos).
+    -> o chute (20 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+    para esta vantagem virar resultado seriam ~47 celulas; ha 35.
+
+  MACRO, futuro, h=15  (32 celulas, 10 papel(is))
+    acertou 0 em 100 entre os casos que o sinal apontou como mais agitados.
+    Chutar as cegas acerta 22 em 100.
+    perdeu do chute por 22 acertos em 100.
+    MAS a margem de erro vai de 0 a 39 em 100 (largura de 39 pontos).
+    -> o chute (22 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+    para esta vantagem virar resultado seriam ~39 celulas; ha 32.
+
+  MACRO, futuro, h=60  (30 celulas, 10 papel(is))
+    acertou 0 em 100 entre os casos que o sinal apontou como mais agitados.
+    Chutar as cegas acerta 20 em 100.
+    perdeu do chute por 20 acertos em 100.
+    MAS a margem de erro vai de 0 a 39 em 100 (largura de 39 pontos).
+    -> o chute (20 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+    para esta vantagem virar resultado seriam ~47 celulas; ha 30.
+
+  CORPORATIVO, passado, h=-60  (62 celulas, 10 papel(is))
+    acertou 0 em 100 entre os casos que o sinal apontou como mais agitados.
+    Chutar as cegas acerta 21 em 100.
+    perdeu do chute por 21 acertos em 100.
+    MAS a margem de erro vai de 0 a 24 em 100 (largura de 24 pontos).
+    -> o chute (21 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+    para esta vantagem virar resultado seriam ~43 celulas; ha 62.
+
+  CORPORATIVO, passado, h=-15  (77 celulas, 10 papel(is))
+    acertou 7 em 100 entre os casos que o sinal apontou como mais agitados.
+    Chutar as cegas acerta 21 em 100.
+    perdeu do chute por 14 acertos em 100.
+    MAS a margem de erro vai de 1 a 30 em 100 (largura de 29 pontos).
+    -> o chute (21 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+    para esta vantagem virar resultado seriam ~97 celulas; ha 77.
+
+  CORPORATIVO, passado, h=-5  (82 celulas, 10 papel(is))
+    acertou 19 em 100 entre os casos que o sinal apontou como mais agitados.
+    Chutar as cegas acerta 21 em 100.
+    perdeu do chute por 2 acertos em 100.
+    MAS a margem de erro vai de 7 a 43 em 100 (largura de 36 pontos).
+    -> o chute (21 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+    para esta vantagem virar resultado seriam ~783 celulas; ha 82.
+
+  CORPORATIVO, futuro, h=5  (92 celulas, 10 papel(is))
+    acertou 17 em 100 entre os casos que o sinal apontou como mais agitados.
+    Chutar as cegas acerta 21 em 100.
+    perdeu do chute por 4 acertos em 100.
+    MAS a margem de erro vai de 6 a 39 em 100 (largura de 33 pontos).
+    -> o chute (21 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+    para esta vantagem virar resultado seriam ~783 celulas; ha 92.
+
+  CORPORATIVO, futuro, h=15  (87 celulas, 10 papel(is))
+    acertou 24 em 100 entre os casos que o sinal apontou como mais agitados.
+    Chutar as cegas acerta 21 em 100.
+    vantagem: +3 acertos em 100.
+    MAS a margem de erro vai de 10 a 47 em 100 (largura de 38 pontos).
+    -> o chute (21 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+    para esta vantagem virar resultado seriam ~783 celulas; ha 87.
+
+  CORPORATIVO, futuro, h=60  (71 celulas, 10 papel(is))
+    acertou 14 em 100 entre os casos que o sinal apontou como mais agitados.
+    Chutar as cegas acerta 21 em 100.
+    perdeu do chute por 7 acertos em 100.
+    MAS a margem de erro vai de 4 a 40 em 100 (largura de 36 pontos).
+    -> o chute (21 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+    para esta vantagem virar resultado seriam ~417 celulas; ha 71.
+
+========================================================================================================
+5 MINUTOS — VOLATILIDADE (o papel se mexe muito?)
+========================================================================================================
+tipo         janela       h  papeis  celulas       IC      p  acerto em 100  chute    IC95 do acerto  veredito
+judicial     passado    -24       4        7        —      —              —      —                 —  menos de 8 celulas: nao calcula
+judicial     passado     -6       4        7        —      —              —      —                 —  menos de 8 celulas: nao calcula
+judicial     passado     -3       4        8  +0.1078  0.817            0.0   25.0   [  0.0 –  79.3]  DESCRITIVO (n=8 < 120)
+judicial     futuro       3       4       11  +0.2294  0.501           50.0   27.3   [  9.5 –  90.5]  DESCRITIVO (n=11 < 120)
+judicial     futuro       6       4       10  +0.2025  0.570            0.0   20.0   [  0.0 –  65.8]  DESCRITIVO (n=10 < 120)
+judicial     futuro      24       4       10  +0.0307  0.940            0.0   20.0   [  0.0 –  65.8]  DESCRITIVO (n=10 < 120)
+legislativo  passado    -24       2        1        —      —              —      —                 —  menos de 8 celulas: nao calcula
+legislativo  passado     -6       2        1        —      —              —      —                 —  menos de 8 celulas: nao calcula
+legislativo  passado     -3       2        1        —      —              —      —                 —  menos de 8 celulas: nao calcula
+legislativo  futuro       3       2        3        —      —              —      —                 —  menos de 8 celulas: nao calcula
+legislativo  futuro       6       2        3        —      —              —      —                 —  menos de 8 celulas: nao calcula
+legislativo  futuro      24       2        3        —      —              —      —                 —  menos de 8 celulas: nao calcula
+calendario   passado    -24       1        1        —      —              —      —                 —  menos de 8 celulas: nao calcula
+calendario   passado     -6       1        1        —      —              —      —                 —  menos de 8 celulas: nao calcula
+calendario   passado     -3       1        1        —      —              —      —                 —  menos de 8 celulas: nao calcula
+calendario   futuro       3       1        1        —      —              —      —                 —  menos de 8 celulas: nao calcula
+calendario   futuro       6       1        1        —      —              —      —                 —  menos de 8 celulas: nao calcula
+calendario   futuro      24       1        1        —      —              —      —                 —  menos de 8 celulas: nao calcula
+macro        passado    -24      10       54  -0.3200  0.023           10.0   20.4   [  1.8 –  40.4]  DESCRITIVO (n=54 < 120)
+macro        passado     -6      10       62  +0.1570  0.227           25.0   21.0   [  8.9 –  53.2]  DESCRITIVO (n=62 < 120)
+macro        passado     -3      10       64  -0.0048  0.969           16.7   20.3   [  4.7 –  44.8]  DESCRITIVO (n=64 < 120)
+macro        futuro       3      10       73  +0.0681  0.581            7.1   20.5   [  1.3 –  31.5]  DESCRITIVO (n=73 < 120)
+macro        futuro       6      10       71  -0.0380  0.755           21.4   21.1   [  7.6 –  47.6]  DESCRITIVO (n=71 < 120)
+macro        futuro      24      10       63  -0.0739  0.572           25.0   20.6   [  8.9 –  53.2]  DESCRITIVO (n=63 < 120)
+corporativo  passado    -24      10      155  -0.0445  0.575           12.9   20.0   [  5.1 –  28.9]  nulo
+corporativo  passado     -6      10      213  -0.1720  0.013           16.7   20.2   [  8.3 –  30.6]  p<0,05 mas cai no FDR
+corporativo  passado     -3      10      229  -0.0467  0.464           15.6   20.1   [  7.7 –  28.8]  nulo
+corporativo  futuro       3      10      239  -0.0447  0.488           19.1   20.1   [ 10.4 –  32.5]  nulo
+corporativo  futuro       6      10      223  -0.0623  0.351           13.6   20.2   [  6.4 –  26.7]  nulo
+corporativo  futuro      24      10      163  -0.0400  0.600           15.6   20.2   [  6.9 –  31.8]  nulo
+
+--------------------------------------------------------------------------------------------------------
+5 MINUTOS — VOLATILIDADE (o papel se mexe muito?) — EM ACERTOS POR 100
+--------------------------------------------------------------------------------------------------------
+  LEMBRE: aqui 'acertar' = o papel ficou entre os 20% que mais
+  se mexeram. Chutar as cegas acerta ~20 em 100, nao 50.
+
+  JUDICIAL, passado, h=-3  (8 celulas, 4 papel(is))
+    acertou 0 em 100 entre os casos que o sinal apontou como mais agitados.
+    Chutar as cegas acerta 25 em 100.
+    perdeu do chute por 25 acertos em 100.
+    MAS a margem de erro vai de 0 a 79 em 100 (largura de 79 pontos).
+    -> o chute (25 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+    para esta vantagem virar resultado seriam ~29 celulas; ha 8.
+
+  JUDICIAL, futuro, h=3  (11 celulas, 4 papel(is))
+    acertou 50 em 100 entre os casos que o sinal apontou como mais agitados.
+    Chutar as cegas acerta 27 em 100.
+    vantagem: +23 acertos em 100.
+    MAS a margem de erro vai de 9 a 91 em 100 (largura de 81 pontos).
+    -> o chute (27 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+    para esta vantagem virar resultado seriam ~36 celulas; ha 11.
+
+  JUDICIAL, futuro, h=6  (10 celulas, 4 papel(is))
+    acertou 0 em 100 entre os casos que o sinal apontou como mais agitados.
+    Chutar as cegas acerta 20 em 100.
+    perdeu do chute por 20 acertos em 100.
+    MAS a margem de erro vai de 0 a 66 em 100 (largura de 66 pontos).
+    -> o chute (20 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+    para esta vantagem virar resultado seriam ~47 celulas; ha 10.
+
+  JUDICIAL, futuro, h=24  (10 celulas, 4 papel(is))
+    acertou 0 em 100 entre os casos que o sinal apontou como mais agitados.
+    Chutar as cegas acerta 20 em 100.
+    perdeu do chute por 20 acertos em 100.
+    MAS a margem de erro vai de 0 a 66 em 100 (largura de 66 pontos).
+    -> o chute (20 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+    para esta vantagem virar resultado seriam ~47 celulas; ha 10.
+
+  MACRO, passado, h=-24  (54 celulas, 10 papel(is))
+    acertou 10 em 100 entre os casos que o sinal apontou como mais agitados.
+    Chutar as cegas acerta 20 em 100.
+    perdeu do chute por 10 acertos em 100.
+    MAS a margem de erro vai de 2 a 40 em 100 (largura de 39 pontos).
+    -> o chute (20 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+    para esta vantagem virar resultado seriam ~181 celulas; ha 54.
+
+  MACRO, passado, h=-6  (62 celulas, 10 papel(is))
+    acertou 25 em 100 entre os casos que o sinal apontou como mais agitados.
+    Chutar as cegas acerta 21 em 100.
+    vantagem: +4 acertos em 100.
+    MAS a margem de erro vai de 9 a 53 em 100 (largura de 44 pontos).
+    -> o chute (21 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+    para esta vantagem virar resultado seriam ~783 celulas; ha 62.
+
+  MACRO, passado, h=-3  (64 celulas, 10 papel(is))
+    acertou 17 em 100 entre os casos que o sinal apontou como mais agitados.
+    Chutar as cegas acerta 20 em 100.
+    perdeu do chute por 4 acertos em 100.
+    MAS a margem de erro vai de 5 a 45 em 100 (largura de 40 pontos).
+    -> o chute (20 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+    para esta vantagem virar resultado seriam ~783 celulas; ha 64.
+
+  MACRO, futuro, h=3  (73 celulas, 10 papel(is))
+    acertou 7 em 100 entre os casos que o sinal apontou como mais agitados.
+    Chutar as cegas acerta 21 em 100.
+    perdeu do chute por 13 acertos em 100.
+    MAS a margem de erro vai de 1 a 31 em 100 (largura de 30 pontos).
+    -> o chute (21 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+    para esta vantagem virar resultado seriam ~107 celulas; ha 73.
+
+  MACRO, futuro, h=6  (71 celulas, 10 papel(is))
+    acertou 21 em 100 entre os casos que o sinal apontou como mais agitados.
+    Chutar as cegas acerta 21 em 100.
+    vantagem: +0 acertos em 100.
+    MAS a margem de erro vai de 8 a 48 em 100 (largura de 40 pontos).
+    -> o chute (21 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+    para esta vantagem virar resultado seriam ~783 celulas; ha 71.
+
+  MACRO, futuro, h=24  (63 celulas, 10 papel(is))
+    acertou 25 em 100 entre os casos que o sinal apontou como mais agitados.
+    Chutar as cegas acerta 21 em 100.
+    vantagem: +4 acertos em 100.
+    MAS a margem de erro vai de 9 a 53 em 100 (largura de 44 pontos).
+    -> o chute (21 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+    para esta vantagem virar resultado seriam ~783 celulas; ha 63.
+
+  CORPORATIVO, passado, h=-24  (155 celulas, 10 papel(is))
+    acertou 13 em 100 entre os casos que o sinal apontou como mais agitados.
+    Chutar as cegas acerta 20 em 100.
+    perdeu do chute por 7 acertos em 100.
+    MAS a margem de erro vai de 5 a 29 em 100 (largura de 24 pontos).
+    -> o chute (20 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+
+  CORPORATIVO, passado, h=-6  (213 celulas, 10 papel(is))
+    acertou 17 em 100 entre os casos que o sinal apontou como mais agitados.
+    Chutar as cegas acerta 20 em 100.
+    perdeu do chute por 4 acertos em 100.
+    MAS a margem de erro vai de 8 a 31 em 100 (largura de 22 pontos).
+    -> o chute (20 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+
+  CORPORATIVO, passado, h=-3  (229 celulas, 10 papel(is))
+    acertou 16 em 100 entre os casos que o sinal apontou como mais agitados.
+    Chutar as cegas acerta 20 em 100.
+    perdeu do chute por 5 acertos em 100.
+    MAS a margem de erro vai de 8 a 29 em 100 (largura de 21 pontos).
+    -> o chute (20 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+
+  CORPORATIVO, futuro, h=3  (239 celulas, 10 papel(is))
+    acertou 19 em 100 entre os casos que o sinal apontou como mais agitados.
+    Chutar as cegas acerta 20 em 100.
+    perdeu do chute por 1 acertos em 100.
+    MAS a margem de erro vai de 10 a 33 em 100 (largura de 22 pontos).
+    -> o chute (20 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+
+  CORPORATIVO, futuro, h=6  (223 celulas, 10 papel(is))
+    acertou 14 em 100 entre os casos que o sinal apontou como mais agitados.
+    Chutar as cegas acerta 20 em 100.
+    perdeu do chute por 7 acertos em 100.
+    MAS a margem de erro vai de 6 a 27 em 100 (largura de 20 pontos).
+    -> o chute (20 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+
+  CORPORATIVO, futuro, h=24  (163 celulas, 10 papel(is))
+    acertou 16 em 100 entre os casos que o sinal apontou como mais agitados.
+    Chutar as cegas acerta 20 em 100.
+    perdeu do chute por 5 acertos em 100.
+    MAS a margem de erro vai de 7 a 32 em 100 (largura de 25 pontos).
+    -> o chute (20 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+
+========================================================================================================
+15 MINUTOS — VOLATILIDADE (o papel se mexe muito?)
+========================================================================================================
+tipo         janela       h  papeis  celulas       IC      p  acerto em 100  chute    IC95 do acerto  veredito
+judicial     passado    -16       4        7        —      —              —      —                 —  menos de 8 celulas: nao calcula
+judicial     passado     -4       4        7        —      —              —      —                 —  menos de 8 celulas: nao calcula
+judicial     passado     -2       4        7        —      —              —      —                 —  menos de 8 celulas: nao calcula
+judicial     futuro       2       4       10  -0.2025  0.560            0.0   20.0   [  0.0 –  65.8]  DESCRITIVO (n=10 < 120)
+judicial     futuro       4       4       10  -0.1779  0.631            0.0   20.0   [  0.0 –  65.8]  DESCRITIVO (n=10 < 120)
+judicial     futuro      16       4       10  +0.3129  0.370            0.0   20.0   [  0.0 –  65.8]  DESCRITIVO (n=10 < 120)
+legislativo  passado    -16       2        1        —      —              —      —                 —  menos de 8 celulas: nao calcula
+legislativo  passado     -4       2        1        —      —              —      —                 —  menos de 8 celulas: nao calcula
+legislativo  passado     -2       2        1        —      —              —      —                 —  menos de 8 celulas: nao calcula
+legislativo  futuro       2       2        3        —      —              —      —                 —  menos de 8 celulas: nao calcula
+legislativo  futuro       4       2        3        —      —              —      —                 —  menos de 8 celulas: nao calcula
+legislativo  futuro      16       2        3        —      —              —      —                 —  menos de 8 celulas: nao calcula
+calendario   passado    -16       1        1        —      —              —      —                 —  menos de 8 celulas: nao calcula
+calendario   passado     -4       1        1        —      —              —      —                 —  menos de 8 celulas: nao calcula
+calendario   passado     -2       1        1        —      —              —      —                 —  menos de 8 celulas: nao calcula
+calendario   futuro       2       1        1        —      —              —      —                 —  menos de 8 celulas: nao calcula
+calendario   futuro       4       1        1        —      —              —      —                 —  menos de 8 celulas: nao calcula
+calendario   futuro      16       1        1        —      —              —      —                 —  menos de 8 celulas: nao calcula
+macro        passado    -16      10       50  -0.2811  0.043           10.0   20.0   [  1.8 –  40.4]  DESCRITIVO (n=50 < 120)
+macro        passado     -4      10       57  -0.0898  0.501           18.2   21.1   [  5.1 –  47.7]  DESCRITIVO (n=57 < 120)
+macro        passado     -2      10       59  +0.1546  0.253           36.4   20.3   [ 15.2 –  64.6]  DESCRITIVO (n=59 < 120)
+macro        futuro       2      10       68  -0.0870  0.466            7.7   20.6   [  1.4 –  33.3]  DESCRITIVO (n=68 < 120)
+macro        futuro       4      10       66  +0.0634  0.609           23.1   21.2   [  8.2 –  50.3]  DESCRITIVO (n=66 < 120)
+macro        futuro      16      10       59  -0.1180  0.383           18.2   20.3   [  5.1 –  47.7]  DESCRITIVO (n=59 < 120)
+corporativo  passado    -16      10      121  +0.0363  0.685           16.7   20.7   [  6.7 –  35.9]  nulo
+corporativo  passado     -4      10      200  -0.0867  0.220           17.5   20.0   [  8.7 –  32.0]  nulo
+corporativo  passado     -2      10      221  -0.0791  0.227           20.5   20.4   [ 11.2 –  34.5]  nulo
+corporativo  futuro       2      10      229  +0.1187  0.068           22.2   20.1   [ 12.5 –  36.3]  nulo
+corporativo  futuro       4      10      208  +0.0172  0.814           17.1   20.2   [  8.5 –  31.3]  nulo
+corporativo  futuro      16      10      127  +0.0713  0.409           20.0   20.5   [  8.9 –  39.1]  nulo
+
+--------------------------------------------------------------------------------------------------------
+15 MINUTOS — VOLATILIDADE (o papel se mexe muito?) — EM ACERTOS POR 100
+--------------------------------------------------------------------------------------------------------
+  LEMBRE: aqui 'acertar' = o papel ficou entre os 20% que mais
+  se mexeram. Chutar as cegas acerta ~20 em 100, nao 50.
+
+  JUDICIAL, futuro, h=2  (10 celulas, 4 papel(is))
+    acertou 0 em 100 entre os casos que o sinal apontou como mais agitados.
+    Chutar as cegas acerta 20 em 100.
+    perdeu do chute por 20 acertos em 100.
+    MAS a margem de erro vai de 0 a 66 em 100 (largura de 66 pontos).
+    -> o chute (20 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+    para esta vantagem virar resultado seriam ~47 celulas; ha 10.
+
+  JUDICIAL, futuro, h=4  (10 celulas, 4 papel(is))
+    acertou 0 em 100 entre os casos que o sinal apontou como mais agitados.
+    Chutar as cegas acerta 20 em 100.
+    perdeu do chute por 20 acertos em 100.
+    MAS a margem de erro vai de 0 a 66 em 100 (largura de 66 pontos).
+    -> o chute (20 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+    para esta vantagem virar resultado seriam ~47 celulas; ha 10.
+
+  JUDICIAL, futuro, h=16  (10 celulas, 4 papel(is))
+    acertou 0 em 100 entre os casos que o sinal apontou como mais agitados.
+    Chutar as cegas acerta 20 em 100.
+    perdeu do chute por 20 acertos em 100.
+    MAS a margem de erro vai de 0 a 66 em 100 (largura de 66 pontos).
+    -> o chute (20 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+    para esta vantagem virar resultado seriam ~47 celulas; ha 10.
+
+  MACRO, passado, h=-16  (50 celulas, 10 papel(is))
+    acertou 10 em 100 entre os casos que o sinal apontou como mais agitados.
+    Chutar as cegas acerta 20 em 100.
+    perdeu do chute por 10 acertos em 100.
+    MAS a margem de erro vai de 2 a 40 em 100 (largura de 39 pontos).
+    -> o chute (20 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+    para esta vantagem virar resultado seriam ~194 celulas; ha 50.
+
+  MACRO, passado, h=-4  (57 celulas, 10 papel(is))
+    acertou 18 em 100 entre os casos que o sinal apontou como mais agitados.
+    Chutar as cegas acerta 21 em 100.
+    perdeu do chute por 3 acertos em 100.
+    MAS a margem de erro vai de 5 a 48 em 100 (largura de 43 pontos).
+    -> o chute (21 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+    para esta vantagem virar resultado seriam ~783 celulas; ha 57.
+
+  MACRO, passado, h=-2  (59 celulas, 10 papel(is))
+    acertou 36 em 100 entre os casos que o sinal apontou como mais agitados.
+    Chutar as cegas acerta 20 em 100.
+    vantagem: +16 acertos em 100.
+    MAS a margem de erro vai de 15 a 65 em 100 (largura de 49 pontos).
+    -> o chute (20 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+    para esta vantagem virar resultado seriam ~75 celulas; ha 59.
+
+  MACRO, futuro, h=2  (68 celulas, 10 papel(is))
+    acertou 8 em 100 entre os casos que o sinal apontou como mais agitados.
+    Chutar as cegas acerta 21 em 100.
+    perdeu do chute por 13 acertos em 100.
+    MAS a margem de erro vai de 1 a 33 em 100 (largura de 32 pontos).
+    -> o chute (21 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+    para esta vantagem virar resultado seriam ~116 celulas; ha 68.
+
+  MACRO, futuro, h=4  (66 celulas, 10 papel(is))
+    acertou 23 em 100 entre os casos que o sinal apontou como mais agitados.
+    Chutar as cegas acerta 21 em 100.
+    vantagem: +2 acertos em 100.
+    MAS a margem de erro vai de 8 a 50 em 100 (largura de 42 pontos).
+    -> o chute (21 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+    para esta vantagem virar resultado seriam ~783 celulas; ha 66.
+
+  MACRO, futuro, h=16  (59 celulas, 10 papel(is))
+    acertou 18 em 100 entre os casos que o sinal apontou como mais agitados.
+    Chutar as cegas acerta 20 em 100.
+    perdeu do chute por 2 acertos em 100.
+    MAS a margem de erro vai de 5 a 48 em 100 (largura de 43 pontos).
+    -> o chute (20 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+    para esta vantagem virar resultado seriam ~783 celulas; ha 59.
+
+  CORPORATIVO, passado, h=-16  (121 celulas, 10 papel(is))
+    acertou 17 em 100 entre os casos que o sinal apontou como mais agitados.
+    Chutar as cegas acerta 21 em 100.
+    perdeu do chute por 4 acertos em 100.
+    MAS a margem de erro vai de 7 a 36 em 100 (largura de 29 pontos).
+    -> o chute (21 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+
+  CORPORATIVO, passado, h=-4  (200 celulas, 10 papel(is))
+    acertou 18 em 100 entre os casos que o sinal apontou como mais agitados.
+    Chutar as cegas acerta 20 em 100.
+    perdeu do chute por 2 acertos em 100.
+    MAS a margem de erro vai de 9 a 32 em 100 (largura de 23 pontos).
+    -> o chute (20 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+
+  CORPORATIVO, passado, h=-2  (221 celulas, 10 papel(is))
+    acertou 20 em 100 entre os casos que o sinal apontou como mais agitados.
+    Chutar as cegas acerta 20 em 100.
+    vantagem: +0 acertos em 100.
+    MAS a margem de erro vai de 11 a 35 em 100 (largura de 23 pontos).
+    -> o chute (20 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+
+  CORPORATIVO, futuro, h=2  (229 celulas, 10 papel(is))
+    acertou 22 em 100 entre os casos que o sinal apontou como mais agitados.
+    Chutar as cegas acerta 20 em 100.
+    vantagem: +2 acertos em 100.
+    MAS a margem de erro vai de 13 a 36 em 100 (largura de 24 pontos).
+    -> o chute (20 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+
+  CORPORATIVO, futuro, h=4  (208 celulas, 10 papel(is))
+    acertou 17 em 100 entre os casos que o sinal apontou como mais agitados.
+    Chutar as cegas acerta 20 em 100.
+    perdeu do chute por 3 acertos em 100.
+    MAS a margem de erro vai de 9 a 31 em 100 (largura de 23 pontos).
+    -> o chute (20 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+
+  CORPORATIVO, futuro, h=16  (127 celulas, 10 papel(is))
+    acertou 20 em 100 entre os casos que o sinal apontou como mais agitados.
+    Chutar as cegas acerta 20 em 100.
+    perdeu do chute por 0 acertos em 100.
+    MAS a margem de erro vai de 9 a 39 em 100 (largura de 30 pontos).
+    -> o chute (20 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+
+========================================================================================================
+1 HORA — VOLATILIDADE (o papel se mexe muito?)
+========================================================================================================
+tipo         janela       h  papeis  celulas       IC      p  acerto em 100  chute    IC95 do acerto  veredito
+judicial     passado    -20       4        9  -0.0678  0.873            0.0   22.2   [  0.0 –  79.3]  DESCRITIVO (n=9 < 120)
+judicial     passado     -5       4        9  -0.2543  0.523            0.0   22.2   [  0.0 –  79.3]  DESCRITIVO (n=9 < 120)
+judicial     passado     -1       4       10  -0.6933  0.036            0.0   20.0   [  0.0 –  65.8]  DESCRITIVO (n=10 < 120)
+judicial     futuro       1       4       10  +0.1411  0.704            0.0   20.0   [  0.0 –  65.8]  DESCRITIVO (n=10 < 120)
+judicial     futuro       5       4        9  +0.2712  0.490            0.0   22.2   [  0.0 –  79.3]  DESCRITIVO (n=9 < 120)
+judicial     futuro      20       4        8  +0.6343  0.098            0.0   25.0   [  0.0 –  79.3]  DESCRITIVO (n=8 < 120)
+legislativo  passado    -20       2        3        —      —              —      —                 —  menos de 8 celulas: nao calcula
+legislativo  passado     -5       2        3        —      —              —      —                 —  menos de 8 celulas: nao calcula
+legislativo  passado     -1       2        3        —      —              —      —                 —  menos de 8 celulas: nao calcula
+legislativo  futuro       1       2        3        —      —              —      —                 —  menos de 8 celulas: nao calcula
+legislativo  futuro       5       2        3        —      —              —      —                 —  menos de 8 celulas: nao calcula
+legislativo  futuro      20       2        3        —      —              —      —                 —  menos de 8 celulas: nao calcula
+calendario   passado    -20       1        1        —      —              —      —                 —  menos de 8 celulas: nao calcula
+calendario   passado     -5       1        1        —      —              —      —                 —  menos de 8 celulas: nao calcula
+calendario   passado     -1       1        1        —      —              —      —                 —  menos de 8 celulas: nao calcula
+calendario   futuro       1       1        1        —      —              —      —                 —  menos de 8 celulas: nao calcula
+calendario   futuro       5       1        0        —      —              —      —                 —  menos de 8 celulas: nao calcula
+calendario   futuro      20       1        0        —      —              —      —                 —  menos de 8 celulas: nao calcula
+macro        passado    -20      10       54  -0.2345  0.082           10.0   20.4   [  1.8 –  40.4]  DESCRITIVO (n=54 < 120)
+macro        passado     -5      10       91  +0.0449  0.669           16.7   20.9   [  5.8 –  39.2]  DESCRITIVO (n=91 < 120)
+macro        passado     -1      10      101  +0.0401  0.673           30.0   20.8   [ 14.5 –  51.9]  DESCRITIVO (n=101 < 120)
+macro        futuro       1      10      101  -0.1412  0.159           20.0   20.8   [  8.1 –  41.6]  DESCRITIVO (n=101 < 120)
+macro        futuro       5      10       85  -0.1420  0.186           23.5   20.0   [  9.6 –  47.3]  DESCRITIVO (n=85 < 120)
+macro        futuro      20      10       48  +0.0849  0.563           22.2   20.8   [  6.3 –  54.7]  DESCRITIVO (n=48 < 120)
+corporativo  passado    -20      10      140  -0.2032  0.012           14.3   20.0   [  5.7 –  31.5]  p<0,05 mas cai no FDR
+corporativo  passado     -5      10      290  +0.0187  0.762           17.2   20.0   [  9.6 –  28.9]  nulo
+corporativo  passado     -1      10      430  +0.0512  0.275           26.7   20.0   [ 18.5 –  36.9]  nulo
+corporativo  futuro       1      10      428  -0.0335  0.486           12.9   20.1   [  7.4 –  21.7]  nulo
+corporativo  futuro       5      10      285  -0.0332  0.578           22.8   20.0   [ 13.8 –  35.2]  nulo
+corporativo  futuro      20      10      131  -0.0241  0.783           23.1   20.6   [ 11.0 –  42.1]  nulo
+
+--------------------------------------------------------------------------------------------------------
+1 HORA — VOLATILIDADE (o papel se mexe muito?) — EM ACERTOS POR 100
+--------------------------------------------------------------------------------------------------------
+  LEMBRE: aqui 'acertar' = o papel ficou entre os 20% que mais
+  se mexeram. Chutar as cegas acerta ~20 em 100, nao 50.
+
+  JUDICIAL, passado, h=-20  (9 celulas, 4 papel(is))
+    acertou 0 em 100 entre os casos que o sinal apontou como mais agitados.
+    Chutar as cegas acerta 22 em 100.
+    perdeu do chute por 22 acertos em 100.
+    MAS a margem de erro vai de 0 a 79 em 100 (largura de 79 pontos).
+    -> o chute (22 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+    para esta vantagem virar resultado seriam ~38 celulas; ha 9.
+
+  JUDICIAL, passado, h=-5  (9 celulas, 4 papel(is))
+    acertou 0 em 100 entre os casos que o sinal apontou como mais agitados.
+    Chutar as cegas acerta 22 em 100.
+    perdeu do chute por 22 acertos em 100.
+    MAS a margem de erro vai de 0 a 79 em 100 (largura de 79 pontos).
+    -> o chute (22 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+    para esta vantagem virar resultado seriam ~38 celulas; ha 9.
+
+  JUDICIAL, passado, h=-1  (10 celulas, 4 papel(is))
+    acertou 0 em 100 entre os casos que o sinal apontou como mais agitados.
+    Chutar as cegas acerta 20 em 100.
+    perdeu do chute por 20 acertos em 100.
+    MAS a margem de erro vai de 0 a 66 em 100 (largura de 66 pontos).
+    -> o chute (20 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+    para esta vantagem virar resultado seriam ~47 celulas; ha 10.
+
+  JUDICIAL, futuro, h=1  (10 celulas, 4 papel(is))
+    acertou 0 em 100 entre os casos que o sinal apontou como mais agitados.
+    Chutar as cegas acerta 20 em 100.
+    perdeu do chute por 20 acertos em 100.
+    MAS a margem de erro vai de 0 a 66 em 100 (largura de 66 pontos).
+    -> o chute (20 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+    para esta vantagem virar resultado seriam ~47 celulas; ha 10.
+
+  JUDICIAL, futuro, h=5  (9 celulas, 4 papel(is))
+    acertou 0 em 100 entre os casos que o sinal apontou como mais agitados.
+    Chutar as cegas acerta 22 em 100.
+    perdeu do chute por 22 acertos em 100.
+    MAS a margem de erro vai de 0 a 79 em 100 (largura de 79 pontos).
+    -> o chute (22 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+    para esta vantagem virar resultado seriam ~38 celulas; ha 9.
+
+  JUDICIAL, futuro, h=20  (8 celulas, 4 papel(is))
+    acertou 0 em 100 entre os casos que o sinal apontou como mais agitados.
+    Chutar as cegas acerta 25 em 100.
+    perdeu do chute por 25 acertos em 100.
+    MAS a margem de erro vai de 0 a 79 em 100 (largura de 79 pontos).
+    -> o chute (25 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+    para esta vantagem virar resultado seriam ~29 celulas; ha 8.
+
+  MACRO, passado, h=-20  (54 celulas, 10 papel(is))
+    acertou 10 em 100 entre os casos que o sinal apontou como mais agitados.
+    Chutar as cegas acerta 20 em 100.
+    perdeu do chute por 10 acertos em 100.
+    MAS a margem de erro vai de 2 a 40 em 100 (largura de 39 pontos).
+    -> o chute (20 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+    para esta vantagem virar resultado seriam ~181 celulas; ha 54.
+
+  MACRO, passado, h=-5  (91 celulas, 10 papel(is))
+    acertou 17 em 100 entre os casos que o sinal apontou como mais agitados.
+    Chutar as cegas acerta 21 em 100.
+    perdeu do chute por 4 acertos em 100.
+    MAS a margem de erro vai de 6 a 39 em 100 (largura de 33 pontos).
+    -> o chute (21 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+    para esta vantagem virar resultado seriam ~783 celulas; ha 91.
+
+  MACRO, passado, h=-1  (101 celulas, 10 papel(is))
+    acertou 30 em 100 entre os casos que o sinal apontou como mais agitados.
+    Chutar as cegas acerta 21 em 100.
+    vantagem: +9 acertos em 100.
+    MAS a margem de erro vai de 15 a 52 em 100 (largura de 37 pontos).
+    -> o chute (21 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+    para esta vantagem virar resultado seriam ~230 celulas; ha 101.
+
+  MACRO, futuro, h=1  (101 celulas, 10 papel(is))
+    acertou 20 em 100 entre os casos que o sinal apontou como mais agitados.
+    Chutar as cegas acerta 21 em 100.
+    perdeu do chute por 1 acertos em 100.
+    MAS a margem de erro vai de 8 a 42 em 100 (largura de 34 pontos).
+    -> o chute (21 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+    para esta vantagem virar resultado seriam ~783 celulas; ha 101.
+
+  MACRO, futuro, h=5  (85 celulas, 10 papel(is))
+    acertou 24 em 100 entre os casos que o sinal apontou como mais agitados.
+    Chutar as cegas acerta 20 em 100.
+    vantagem: +4 acertos em 100.
+    MAS a margem de erro vai de 10 a 47 em 100 (largura de 38 pontos).
+    -> o chute (20 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+    para esta vantagem virar resultado seriam ~783 celulas; ha 85.
+
+  MACRO, futuro, h=20  (48 celulas, 10 papel(is))
+    acertou 22 em 100 entre os casos que o sinal apontou como mais agitados.
+    Chutar as cegas acerta 21 em 100.
+    vantagem: +1 acertos em 100.
+    MAS a margem de erro vai de 6 a 55 em 100 (largura de 48 pontos).
+    -> o chute (21 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+    para esta vantagem virar resultado seriam ~783 celulas; ha 48.
+
+  CORPORATIVO, passado, h=-20  (140 celulas, 10 papel(is))
+    acertou 14 em 100 entre os casos que o sinal apontou como mais agitados.
+    Chutar as cegas acerta 20 em 100.
+    perdeu do chute por 6 acertos em 100.
+    MAS a margem de erro vai de 6 a 31 em 100 (largura de 26 pontos).
+    -> o chute (20 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+
+  CORPORATIVO, passado, h=-5  (290 celulas, 10 papel(is))
+    acertou 17 em 100 entre os casos que o sinal apontou como mais agitados.
+    Chutar as cegas acerta 20 em 100.
+    perdeu do chute por 3 acertos em 100.
+    MAS a margem de erro vai de 10 a 29 em 100 (largura de 19 pontos).
+    -> o chute (20 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+
+  CORPORATIVO, passado, h=-1  (430 celulas, 10 papel(is))
+    acertou 27 em 100 entre os casos que o sinal apontou como mais agitados.
+    Chutar as cegas acerta 20 em 100.
+    vantagem: +7 acertos em 100.
+    MAS a margem de erro vai de 19 a 37 em 100 (largura de 18 pontos).
+    -> o chute (20 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+
+  CORPORATIVO, futuro, h=1  (428 celulas, 10 papel(is))
+    acertou 13 em 100 entre os casos que o sinal apontou como mais agitados.
+    Chutar as cegas acerta 20 em 100.
+    perdeu do chute por 7 acertos em 100.
+    MAS a margem de erro vai de 7 a 22 em 100 (largura de 14 pontos).
+    -> o chute (20 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+
+  CORPORATIVO, futuro, h=5  (285 celulas, 10 papel(is))
+    acertou 23 em 100 entre os casos que o sinal apontou como mais agitados.
+    Chutar as cegas acerta 20 em 100.
+    vantagem: +3 acertos em 100.
+    MAS a margem de erro vai de 14 a 35 em 100 (largura de 21 pontos).
+    -> o chute (20 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+
+  CORPORATIVO, futuro, h=20  (131 celulas, 10 papel(is))
+    acertou 23 em 100 entre os casos que o sinal apontou como mais agitados.
+    Chutar as cegas acerta 21 em 100.
+    vantagem: +2 acertos em 100.
+    MAS a margem de erro vai de 11 a 42 em 100 (largura de 31 pontos).
+    -> o chute (21 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+
+========================================================================================================
+1 DIA (pregao) — VOLATILIDADE (o papel se mexe muito?)
+========================================================================================================
+tipo         janela       h  papeis  celulas       IC      p  acerto em 100  chute    IC95 do acerto  veredito
+judicial     passado    -20       4        4        —      —              —      —                 —  menos de 8 celulas: nao calcula
+judicial     passado     -5       4        8  -0.1464  0.736            0.0   25.0   [  0.0 –  79.3]  DESCRITIVO (n=8 < 120)
+judicial     passado     -1       4       11  +0.1651  0.631            0.0   27.3   [  0.0 –  65.8]  DESCRITIVO (n=11 < 120)
+judicial     futuro       1       4       11  -0.1101  0.755            0.0   27.3   [  0.0 –  65.8]  DESCRITIVO (n=11 < 120)
+judicial     futuro       5       4        7        —      —              —      —                 —  menos de 8 celulas: nao calcula
+judicial     futuro      20       4        3        —      —              —      —                 —  menos de 8 celulas: nao calcula
+legislativo  passado    -20       2        3        —      —              —      —                 —  menos de 8 celulas: nao calcula
+legislativo  passado     -5       2        3        —      —              —      —                 —  menos de 8 celulas: nao calcula
+legislativo  passado     -1       2        3        —      —              —      —                 —  menos de 8 celulas: nao calcula
+legislativo  futuro       1       2        3        —      —              —      —                 —  menos de 8 celulas: nao calcula
+legislativo  futuro       5       2        2        —      —              —      —                 —  menos de 8 celulas: nao calcula
+legislativo  futuro      20       2        2        —      —              —      —                 —  menos de 8 celulas: nao calcula
+calendario   passado    -20       1        1        —      —              —      —                 —  menos de 8 celulas: nao calcula
+calendario   passado     -5       1        1        —      —              —      —                 —  menos de 8 celulas: nao calcula
+calendario   passado     -1       1        1        —      —              —      —                 —  menos de 8 celulas: nao calcula
+calendario   futuro       1       1        0        —      —              —      —                 —  menos de 8 celulas: nao calcula
+calendario   futuro       5       1        0        —      —              —      —                 —  menos de 8 celulas: nao calcula
+calendario   futuro      20       1        0        —      —              —      —                 —  menos de 8 celulas: nao calcula
+macro        passado    -20      10       23  +0.0082  0.970           25.0   21.7   [  4.6 –  69.9]  DESCRITIVO (n=23 < 120)
+macro        passado     -5      10       46  -0.1157  0.437           22.2   21.7   [  6.3 –  54.7]  DESCRITIVO (n=46 < 120)
+macro        passado     -1      10       90  +0.0553  0.603           33.3   20.0   [ 16.3 –  56.3]  DESCRITIVO (n=90 < 120)
+macro        futuro       1      10       84  +0.0532  0.614           25.0   20.2   [ 10.2 –  49.5]  DESCRITIVO (n=84 < 120)
+macro        futuro       5      10       37  +0.0055  0.977           14.3   21.6   [  2.6 –  51.3]  DESCRITIVO (n=37 < 120)
+macro        futuro      20      10       15  -0.3840  0.164            0.0   20.0   [  0.0 –  56.2]  DESCRITIVO (n=15 < 120)
+corporativo  passado    -20      10       52  +0.0416  0.768           20.0   21.2   [  5.7 –  51.0]  DESCRITIVO (n=52 < 120)
+corporativo  passado     -5      10      118  +0.1690  0.072           21.7   20.3   [  9.7 –  41.9]  DESCRITIVO (n=118 < 120)
+corporativo  passado     -1      10      291  -0.0755  0.209           19.0   20.3   [ 10.9 –  30.9]  nulo
+corporativo  futuro       1      10      283  +0.0798  0.178           25.0   20.1   [ 15.5 –  37.7]  nulo
+corporativo  futuro       5      10      108  +0.0479  0.611           23.8   20.4   [ 10.6 –  45.1]  DESCRITIVO (n=108 < 120)
+corporativo  futuro      20      10       42  -0.0559  0.721           50.0   21.4   [ 21.5 –  78.5]  DESCRITIVO (n=42 < 120)
+
+--------------------------------------------------------------------------------------------------------
+1 DIA (pregao) — VOLATILIDADE (o papel se mexe muito?) — EM ACERTOS POR 100
+--------------------------------------------------------------------------------------------------------
+  LEMBRE: aqui 'acertar' = o papel ficou entre os 20% que mais
+  se mexeram. Chutar as cegas acerta ~20 em 100, nao 50.
+
+  JUDICIAL, passado, h=-5  (8 celulas, 4 papel(is))
+    acertou 0 em 100 entre os casos que o sinal apontou como mais agitados.
+    Chutar as cegas acerta 25 em 100.
+    perdeu do chute por 25 acertos em 100.
+    MAS a margem de erro vai de 0 a 79 em 100 (largura de 79 pontos).
+    -> o chute (25 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+    para esta vantagem virar resultado seriam ~29 celulas; ha 8.
+
+  JUDICIAL, passado, h=-1  (11 celulas, 4 papel(is))
+    acertou 0 em 100 entre os casos que o sinal apontou como mais agitados.
+    Chutar as cegas acerta 27 em 100.
+    perdeu do chute por 27 acertos em 100.
+    MAS a margem de erro vai de 0 a 66 em 100 (largura de 66 pontos).
+    -> o chute (27 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+    para esta vantagem virar resultado seriam ~24 celulas; ha 11.
+
+  JUDICIAL, futuro, h=1  (11 celulas, 4 papel(is))
+    acertou 0 em 100 entre os casos que o sinal apontou como mais agitados.
+    Chutar as cegas acerta 27 em 100.
+    perdeu do chute por 27 acertos em 100.
+    MAS a margem de erro vai de 0 a 66 em 100 (largura de 66 pontos).
+    -> o chute (27 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+    para esta vantagem virar resultado seriam ~24 celulas; ha 11.
+
+  MACRO, passado, h=-20  (23 celulas, 10 papel(is))
+    acertou 25 em 100 entre os casos que o sinal apontou como mais agitados.
+    Chutar as cegas acerta 22 em 100.
+    vantagem: +3 acertos em 100.
+    MAS a margem de erro vai de 5 a 70 em 100 (largura de 65 pontos).
+    -> o chute (22 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+    para esta vantagem virar resultado seriam ~783 celulas; ha 23.
+
+  MACRO, passado, h=-5  (46 celulas, 10 papel(is))
+    acertou 22 em 100 entre os casos que o sinal apontou como mais agitados.
+    Chutar as cegas acerta 22 em 100.
+    vantagem: +0 acertos em 100.
+    MAS a margem de erro vai de 6 a 55 em 100 (largura de 48 pontos).
+    -> o chute (22 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+    para esta vantagem virar resultado seriam ~783 celulas; ha 46.
+
+  MACRO, passado, h=-1  (90 celulas, 10 papel(is))
+    acertou 33 em 100 entre os casos que o sinal apontou como mais agitados.
+    Chutar as cegas acerta 20 em 100.
+    vantagem: +13 acertos em 100.
+    MAS a margem de erro vai de 16 a 56 em 100 (largura de 40 pontos).
+    -> o chute (20 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+    para esta vantagem virar resultado seriam ~108 celulas; ha 90.
+
+  MACRO, futuro, h=1  (84 celulas, 10 papel(is))
+    acertou 25 em 100 entre os casos que o sinal apontou como mais agitados.
+    Chutar as cegas acerta 20 em 100.
+    vantagem: +5 acertos em 100.
+    MAS a margem de erro vai de 10 a 49 em 100 (largura de 39 pontos).
+    -> o chute (20 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+    para esta vantagem virar resultado seriam ~783 celulas; ha 84.
+
+  MACRO, futuro, h=5  (37 celulas, 10 papel(is))
+    acertou 14 em 100 entre os casos que o sinal apontou como mais agitados.
+    Chutar as cegas acerta 22 em 100.
+    perdeu do chute por 7 acertos em 100.
+    MAS a margem de erro vai de 3 a 51 em 100 (largura de 49 pontos).
+    -> o chute (22 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+    para esta vantagem virar resultado seriam ~363 celulas; ha 37.
+
+  MACRO, futuro, h=20  (15 celulas, 10 papel(is))
+    acertou 0 em 100 entre os casos que o sinal apontou como mais agitados.
+    Chutar as cegas acerta 20 em 100.
+    perdeu do chute por 20 acertos em 100.
+    MAS a margem de erro vai de 0 a 56 em 100 (largura de 56 pontos).
+    -> o chute (20 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+    para esta vantagem virar resultado seriam ~47 celulas; ha 15.
+
+  CORPORATIVO, passado, h=-20  (52 celulas, 10 papel(is))
+    acertou 20 em 100 entre os casos que o sinal apontou como mais agitados.
+    Chutar as cegas acerta 21 em 100.
+    perdeu do chute por 1 acertos em 100.
+    MAS a margem de erro vai de 6 a 51 em 100 (largura de 45 pontos).
+    -> o chute (21 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+    para esta vantagem virar resultado seriam ~783 celulas; ha 52.
+
+  CORPORATIVO, passado, h=-5  (118 celulas, 10 papel(is))
+    acertou 22 em 100 entre os casos que o sinal apontou como mais agitados.
+    Chutar as cegas acerta 20 em 100.
+    vantagem: +1 acertos em 100.
+    MAS a margem de erro vai de 10 a 42 em 100 (largura de 32 pontos).
+    -> o chute (20 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+    para esta vantagem virar resultado seriam ~783 celulas; ha 118.
+
+  CORPORATIVO, passado, h=-1  (291 celulas, 10 papel(is))
+    acertou 19 em 100 entre os casos que o sinal apontou como mais agitados.
+    Chutar as cegas acerta 20 em 100.
+    perdeu do chute por 1 acertos em 100.
+    MAS a margem de erro vai de 11 a 31 em 100 (largura de 20 pontos).
+    -> o chute (20 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+
+  CORPORATIVO, futuro, h=1  (283 celulas, 10 papel(is))
+    acertou 25 em 100 entre os casos que o sinal apontou como mais agitados.
+    Chutar as cegas acerta 20 em 100.
+    vantagem: +5 acertos em 100.
+    MAS a margem de erro vai de 16 a 38 em 100 (largura de 22 pontos).
+    -> o chute (20 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+
+  CORPORATIVO, futuro, h=5  (108 celulas, 10 papel(is))
+    acertou 24 em 100 entre os casos que o sinal apontou como mais agitados.
+    Chutar as cegas acerta 20 em 100.
+    vantagem: +3 acertos em 100.
+    MAS a margem de erro vai de 11 a 45 em 100 (largura de 34 pontos).
+    -> o chute (20 em 100) esta DENTRO da margem. Este numero nao distingue sinal de sorte.
+    para esta vantagem virar resultado seriam ~783 celulas; ha 108.
+
+  CORPORATIVO, futuro, h=20  (42 celulas, 10 papel(is))
+    acertou 50 em 100 entre os casos que o sinal apontou como mais agitados.
+    Chutar as cegas acerta 21 em 100.
+    vantagem: +29 acertos em 100.
+    MAS a margem de erro vai de 22 a 78 em 100 (largura de 57 pontos).
+    -> a margem toda fica acima do chute. Aqui ha algo, sujeito a correcao de teste multiplo.
+    para esta vantagem virar resultado seriam ~22 celulas; ha 42.
+
+  RESUMO VOLATILIDADE (o papel se mexe muito?): 0 linha(s) sobrevivem ao FDR (q=0.1), de 76 calculadas.
+  Dos TIPOS PEDIDOS (judicial, legislativo, calendario): 0 linha(s) chegaram ao piso de 120 celulas.
+
+========================================================================================================
+O MESMO SINAL, EM GRANULARIDADES VIZINHAS — VOLATILIDADE (o papel se mexe muito?)
+========================================================================================================
+Se o numero fosse medida, mudaria pouco de uma linha para a vizinha.
+Olhe o tamanho do pulo, e o n de cada uma.
+
+  JUDICIAL — noticia sobre movimento FUTURO
+    granularidade      h  celulas  acertou em 100   chute
+    5 MINUTOS          3       11              50      27
+    5 MINUTOS          6       10               0      20
+    5 MINUTOS         24       10               0      20
+    15 MINUTOS         2       10               0      20
+    15 MINUTOS         4       10               0      20
+    15 MINUTOS        16       10               0      20
+    1 HORA             1       10               0      20
+    1 HORA             5        9               0      22
+    1 HORA            20        8               0      25
+    1 DIA (pregao)     1       11               0      27
+    -> variou de 0 a 50 em 100 (50 pontos de pulo) com n entre 8 e 11.
+       NENHUMA linha chega a 120 celulas. O pulo e o tamanho do ruido, nao um efeito de prazo.
+
+  MACRO — noticia sobre movimento FUTURO
+    granularidade      h  celulas  acertou em 100   chute
+    1 MINUTO           5       35               0      20
+    1 MINUTO          15       32               0      22
+    1 MINUTO          60       30               0      20
+    5 MINUTOS          3       73               7      21
+    5 MINUTOS          6       71              21      21
+    5 MINUTOS         24       63              25      21
+    15 MINUTOS         2       68               8      21
+    15 MINUTOS         4       66              23      21
+    15 MINUTOS        16       59              18      20
+    1 HORA             1      101              20      21
+    1 HORA             5       85              24      20
+    1 HORA            20       48              22      21
+    1 DIA (pregao)     1       84              25      20
+    1 DIA (pregao)     5       37              14      22
+    1 DIA (pregao)    20       15               0      20
+    -> variou de 0 a 25 em 100 (25 pontos de pulo) com n entre 15 e 101.
+       NENHUMA linha chega a 120 celulas. O pulo e o tamanho do ruido, nao um efeito de prazo.
+
+  CORPORATIVO — noticia sobre movimento FUTURO
+    granularidade      h  celulas  acertou em 100   chute
+    1 MINUTO           5       92              17      21
+    1 MINUTO          15       87              24      21
+    1 MINUTO          60       71              14      21
+    5 MINUTOS          3      239              19      20
+    5 MINUTOS          6      223              14      20
+    5 MINUTOS         24      163              16      20
+    15 MINUTOS         2      229              22      20
+    15 MINUTOS         4      208              17      20
+    15 MINUTOS        16      127              20      20
+    1 HORA             1      428              13      20
+    1 HORA             5      285              23      20
+    1 HORA            20      131              23      21
+    1 DIA (pregao)     1      283              25      20
+    1 DIA (pregao)     5      108              24      20
+    1 DIA (pregao)    20       42              50      21
+    -> variou de 13 a 50 em 100 (37 pontos de pulo) com n entre 42 e 428.
+
+
+========================================================================================================
+AUDITORIA A MAO -- os casos dos tres tipos pedidos, um por um
+========================================================================================================
+O sinal de `s` e o efeito NO PAPEL: negativo = ruim para o papel.
+Leia a manchete e julgue se o sinal aponta para o lado certo.
+
+
+  JUDICIAL  (16 caso(s))
+    PETR4  -0.71 ruim   [futuro,passado]
+            MPF apresenta novo recurso contra exploração de petróleo na Foz do Amazonas pela Petrobr
+    BBAS3  -0.60 ruim   [presente]
+            CVM abre processo contra presidente do Banco do Brasil (BBAS3) após fala sobre ações; en
+    PETR4  -0.50 ruim   [futuro]
+            Petrobras (PETR4) nega impacto socioambiental na Foz do Amazonas; MPF pede suspensão da 
+    PETR4  -0.50 ruim   [futuro]
+            Petrobras (PETR4) e MPF entram em briga pela exploração de petróleo na Foz do Amazonas. 
+    PETR4  -0.30 ruim   [presente]
+            Braskem (BRKM5): MP questiona processo e credores cobram Petrobras (PETR4) e IG4
+    B3SA3  +0.00 neutro [futuro,passado,presente]
+            T4F (SHOW3) fecha capital após CVM aprovar cancelamento de registro; entenda
+    VALE3  +0.00 neutro [futuro,passado]
+            MPF aciona Vale (VALE3) por extravasamento na Mina de Viga (MG) e demanda auditoria inde
+    PETR4  +0.00 neutro [futuro]
+            Petrobras vai ao Governo contra ANP para manter poder no mercado de gás
+    PETR4  +0.00 neutro [futuro]
+            Petrobras (PETR4), Tim (TIMS3), Boa Safra (SOJA3) e outros destaques desta segunda-feira
+    VALE3  +0.00 neutro [futuro]
+            Vale (VALE3) inicia retomada parcial de operações na Mina de Fábrica após aval da Justiç
+    VALE3  +0.04 neutro [futuro,passado]
+            Vale (VALE3), Kepler Weber (KEPL3), Telefônica Brasil (VIVT3) e outros destaques corpora
+    PETR4  +0.04 neutro [futuro,passado]
+            Raízen (RAIZ4), Petrobras (PETR4), Azul (AZUL3) e outros destaques desta quarta-feira (3
+    PETR4  +0.35 bom    [futuro]
+            ANP avança para reduzir concentração no mercado de gás apesar de resistência da Petrobra
+    PETR4  +0.40 bom    [futuro,passado,presente]
+            ANP aprova delimitação de novas áreas de petróleo na Margem Equatorial
+    B3SA3  +0.45 bom    [futuro,presente]
+            Ibovespa sobe com petróleo, pesquisas eleitorais  e STF no radar; 5 coisas para saber an
+    VALE3  +0.50 bom    [futuro,presente]
+            Vale (VALE3) pode pagar imposto sobre lucros no exterior? STF zera placar; entenda
+
+  LEGISLATIVO  (3 caso(s))
+    VALE3  +0.00 neutro [futuro,presente]
+            A declaração do CEO da Vale (VALE3) que fez as ações da mineradora subirem quase 2%
+    PETR4  +0.00 neutro [futuro,presente]
+            Petrobras (PETR4) recebe R$ 2,3 bilhões em nova parcela de subvenção ao diesel
+    PETR4  +0.35 bom    [futuro,passado,presente]
+            No gás, Petrobras é “atravessadora”, diz diretor da ANP. “Não somos ONG,” diz Magda
+
+  CALENDARIO  (1 caso(s))
+    VALE3  +0.00 neutro [futuro,presente]
+            Vale (VALE3) passará a divulgar relatório de vendas junto com resultados

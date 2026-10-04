@@ -241,6 +241,24 @@ todas as barras; ela é ~51%, não os 55–65% que o estimador enviesado produzi
 
 Tabelas completas, por granularidade, em `docs/orientacao-medicao.md`.
 
+### Por TIPO de evento: 0 de 152, e por falta de amostra
+
+Mesma medição, agora agrupando por tipo em vez de orientação
+(`scripts/tipo_evento_test.py`, 2026-10-04). Judicial tem 16 matérias,
+legislativo 3 e calendário 1 — que viram 8 a 11 células por granularidade, bem
+abaixo do piso de 120. Nenhuma das 152 linhas (76 de direção + 76 de
+volatilidade) sobrevive ao FDR, e **nenhuma dos tipos pedidos atinge o piso**.
+
+O número que mostra o tamanho do problema sem precisar de estatística: judicial
+"acerta 88 em 100" em 5 minutos e "29 em 100" em 15 minutos, com ~10 casos em
+cada — pulo de 59 pontos entre medições vizinhas. Corporativo, com 42 a 428
+casos por célula, varia 9 pontos. A diferença entre as duas linhas é o tamanho
+da amostra.
+
+Para provar 10 pontos de vantagem seriam ~194 células, ou cerca de 300 matérias
+judiciais. Não é problema de método, é de fonte — ver ponto 6 em
+`docs/fontes-prospectivas.md`. Detalhe em `docs/tipos-medicao.md`.
+
 ## Métricas de notícia
 
 Para o canal de texto, medir adicionalmente:
