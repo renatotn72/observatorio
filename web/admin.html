@@ -1,0 +1,403 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Operações — Observatório</title>
+<style>
+/* Duas classes de tarefa, e a diferença é ESTRUTURAL, não um aviso:
+   a deliberada não tem controle de agendamento — não desativado, inexistente.
+   Mesma hachura do regime "não medido" do painel. */
+:root{
+  --papel:#FAFAF7; --branco:#fff;
+  --ink:#15181B; --ink2:#42484E; --ink3:#63696F;
+  --rule:#DCDBD4; --rule2:#ECEBE4;
+  --med:#0E5A62; --rep:#8E3B22; --rep-fundo:#FBF7F5; --rep-rule:#E4D2CA;
+  --serif:Georgia,'Iowan Old Style','Times New Roman',serif;
+  --sans:system-ui,-apple-system,'Segoe UI',sans-serif;
+  --mono:ui-monospace,'SF Mono','Cascadia Mono',Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--papel);color:var(--ink);font:14px/1.5 var(--sans)}
+.wrap{max-width:1200px;margin:0 auto;padding:0 40px}
+h1,h2,h3{font-family:var(--serif);font-weight:400;letter-spacing:-.3px;margin:0}
+a{color:var(--med)} a:hover{color:var(--ink)}
+.mono{font-family:var(--mono)}
+.hach{background-color:#F7F6F1;background-image:repeating-linear-gradient(135deg,#B4B9BE 0,#B4B9BE 1px,transparent 1px,transparent 9px)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+
+header{border-bottom:2px solid var(--ink)}
+.hd{display:flex;flex-wrap:wrap;gap:18px;align-items:flex-end;justify-content:space-between;padding:26px 0 16px}
+.hd .sub{margin:7px 0 0;max-width:740px;font-size:13.5px;line-height:1.55;color:var(--ink2)}
+code{font-family:var(--mono);background:#F2F1EB;padding:1px 6px}
+
+.btn{border:1px solid var(--ink);background:var(--papel);color:var(--ink);font:13px var(--sans);padding:0 14px;min-height:44px;cursor:pointer}
+.btn:hover{background:var(--branco)}
+.btn-prim{border-color:var(--med);background:var(--med);color:#fff}
+.btn-rep{border-color:var(--rep);background:var(--rep);color:#fff}
+.btn-sm{min-height:34px;font-size:12px;padding:0 11px}
+.selo{display:inline-flex;align-items:center;gap:6px;padding:3px 9px;font:10.5px/1.4 var(--mono);letter-spacing:1px;white-space:nowrap}
+.selo-ag{border:1px solid var(--med);color:var(--med)}
+.selo-esp{border:1px solid var(--ink3);color:var(--ink3)}
+.selo-del{background:var(--ink);color:#fff}
+
+.regra{display:flex;flex-wrap:wrap;margin-top:24px;border:1px solid var(--rule);background:var(--branco)}
+.regra>div{flex:1 1 400px;min-width:0;padding:19px 22px;display:flex;gap:13px;align-items:flex-start}
+.regra>div:first-child{border-right:1px solid var(--rule)}
+.regra .pin{width:12px;height:12px;margin-top:5px;flex:none}
+.regra p{margin:6px 0 0;font-size:12.5px;line-height:1.6;color:var(--ink2)}
+
+.sec{margin-top:36px}
+.sec-hd{display:flex;flex-wrap:wrap;gap:14px;align-items:baseline;justify-content:space-between;padding-bottom:11px;border-bottom:1px solid var(--ink)}
+.sec-hd h2{font-size:23px}
+.sec-hd span{font:11.5px var(--mono);color:var(--ink3)}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:14px;margin-top:17px}
+.card{border:1px solid var(--rule);background:var(--branco);padding:15px 16px;display:flex;flex-direction:column;gap:10px}
+.card .t1{display:flex;gap:10px;align-items:flex-start;justify-content:space-between}
+.card .t1 b{font-size:13.5px;line-height:1.35}
+.agenda{font:11px/1.7 var(--mono);color:var(--ink2)}
+.campos{display:flex;flex-wrap:wrap;gap:7px;align-items:center;font:11.5px var(--sans);color:var(--ink2)}
+.campos input[type=number]{width:62px}
+.campos input[type=text]{width:58px}
+.campos input{font:12px var(--mono);padding:0 6px;min-height:32px;border:1px solid var(--rule);background:var(--papel);color:var(--ink)}
+.campos label{display:inline-flex;align-items:center;gap:5px}
+.acoes{display:flex;gap:8px;align-items:center;margin-top:auto;padding-top:10px;border-top:1px dotted var(--rule)}
+.ultima{font:10.5px var(--mono);color:var(--ink3)}
+.msg{font:11px var(--mono);color:var(--med)}
+
+.del-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(420px,1fr));gap:16px;margin-top:17px}
+.del{border:2px solid var(--ink);background:var(--branco)}
+.del .top{padding:12px 18px;border-bottom:2px solid var(--ink);display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+.del .top b{font-size:14.5px;background:#F7F6F1;padding:1px 4px}
+.del .corpo{padding:16px 18px}
+.del .corpo>p{margin:0;font-size:12.5px;line-height:1.6;color:var(--ink2)}
+.confirma{margin-top:13px;border:1px solid var(--rep);background:var(--rep-fundo);padding:13px 15px}
+.confirma .rot{margin:0 0 8px;font:10.5px var(--mono);letter-spacing:1px;color:var(--rep)}
+.confirma .det{font:11.5px/1.75 var(--mono);color:var(--ink2)}
+.confirma p.aviso{margin:9px 0 0;font-size:12px;line-height:1.55;color:var(--rep)}
+
+table{width:100%;border-collapse:collapse;margin-top:16px;background:var(--branco);border:1px solid var(--rule)}
+th{text-align:left;font:10px var(--mono);letter-spacing:.8px;color:var(--ink3);font-weight:400;padding:10px 14px;border-bottom:1px solid var(--ink)}
+td{padding:10px 14px;border-bottom:1px solid var(--rule2);font-size:13px;vertical-align:top}
+td.mono{font-size:12px;color:var(--ink2)}
+details summary{cursor:pointer;font-size:12px;color:var(--med)}
+details pre{margin:7px 0 0;padding:10px;background:#F4F3EE;border:1px solid var(--rule);font:11px/1.5 var(--mono);overflow:auto;max-height:220px;white-space:pre-wrap;word-break:break-word}
+.ok{color:var(--med)} .err{color:var(--rep)}
+
+/* gaveta IA */
+#abrir-ia{position:fixed;right:24px;bottom:24px;z-index:40;box-shadow:0 2px 10px rgba(0,0,0,.18)}
+#ia{position:fixed;top:0;right:0;bottom:0;width:440px;max-width:100%;background:var(--papel);border-left:2px solid var(--ink);z-index:50;display:flex;flex-direction:column;transform:translateX(102%);transition:transform .18s ease-out}
+#ia[data-aberto="1"]{transform:none}
+#ia .top{padding:16px 20px;border-bottom:2px solid var(--ink);display:flex;gap:12px;align-items:flex-start;justify-content:space-between}
+#ia .top h2{font-size:19px}
+#ia .top p{margin:5px 0 0;font-size:12px;color:var(--ink3)}
+#ia .corpo{flex:1 1 auto;overflow:auto;padding:18px 20px}
+#ia .pe{padding:14px 20px;border-top:1px solid var(--rule);background:var(--branco)}
+#ia textarea{width:100%;min-height:76px;font:13px/1.5 var(--sans);padding:10px;border:1px solid var(--rule);background:var(--papel);color:var(--ink);resize:vertical}
+.sug{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}
+.sug button{border:1px solid var(--rule);background:var(--papel);color:var(--ink2);font:11.5px var(--sans);padding:5px 9px;cursor:pointer;text-align:left}
+.sug button:hover{border-color:var(--ink);color:var(--ink)}
+.resp{border:1px solid var(--rule);background:var(--branco);padding:16px 18px;margin-bottom:14px}
+.resp .txt{font-size:14px;line-height:1.6;white-space:pre-wrap}
+.resp .fatos{margin-top:13px;padding-top:11px;border-top:1px dotted var(--rule)}
+.resp .fatos div{display:flex;justify-content:space-between;gap:12px;padding:3px 0;font-size:12px;color:var(--ink2)}
+.resp .fatos b{font:12px var(--mono);font-weight:400;color:var(--ink);text-align:right}
+.ress{margin-top:12px;border-left:2px solid var(--rep);padding:2px 0 2px 11px;font-size:12px;line-height:1.5;color:var(--rep)}
+.acao{border:1px solid var(--ink);background:var(--branco);padding:13px 15px;margin-top:11px}
+.acao.deliberada{border-width:2px}
+.acao .lin1{display:flex;flex-wrap:wrap;gap:9px;align-items:center;justify-content:space-between}
+.aviso-box{border:1px solid var(--rep);background:var(--rep-fundo);padding:12px 14px;margin-top:10px;font-size:12px;line-height:1.55;color:var(--rep)}
+.ia-off{border:2px solid var(--ink);background:var(--branco);padding:16px 18px;margin-bottom:14px}
+details.ctx{margin-top:12px;border:1px solid var(--rule);background:var(--branco)}
+details.ctx summary{padding:10px 14px;font-size:12.5px;color:var(--ink2)}
+details.ctx pre{margin:0;padding:12px 14px;border-top:1px solid var(--rule);max-height:340px}
+.carregando{font:12px var(--mono);color:var(--ink3)}
+footer{margin:34px 0 0;padding:18px 0 48px;border-top:1px solid var(--rule);font-size:12.5px;line-height:1.65;color:var(--ink3)}
+@media (max-width:900px){ .wrap{padding:0 16px} #ia{width:100%} #abrir-ia{right:16px;bottom:16px} }
+</style>
+</head>
+<body>
+
+<header><div class="wrap hd">
+  <div>
+    <p style="margin:0 0 7px"><a href="/">← Painel público</a></p>
+    <h1>Central de Operações</h1>
+    <p class="sub">Executa apenas tarefas cadastradas. Não aceita comandos de shell. Para processar a fila, rode em outro terminal: <code>python -m obs.cli worker</code></p>
+  </div>
+  <div class="mono" style="font-size:12px;color:var(--ink3);text-align:right" id="resumo">—</div>
+</div></header>
+
+<main class="wrap">
+  <section class="regra">
+    <div>
+      <span class="pin" style="background:var(--med)"></span>
+      <div><strong style="font-size:15px">Rotina — pode rodar sozinha</strong>
+        <p>Coleta e processamento. Se falhar, repete; se repetir à toa, o pior caso é desperdício. Tem agendamento, janela de horário e tentativas.</p></div>
+    </div>
+    <div class="hach">
+      <span class="pin" style="border:2px solid var(--ink);background:var(--papel)"></span>
+      <div style="background:var(--papel);padding:2px 0"><strong style="font-size:15px">Deliberada — nunca roda sozinha</strong>
+        <p>Reescreve o que o painel publica. Não tem controle de agendamento — <strong style="color:var(--ink)">não desativado: inexistente</strong>. Só roda por ato humano, com o que será sobrescrito declarado antes.</p></div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="sec-hd"><h2>Rotina</h2><span id="cont-rotina">—</span></div>
+    <div class="grid" id="rotina">carregando…</div>
+  </section>
+
+  <section class="sec">
+    <div class="sec-hd"><h2>Deliberada</h2><span id="cont-del">—</span></div>
+    <div class="del-grid" id="deliberada"></div>
+  </section>
+
+  <section class="sec">
+    <div class="sec-hd"><h2>Histórico</h2><span>as deliberadas ficam marcadas na coluna da esquerda</span></div>
+    <table><thead><tr><th style="width:120px">classe</th><th>tarefa</th><th style="width:70px">origem</th>
+      <th style="width:140px">quando</th><th style="width:90px">resultado</th><th style="width:110px">detalhes</th></tr></thead>
+      <tbody id="runs"><tr><td colspan="6">carregando…</td></tr></tbody></table>
+  </section>
+
+  <footer>As tarefas de classe deliberada aparecem no histórico com a mesma marca que têm no cartão: quem recalibrou, quando, e com que resultado — o painel não deve ter recalibração anônima.</footer>
+</main>
+
+<button class="btn btn-prim" id="abrir-ia" type="button">Perguntar à IA</button>
+
+<aside id="ia" aria-label="Perguntar à IA" data-aberto="0">
+  <div class="top">
+    <div><h2>Perguntar</h2><p>Escopo: operações. Propõe tarefas; nunca as executa.</p></div>
+    <button class="btn btn-sm" id="fechar-ia" type="button">Fechar</button>
+  </div>
+  <div class="corpo" id="ia-corpo"></div>
+  <div class="pe">
+    <label class="sr" for="ia-q">Pergunta</label>
+    <textarea id="ia-q" placeholder="Ex.: o que está agendado agora e o que não roda há mais tempo?"></textarea>
+    <div style="margin-top:9px"><button class="btn btn-prim" id="ia-enviar" type="button" style="width:100%">Perguntar</button></div>
+    <div class="sug" id="ia-sug"></div>
+  </div>
+</aside>
+
+<script>
+"use strict";
+const J = (u,o) => fetch(u,o).then(r => r.json());
+const POST = (u,b) => J(u,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(b)});
+const esc = s => String(s==null?'':s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const quando = ts => ts ? new Date(ts*1000).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}) : '—';
+const nf = (x,d=3) => x==null ? '—' : Number(x).toLocaleString('pt-BR',{minimumFractionDigits:d,maximumFractionDigits:d});
+const isoBr = s => { if (!s) return '—'; const d = new Date(s);
+  return isNaN(d) ? s : d.toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}); };
+
+// O que cada tarefa deliberada sobrescreve. A confirmação NOMEIA o artefato
+// em vez de perguntar "tem certeza?".
+const SOBRESCREVE = {
+  recalibrate_volatility: 'Substitui o calibrador <span class="mono">vol:1d</span> que o painel está publicando <strong>neste momento</strong>. Se o novo ajuste não passar na porta, a agitação deixa de exibir número e passa ao regime “não calibrado”.',
+  recalibrate_direction: 'Reajusta a cabeça de direção, que hoje não publica nada. Só passa a exibir número se cruzar a porta — e isso depende de haver rótulos D+1 no banco.',
+  build_labels: 'Reescreve os rótulos D+1/D+5/D+20 contra os quais todo calibrador é julgado. Muda o passado do qual as métricas saíram.',
+  run_pead_backtest: 'Experimento de pesquisa. O resultado não entra no painel em hipótese alguma; vira mais uma linha no placar de hipóteses.',
+};
+
+let ST = null, STATUS = null, IA = null, RESP = null, ESPERANDO = false;
+const CONFIRMANDO = new Set();
+
+async function carregar(){
+  const [st, status] = await Promise.all([
+    J('/api/admin/state'),
+    J('/api/status').catch(() => null),
+  ]);
+  ST = st; STATUS = status;
+  if (!IA) IA = await J('/api/ia/estado').catch(() => ({ok:false, motivo:'rota /api/ia/estado indisponível'}));
+  render();
+}
+
+function sched(id){ return (ST.schedules||[]).find(s => s.job === id) || {}; }
+
+function render(){
+  const jobs = Object.entries(ST.jobs || {});
+  const rot = jobs.filter(([,j]) => j.schedule);
+  const del = jobs.filter(([,j]) => !j.schedule);
+  const nAg = rot.filter(([id]) => sched(id).enabled).length;
+  document.getElementById('resumo').innerHTML =
+    `${jobs.length} tarefas · ${rot.length} de rotina · ${del.length} deliberadas<br>fila: ${(ST.runs||[]).filter(r=>r.status==='queued'||r.status==='running').length} pendente(s)`;
+  document.getElementById('cont-rotina').textContent = `${rot.length} tarefas · ${nAg} agendada(s) · ${rot.length-nAg} em espera manual`;
+  document.getElementById('cont-del').textContent = `${del.length} tarefas · nenhuma agendável · todas sobrescrevem algo publicado`;
+
+  document.getElementById('rotina').innerHTML = rot.map(([id,j]) => {
+    const a = sched(id);
+    return `<div class="card">
+      <div class="t1"><b>${esc(j.label)}</b>
+        <span class="selo ${a.enabled?'selo-ag':'selo-esp'}">${a.enabled?'AGENDADA':'EM ESPERA'}</span></div>
+      <div class="agenda">${a.enabled
+        ? `cada ${a.interval_minutes||15} min · janela ${esc(a.window_start)}–${esc(a.window_end)}${a.weekdays_only?' · dias úteis':''}<br>próxima ${quando(a.next_run_ts)}`
+        : 'sem agenda ativa'}</div>
+      <div class="campos">
+        <label><input type="checkbox" data-f="en" data-j="${esc(id)}" ${a.enabled?'checked':''}> agendar</label>
+        cada <input type="number" min="1" data-f="int" data-j="${esc(id)}" value="${a.interval_minutes||15}"> min
+        <label><input type="checkbox" data-f="week" data-j="${esc(id)}" ${a.weekdays_only?'checked':''}> dias úteis</label>
+        <span style="width:100%"></span>
+        janela <input type="text" data-f="ini" data-j="${esc(id)}" value="${esc(a.window_start||'00:00')}">–<input type="text" data-f="fim" data-j="${esc(id)}" value="${esc(a.window_end||'23:59')}">
+        tentativas <input type="number" min="0" data-f="ret" data-j="${esc(id)}" value="${a.max_retries??2}">
+        espera <input type="number" min="1" data-f="esp" data-j="${esc(id)}" value="${a.retry_delay_minutes??5}"> min
+      </div>
+      <div class="acoes">
+        <button class="btn btn-sm" type="button" data-salvar="${esc(id)}">Salvar agenda</button>
+        <button class="btn btn-sm btn-prim" type="button" data-run="${esc(id)}">Rodar agora</button>
+        <span class="msg" data-msg="${esc(id)}"></span>
+      </div>
+      <div class="ultima">última ${quando(a.last_run_ts)} · ${esc(a.last_status||'nunca executada')}</div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('deliberada').innerHTML = del.map(([id,j]) => {
+    const a = sched(id);
+    const conf = CONFIRMANDO.has(id);
+    const cal = ((STATUS||{}).agitacao||{}).calibrador;
+    let ficha = '';
+    if (id === 'recalibrate_volatility' && cal){
+      const m = cal.metrics || {};
+      ficha = `<div class="det">${esc(cal.name)} · ajustado ${esc(isoBr(cal.fitted))} · n ${Number(cal.n||0).toLocaleString('pt-BR')}<br>
+        AUC ${nf(m.auc_oos)} · skill ${nf(m.skill_brier_oos)} · ${m.calibrado?'aprovado na porta':'não aprovado'}<br>
+        em uso por ${Number((STATUS.cadeia||{}).papeis||0)} papéis no painel público</div>`;
+    }
+    return `<div class="del">
+      <div class="top hach"><b>${esc(j.label)}</b><span class="selo selo-del">SEM AGENDAMENTO</span></div>
+      <div class="corpo">
+        <p>${SOBRESCREVE[id] || 'Tarefa deliberada: só roda por ato humano.'}</p>
+        ${conf ? `<div class="confirma">
+            <p class="rot">O QUE SERÁ SOBRESCRITO</p>
+            ${ficha || '<div class="det">—</div>'}
+            <p class="aviso">A execução é irreversível pela tela: não há “desfazer” para um calibrador reajustado.</p>
+            <div style="display:flex;flex-wrap:wrap;gap:9px;margin-top:12px">
+              <button class="btn btn-sm btn-rep" type="button" data-run="${esc(id)}">Confirmar e enfileirar</button>
+              <button class="btn btn-sm" type="button" data-cancelar="${esc(id)}">Cancelar</button>
+              <span class="msg" data-msg="${esc(id)}"></span>
+            </div></div>`
+          : `<div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:13px">
+              <button class="btn btn-sm" type="button" data-confirmar="${esc(id)}">Rodar manualmente</button>
+              <span class="ultima">última ${quando(a.last_run_ts)} · ${esc(a.last_status||'nunca executada')}</span>
+              <span class="msg" data-msg="${esc(id)}"></span>
+            </div>`}
+      </div></div>`;
+  }).join('');
+
+  const jl = ST.jobs || {};
+  document.getElementById('runs').innerHTML = (ST.runs||[]).slice(0,25).map(r => {
+    const del = jl[r.job] && !jl[r.job].schedule;
+    return `<tr>
+      <td><span class="selo ${del?'selo-del':'selo-esp'}">${del?'DELIBERADA':'ROTINA'}</span></td>
+      <td>${esc((jl[r.job]||{}).label || r.job)}</td>
+      <td class="mono">${esc(r.trigger||'')}</td>
+      <td class="mono">${quando(r.queued_ts)}</td>
+      <td class="mono ${r.status==='error'?'err':'ok'}">${esc(r.status)}</td>
+      <td><details><summary>ver log</summary><pre>${esc(r.error || r.details || '(vazio)')}</pre></details></td>
+    </tr>`;
+  }).join('') || '<tr><td colspan="6">Sem execuções registradas.</td></tr>';
+}
+
+/* ------------------------------------------------------------- eventos ---*/
+document.body.addEventListener('click', async e => {
+  const g = (sel) => e.target.closest(sel);
+  const msg = id => document.querySelector(`[data-msg="${id}"]`);
+
+  const c = g('[data-confirmar]');
+  if (c){ CONFIRMANDO.add(c.dataset.confirmar); return render(); }
+  const x = g('[data-cancelar]');
+  if (x){ CONFIRMANDO.delete(x.dataset.cancelar); return render(); }
+
+  const s = g('[data-salvar]');
+  if (s){
+    const id = s.dataset.salvar, v = f => document.querySelector(`[data-f="${f}"][data-j="${id}"]`);
+    s.disabled = true;
+    await POST('/api/admin/schedule', {
+      job:id, enabled:v('en').checked, interval_minutes:+v('int').value,
+      window_start:v('ini').value, window_end:v('fim').value,
+      weekdays_only:v('week').checked, max_retries:+v('ret').value,
+      retry_delay_minutes:+v('esp').value});
+    if (msg(id)) msg(id).textContent = 'agenda salva';
+    return carregar();
+  }
+
+  const r = g('[data-run]');
+  if (r){
+    const id = r.dataset.run;
+    r.disabled = true;
+    try{
+      const out = await POST('/api/admin/run', {job:id});
+      if (msg(id)) msg(id).textContent = out.queued ? `enfileirado (#${out.id})` : (out.reason || 'não enfileirado');
+    }catch(err){ if (msg(id)) msg(id).textContent = 'falhou'; }
+    CONFIRMANDO.delete(id);
+    setTimeout(carregar, 400);
+  }
+});
+
+/* ------------------------------------------------------------------ IA ---*/
+const SUG = ['O que está agendado agora?','Qual tarefa não roda há mais tempo?',
+  'O que precisa rodar para calibrar a direção?','Houve erro nas últimas execuções?'];
+
+function renderIA(){
+  const el = document.getElementById('ia-corpo');
+  let h = '';
+  if (IA && !IA.ok){
+    h += `<div class="ia-off"><span class="selo selo-del" style="margin-bottom:10px">IA DESLIGADA</span>
+      <p style="margin:0;font-size:13px;line-height:1.6;color:var(--ink2)">${esc(IA.motivo||'')}</p>
+      <p style="margin:10px 0 0;font:11.5px/1.7 var(--mono);color:var(--ink2)">OBS_ALLOW_EXTERNAL_LLM=1<br>OBS_LLM_URL=…<br>OBS_LLM_KEY=…<br>OBS_LLM_MODEL=…</p></div>`;
+  }
+  if (ESPERANDO) h += `<p class="carregando">consultando…</p>`;
+  if (RESP && !ESPERANDO){
+    if (RESP.ok){
+      h += `<div class="resp"><div class="txt">${esc(RESP.resposta)}</div>`;
+      if ((RESP.fatos||[]).length) h += `<div class="fatos">` + RESP.fatos.map(f =>
+        `<div><span>${esc(f.rotulo)}</span><b>${esc(f.valor)}</b></div>`).join('') + `</div>`;
+      h += `</div>`;
+      (RESP.ressalvas||[]).forEach(t => h += `<div class="ress">${esc(t)}</div>`);
+      (RESP.acoes||[]).forEach(a => {
+        const del = a.classe === 'deliberada';
+        h += `<div class="acao${del?' deliberada':''}">
+          <div class="lin1"><b style="font-size:13.5px">${esc(a.label)}</b>
+            <span class="selo ${del?'selo-del':'selo-esp'}">${del?'DELIBERADA':'ROTINA'}</span></div>
+          <p style="margin:7px 0 0;font-size:12px;line-height:1.5;color:var(--ink2)">${esc(a.motivo)}</p>
+          ${del?`<div class="aviso-box">Sobrescreve o que o painel publica. A IA só propôs: confirme no cartão da tarefa, acima, onde a ficha do artefato aparece.</div>`
+               :`<div style="margin-top:10px"><button class="btn btn-sm btn-prim" type="button" data-run="${esc(a.job)}">Enfileirar agora</button>
+                 <span class="msg" data-msg="${esc(a.job)}"></span></div>`}
+        </div>`;
+      });
+      if (RESP.model) h += `<p class="mono" style="font-size:10.5px;color:var(--ink3);margin-top:12px">modelo: ${esc(RESP.model)}</p>`;
+    } else if (!RESP.ia_desligada){
+      h += `<div class="aviso-box">${esc(RESP.error||'falha na consulta')}</div>`;
+    }
+    if (RESP.contexto) h += `<details class="ctx"><summary>O que a IA viu (operações)</summary>
+      <pre>${esc(JSON.stringify(RESP.contexto, null, 1))}</pre></details>`;
+  }
+  if (!h) h = `<p style="margin:0;font-size:13px;line-height:1.6;color:var(--ink2)">Pergunte sobre agenda, última execução, erros ou o que falta rodar. A IA pode <strong>propor</strong> tarefas; enfileirar continua sendo clique seu.</p>`;
+  el.innerHTML = h; el.scrollTop = 0;
+}
+
+async function perguntar(){
+  const q = document.getElementById('ia-q').value.trim();
+  if (!q || ESPERANDO) return;
+  ESPERANDO = true; renderIA();
+  try{ RESP = await POST('/api/perguntar', {pergunta:q, escopo:'operacoes'}); }
+  catch(e){ RESP = {ok:false, error:String(e)}; }
+  ESPERANDO = false; renderIA();
+}
+
+document.getElementById('ia-sug').innerHTML = SUG.map(q => `<button type="button" data-q="${esc(q)}">${esc(q)}</button>`).join('');
+document.getElementById('ia-sug').addEventListener('click', e => {
+  const b = e.target.closest('[data-q]'); if (!b) return;
+  document.getElementById('ia-q').value = b.dataset.q; perguntar();
+});
+document.getElementById('abrir-ia').addEventListener('click', () => {
+  document.getElementById('ia').dataset.aberto = '1'; renderIA(); document.getElementById('ia-q').focus();
+});
+document.getElementById('fechar-ia').addEventListener('click', () => document.getElementById('ia').dataset.aberto = '0');
+document.getElementById('ia-enviar').addEventListener('click', perguntar);
+document.getElementById('ia-q').addEventListener('keydown', e => {
+  if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) perguntar();
+});
+document.addEventListener('keydown', e => { if (e.key === 'Escape') document.getElementById('ia').dataset.aberto = '0'; });
+
+carregar();
+setInterval(() => { if (document.getElementById('ia').dataset.aberto !== '1' && !CONFIRMANDO.size) carregar(); }, 15000);
+</script>
+</body>
+</html>

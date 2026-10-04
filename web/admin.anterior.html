@@ -1,0 +1,37 @@
+<!doctype html><html lang="pt-br"><meta charset="utf-8"><title>Operações — Observatório</title>
+<style>
+body{font:14px system-ui;background:#f7f7f5;color:#1f2937;margin:0}main{max-width:1200px;margin:auto;padding:28px}
+h1,h2{font-family:Georgia,serif}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(330px,1fr));gap:16px}
+.card{background:#fff;border:1px solid #ddd;padding:16px}.job{border-top:1px solid #eee;padding:12px 0}.job:first-child{border:0}
+button{background:#1d4ed8;color:#fff;border:0;padding:8px 10px;cursor:pointer}button.sec{background:#475569}
+input{padding:6px;width:68px}.muted{color:#64748b}.ok{color:#15803d}.err{color:#b91c1c}pre{background:#111827;color:#e5e7eb;padding:10px;overflow:auto;max-height:260px}
+</style><main>
+<p><a href="/">← Painel público</a></p><h1>Central de Operações</h1>
+<p class="muted">Executa somente jobs autorizados. Não aceita comandos de shell arbitrários. Para processar a fila, rode em outro terminal: <code>python -m obs.cli worker</code>.</p>
+<div class="grid"><section class="card"><h2>Sincronizações e Agenda</h2><div id="jobs">Carregando…</div></section>
+<section class="card"><h2>Histórico e logs</h2><div id="runs">Carregando…</div></section>
+<section class="card"><h2>Empresas e Universo</h2><p>Cadastros CVM, liquidez e empresas candidatas são atualizados por <b>Atualizar cadastro CVM</b> e <b>Revisar universo</b>.</p><p class="muted">A ativação no universo não é automática: exige ticker/CNPJ e filtro de liquidez.</p></section>
+<section class="card"><h2>Relatórios e IA</h2><p>PDFs são extraídos e analisados localmente. A análise externa continua bloqueada até autorização explícita por ambiente.</p><p class="muted">Documentos e planos contábeis aparecem no detalhe de cada ação.</p></section></div></main>
+<script>
+const $=s=>document.querySelector(s);
+async function get(){return (await fetch('/api/admin/state')).json()}
+async function post(path,data){return (await fetch(path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)})).json()}
+function fmt(ts){return ts?new Date(ts*1000).toLocaleString('pt-BR'):'—'}
+async function render(){
+ const x=await get(), s=Object.fromEntries(x.schedules.map(v=>[v.job,v]));
+ $('#jobs').innerHTML=Object.entries(x.jobs).map(([id,j])=>{const a=s[id]||{};
+ const sched=j.schedule?`<label><input type="checkbox" ${a.enabled?'checked':''} data-en="${id}"> agendar</label>
+ cada <input data-int="${id}" type="number" min="5" value="${a.interval_minutes||15}"> min
+ <br><small>Janela <input data-start="${id}" value="${a.window_start||'00:00'}">–<input data-end="${id}" value="${a.window_end||'23:59'}">
+ <label><input type="checkbox" ${a.weekdays_only?'checked':''} data-week="${id}"> dias úteis</label>
+ tentativas <input data-ret="${id}" type="number" min="0" value="${a.max_retries||2}">
+ espera <input data-delay="${id}" type="number" min="1" value="${a.retry_delay_minutes||5}"> min</small>
+ <button class="sec" data-save="${id}">Salvar</button>`:'<span class="muted">somente manual</span>';
+ return `<div class="job"><b>${j.label}</b><br>${sched}
+ <button data-run="${id}">Rodar agora</button><br><span class="muted">Última: ${fmt(a.last_run_ts)} · ${a.last_status||'—'} · Próxima: ${fmt(a.next_run_ts)}</span></div>`}).join('');
+ $('#runs').innerHTML=x.runs.map(r=>`<div class="${r.status==='error'?'err':'ok'}"><b>${r.job}</b> · ${r.status} · ${fmt(r.queued_ts)}<details><summary>detalhes</summary><pre>${r.error||r.details||''}</pre></details></div>`).join('')||'Sem execuções.';
+ document.querySelectorAll('[data-run]').forEach(b=>b.onclick=async()=>{await post('/api/admin/run',{job:b.dataset.run});setTimeout(render,300)});
+ document.querySelectorAll('[data-save]').forEach(b=>b.onclick=async()=>{let id=b.dataset.save;await post('/api/admin/schedule',{job:id,enabled:document.querySelector(`[data-en="${id}"]`).checked,interval_minutes:+document.querySelector(`[data-int="${id}"]`).value,window_start:document.querySelector(`[data-start="${id}"]`).value,window_end:document.querySelector(`[data-end="${id}"]`).value,weekdays_only:document.querySelector(`[data-week="${id}"]`).checked,max_retries:+document.querySelector(`[data-ret="${id}"]`).value,retry_delay_minutes:+document.querySelector(`[data-delay="${id}"]`).value});render()});
+}
+render();setInterval(render,10000);
+</script>

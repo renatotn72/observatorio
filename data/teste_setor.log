@@ -1,0 +1,13 @@
+  [setor] banks: falhou
+  [setor] beverages: falhou
+  [setor] financials: falhou
+  [setor] industrials: falhou
+  [setor] mining: falhou
+  [setor] oil_gas: falhou
+  [setor] pulp_paper: falhou
+  [setor] retail: falhou
+
+  0 linhas (artigo x papel) em 181.0s
+
+  artigos distintos: 0
+  gravados: 0 novos

@@ -1,0 +1,24 @@
+== 2. Mencoes, agrupamento e pontuacao ==
+  311 janelas de 48h, passo 24h, 2025-11-25 a 2026-10-02
+  mencoes=229 pontuados=210
+== 3. Reconstrucao dos sinais passados ==
+105 dias de pregao com noticia pontuada
+== 4. Rotulagem ==
+{
+  "dias": 365,
+  "mencoes": 229,
+  "clusters": 18378,
+  "pontuados": 210,
+  "sinais": 389,
+  "rotulos": 379,
+  "taxa_base": {
+    "up": 0.21372031662269128,
+    "flat": 0.5329815303430079,
+    "down": 0.2532981530343008,
+    "n": 379
+  },
+  "pronto_para_calibrar": true,
+  "aviso": "Rotulos vindos de backfill sao ESTIMATIVA: o GDELT indexa pelo seendate e a cobertura retroativa nao e a que estava visivel em tempo real. Use para destravar a primeira calibracao e deixe o ciclo ao vivo substituir com rotulo limpo. Ver obs/historico.py."
+}
+
+379 rotulos (minimo 120). Agora: python3 -m obs.cli calibrate --method platt

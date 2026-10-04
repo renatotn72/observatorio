@@ -1,0 +1,15 @@
+# Fonte única de configuração do proxy SAI/OpenAI-compatible.
+# Copie este arquivo para mcp-models.properties e preencha o cookie.
+server.port=8100
+proxy.modelName=sai-dev-gpt5
+# IMPORTANTE para o Observatório: preserva system prompt documental e JSON schema.
+proxy.promptMode=raw
+proxy.maxHistoryMessages=12
+proxy.streamChunkSize=120
+sai.baseUrl=https://sai-library.saiapplications.com
+sai.templateId=689529a9bc6f5e4a68e53eb3
+sai.cookie=
+# Alternativa: mcp.streaming.cookieValue=
+sai.referer=https://sai-library.saiapplications.com/free-chat
+sai.origin=https://sai-library.saiapplications.com
+sai.timeoutSeconds=120

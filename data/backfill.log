@@ -1,0 +1,7 @@
+== 1. Backfill de noticia (GDELT, janela historica) ==
+53 janelas x 10 papeis = ~49 min de espera imposta pelo GDELT (1 req / 5.5s)
+  [gdelt] VALE3: frase 'Vale' recusada por curta; reenviando com 6 termos
+  [gdelt] VALE3: sem resposta
+  [gdelt] BBDC4: sem resposta
+  [gdelt] BBAS3: sem resposta
+  [gdelt] MGLU3: sem resposta

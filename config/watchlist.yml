@@ -1,0 +1,48 @@
+# Papéis monitorados. 'aliases' é o que o matcher procura no texto da notícia.
+# 'benchmark' é usado para calcular retorno anormal (CAR).
+# "__crosssec__" = retorno menos a media transversal da watchlist (remove beta de
+# mercado sem dado externo; funciona no brapi gratuito).
+# Com BRAPI_TOKEN definido, troque por BOVA11 para um benchmark de verdade.
+benchmark: __crosssec__
+
+tickers:
+  PETR4:
+    name: Petrobras
+    sector: oil_gas
+    aliases: [petrobras, petrobrás, petróleo brasileiro, petrobras pn, PETR4, PETR3, PBR]
+  VALE3:
+    name: Vale
+    sector: mining
+    aliases: ["vale s.a.", "vale sa", "vale do rio doce", "companhia vale", "mineradora vale", VALE3, VALE5]
+  ITUB4:
+    name: Itau Unibanco
+    sector: banks
+    aliases: [itaú unibanco, itau unibanco, banco itaú, banco itau, ITUB4, ITUB3]
+  BBDC4:
+    name: Bradesco
+    sector: banks
+    aliases: [bradesco, banco bradesco, BBDC4, BBDC3]
+  BBAS3:
+    name: Banco do Brasil
+    sector: banks
+    aliases: ["banco do brasil", BBAS3]
+  ABEV3:
+    name: Ambev
+    sector: beverages
+    aliases: [ambev, anheuser-busch inbev brasil, ABEV3]
+  WEGE3:
+    name: WEG
+    sector: industrials
+    aliases: ["weg s.a.", "weg sa", "weg equipamentos", "weg motores", WEGE3]
+  MGLU3:
+    name: Magazine Luiza
+    sector: retail
+    aliases: ["magazine luiza", magalu, MGLU3]
+  B3SA3:
+    name: B3
+    sector: financials
+    aliases: ["b3 s.a.", "b3 brasil bolsa", "bolsa brasileira", B3SA3]
+  SUZB3:
+    name: Suzano
+    sector: pulp_paper
+    aliases: [suzano, "suzano papel", SUZB3]

@@ -1,0 +1,6 @@
+# Observatorio -- ciclo a cada 15 min em dia de pregao (B3: 10h-18h BRT)
+# crontab -e  e cole, ajustando o caminho:
+*/15 10-18 * * 1-5  cd /CAMINHO/observatorio && /usr/bin/python3 -m obs.cli cycle >> data/cycle.log 2>&1
+
+# Recalibrar uma vez por dia, depois do fechamento
+30 19 * * 1-5  cd /CAMINHO/observatorio && /usr/bin/python3 -m obs.cli prices --range 1mo && /usr/bin/python3 -m obs.cli label && /usr/bin/python3 -m obs.cli calibrate >> data/calib.log 2>&1

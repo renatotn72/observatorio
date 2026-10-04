@@ -1,0 +1,1185 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Papel · Observatório de Ações</title>
+<script>
+try { const t = localStorage.getItem("obs-theme"); if (t === "dark" || t === "light") document.documentElement.setAttribute("data-theme", t); } catch (e) {}
+</script>
+<style>
+:root{
+  --bg:#f7f8fa; --panel:#ffffff; --panel-2:#f2f4f7; --border:#e2e5ea; --text:#15181d; --muted:#5f6672;
+  --up:#0b8a4c; --up-soft:#e3f5ea; --down:#c9281d; --down-soft:#fdeceb; --flat:#7b828c; --flat-soft:#eef0f3;
+  --accent:#2b5fd9; --accent-soft:#e8eefc; --track:#eceef2; --grid:#eceef2; --line:#1f2937; --area:rgba(31,41,55,.06);
+  --vol:#b45309; --warn:#9a4a07; --warn-bg:#fef6e7;
+  --shadow:0 10px 30px rgba(16,24,40,.16); --focus:0 0 0 3px rgba(43,95,217,.35);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#101317; --panel:#181c22; --panel-2:#1e232a; --border:#2a3038; --text:#e8eaed; --muted:#a0a8b2;
+    --up:#2ecc71; --up-soft:#15291f; --down:#ff6b5e; --down-soft:#2a1715; --flat:#8d96a1; --flat-soft:#232831;
+    --accent:#6f9bff; --accent-soft:#1c2740; --track:#262c35; --grid:#232831; --line:#dfe3e8; --area:rgba(223,227,232,.06);
+    --vol:#f0b429; --warn:#f0b429; --warn-bg:#2a2112;
+    --shadow:0 10px 30px rgba(0,0,0,.5); --focus:0 0 0 3px rgba(111,155,255,.45);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#101317; --panel:#181c22; --panel-2:#1e232a; --border:#2a3038; --text:#e8eaed; --muted:#a0a8b2;
+  --up:#2ecc71; --up-soft:#15291f; --down:#ff6b5e; --down-soft:#2a1715; --flat:#8d96a1; --flat-soft:#232831;
+  --accent:#6f9bff; --accent-soft:#1c2740; --track:#262c35; --grid:#232831; --line:#dfe3e8; --area:rgba(223,227,232,.06);
+  --vol:#f0b429; --warn:#f0b429; --warn-bg:#2a2112;
+  --shadow:0 10px 30px rgba(0,0,0,.5); --focus:0 0 0 3px rgba(111,155,255,.45);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
+.wrap{max-width:1440px;margin:0 auto;padding:16px 16px 64px}
+.sr{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+:focus-visible{outline:none;box-shadow:var(--focus);border-radius:6px}
+.muted{color:var(--muted)}
+.num{font-variant-numeric:tabular-nums}
+button,select,input{font:inherit;color:inherit}
+.btn{display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:6px 12px;border-radius:8px;border:1px solid var(--border);
+  background:var(--panel);color:var(--text);cursor:pointer;font-size:14px;white-space:nowrap;text-decoration:none}
+.btn:hover{border-color:var(--accent)}
+.btn svg{width:16px;height:16px;flex:none}
+.panel{background:var(--panel);border:1px solid var(--border);border-radius:12px}
+
+/* topo */
+.top{display:flex;flex-wrap:wrap;gap:12px 28px;align-items:center}
+.top .tools{margin-left:auto}
+.idblock{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.back{display:inline-flex;align-items:center;gap:4px;color:var(--muted);text-decoration:none;font-size:14px;min-height:36px;padding:0 6px;border-radius:8px}
+.back:hover{color:var(--accent)}
+.back svg{width:16px;height:16px}
+h1{margin:0;font-size:28px;letter-spacing:-.015em;line-height:1.1}
+.who{color:var(--muted);font-size:14px}
+.star{width:38px;height:38px;display:inline-flex;align-items:center;justify-content:center;border:1px solid var(--border);background:var(--panel);border-radius:9px;cursor:pointer;color:var(--muted)}
+.star svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.7}
+.star[aria-pressed="true"]{color:#d69e00}.star[aria-pressed="true"] svg{fill:currentColor}
+.priceblock{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.price{font-size:26px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.chg{font-weight:650;font-variant-numeric:tabular-nums}
+.chg.up{color:var(--up)}.chg.down{color:var(--down)}
+.tools{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.switch{position:relative}
+.switch input{min-height:36px;width:170px;padding:6px 10px;border-radius:8px;border:1px solid var(--border);background:var(--panel);text-transform:uppercase}
+.switch input::placeholder{text-transform:none}
+.switch input:focus{outline:none;border-color:var(--accent);box-shadow:var(--focus)}
+.sigchips{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.sc{font-size:12.5px;padding:3px 9px;border-radius:999px;background:var(--panel-2);font-variant-numeric:tabular-nums}
+.sc b{font-weight:650}
+
+/* controles */
+.controls{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;justify-content:space-between;margin:16px 0 12px}
+.seg{display:inline-flex;gap:2px;padding:3px;background:var(--panel-2);border-radius:10px;flex-wrap:wrap}
+.seg button{border:0;background:none;min-height:34px;min-width:40px;padding:4px 10px;border-radius:7px;cursor:pointer;font-size:13.5px;color:var(--muted);font-weight:600;
+  font-variant-numeric:tabular-nums;display:inline-flex;align-items:center;gap:6px}
+.seg button[aria-pressed="true"]{background:var(--panel);color:var(--text);box-shadow:0 1px 2px rgba(0,0,0,.12)}
+.seg .ct{font-weight:500;font-size:12px;opacity:.85}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12.5px;color:var(--muted);align-items:center}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend svg{width:12px;height:12px}
+
+/* layout */
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 420px;gap:14px;align-items:start}
+.layout>*{min-width:0}
+@media(max-width:1100px){.layout{grid-template-columns:1fr}}
+.chartcard{padding:12px 12px 6px;position:relative}
+.charthead{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:baseline;padding:2px 4px 6px}
+.charthead h2,.newshead h2{font-size:12.5px;letter-spacing:.06em;text-transform:uppercase;margin:0;color:var(--muted);font-weight:650}
+.hint{font-size:12.5px;color:var(--muted)}
+.chartbox{position:relative;touch-action:pan-y}
+#chart{display:block;width:100%;user-select:none}
+#chart:focus-visible{box-shadow:var(--focus);border-radius:8px}
+#chart text{font:11.5px ui-sans-serif,system-ui,sans-serif;fill:var(--muted);font-variant-numeric:tabular-nums}
+#chart .gl{stroke:var(--grid);stroke-width:1}
+#chart .pl{fill:none;stroke:var(--line);stroke-width:1.75;stroke-linejoin:round}
+#chart .pa{fill:var(--area)}
+#chart .zl{stroke:var(--border);stroke-width:1}
+#chart .ch{stroke:var(--muted);stroke-width:1;stroke-dasharray:3 3}
+#chart .stem{stroke-width:1;stroke-dasharray:2 2;opacity:.6}
+#chart .mk{cursor:pointer;stroke:var(--panel);stroke-width:1.5}
+#chart .mk.up{fill:var(--up)}#chart .mk.down{fill:var(--down)}#chart .mk.flat{fill:var(--flat)}
+#chart .stem.up{stroke:var(--up)}#chart .stem.down{stroke:var(--down)}#chart .stem.flat{stroke:var(--flat)}
+#chart .ring{fill:none;stroke:var(--accent);stroke-width:2.5}
+#chart .bar.up{fill:var(--up)}#chart .bar.down{fill:var(--down)}#chart .bar.flat{fill:var(--flat)}
+#chart .dot{fill:var(--line);stroke:var(--panel);stroke-width:2}
+#chart .lbl{font-size:11px;fill:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.tip{position:absolute;pointer-events:none;z-index:5;background:var(--panel);border:1px solid var(--border);border-radius:10px;box-shadow:var(--shadow);
+  padding:9px 11px;font-size:12.5px;max-width:320px;line-height:1.4}
+.tip[hidden]{display:none}
+.tip .tt{font-weight:600;font-size:13px;margin:4px 0}
+.tip .row{display:flex;justify-content:space-between;gap:14px;font-variant-numeric:tabular-nums}
+@keyframes pulsoMk{0%{stroke-width:0;opacity:.9}60%{stroke-width:14;opacity:.15}100%{stroke-width:18;opacity:0}}
+.mk.pulsa{stroke:var(--accent);paint-order:stroke;animation:pulsoMk 2s ease-out}
+.zoomctl{position:absolute;top:8px;right:10px;z-index:3;display:flex;gap:4px}
+.zoomctl button{width:28px;height:28px;border:1px solid var(--line);background:var(--bg);
+  color:var(--ink2);border-radius:7px;cursor:pointer;font-size:15px;line-height:1;
+  display:flex;align-items:center;justify-content:center;padding:0}
+.zoomctl button:hover{background:var(--accent-soft);color:var(--accent);border-color:var(--accent)}
+.chartbox{position:relative}
+.zoomhint{display:flex;gap:10px;align-items:center;flex-wrap:wrap;font-size:13px;background:var(--accent-soft);color:var(--text);border-radius:9px;padding:8px 12px;margin:6px 4px 4px}
+.zoomhint[hidden]{display:none}
+.zoomhint button{border:0;background:none;color:var(--accent);font-weight:650;cursor:pointer;padding:4px 2px}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:10px 4px 6px}
+@media(max-width:700px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.stat{background:var(--panel-2);border-radius:9px;padding:8px 11px}
+.stat dt{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.stat dd{margin:0;font-weight:650;font-variant-numeric:tabular-nums;font-size:17px}
+.stat dd small{font-weight:500;font-size:12px;color:var(--muted)}
+.up-t{color:var(--up)}.down-t{color:var(--down)}
+
+/* lista de notícias */
+.cadbox{padding:12px 14px 10px;border-bottom:1px solid var(--border)}
+.cadbox h2{font-size:12.5px;letter-spacing:.06em;text-transform:uppercase;margin:0 0 4px;color:var(--muted);font-weight:650}
+.cad{display:grid;grid-template-columns:minmax(96px,auto) minmax(0,1fr) 46px;gap:8px;align-items:center;font-size:13px;margin:5px 0}
+.cad .dn{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cad .cbar{height:9px;background:var(--track);border-radius:5px;position:relative;overflow:hidden}
+.cad .cbar i{position:absolute;left:0;top:0;bottom:0;border-radius:5px}
+.cad .cbar i.pos{background:var(--accent)}.cad .cbar i.neg{background:var(--vol)}
+.cad .sh{text-align:right;font-variant-numeric:tabular-nums;font-weight:600}
+.cad .sg{display:inline-block;width:14px;font-weight:800;text-align:center}
+.cad .sg.pos{color:var(--accent)}.cad .sg.neg{color:var(--vol)}
+.cadnote{font-size:11.5px;color:var(--muted);margin:4px 0 0}
+.sc .nmd{color:var(--warn);font-weight:600}
+/* O CARD INTEIRO ROLA, nao so a lista. O desenho antigo prendia o card em
+   100vh com overflow:hidden e deixava a lista ser a unica a rolar -- mas as
+   secoes fixas acima dela (cadeia, surpresa, agenda) crescem com o conteudo.
+   MEDIDO em 1600x900: elas ocupavam 841 dos 874px e sobravam 33px de altura
+   util para 3.402px de noticia. Agora a rolagem e uma so e nada fica
+   inalcancavel; a lista ganha um piso para nao sumir quando o topo e alto. */
+.newscard{position:sticky;top:12px;max-height:calc(100vh - 24px);display:flex;
+  flex-direction:column;overflow-y:auto;overscroll-behavior:contain}
+@media(max-width:1100px){.newscard{position:static;max-height:none}}
+.newshead{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:12px 14px;border-bottom:1px solid var(--border)}
+.newshead select{min-height:34px;border-radius:7px;border:1px solid var(--border);background:var(--panel);font-size:13px;padding:2px 6px;color:var(--text)}
+.newslist{list-style:none;margin:0;padding:0 14px;overflow:visible;flex:0 0 auto;min-height:180px}
+.ni{display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 10px;padding:11px 4px;border-top:1px solid var(--border);cursor:pointer;border-radius:8px}
+.ni:first-child{border-top:0}
+.ni:hover{background:var(--panel-2)}
+.ni.on{background:var(--accent-soft);box-shadow:inset 3px 0 0 var(--accent)}
+.badge{grid-row:1 / span 3;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:1px;width:66px;padding:5px 6px;border-radius:8px;
+  font-size:11px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;font-variant-numeric:tabular-nums;border:0;cursor:pointer}
+.badge svg{width:14px;height:14px}
+.badge .sv{font-size:12px;letter-spacing:0}
+.badge.up{background:var(--up-soft);color:var(--up)}.badge.down{background:var(--down-soft);color:var(--down)}.badge.flat{background:var(--flat-soft);color:var(--flat)}
+.ni a{color:var(--text);text-decoration:none;font-weight:550;font-size:14px;line-height:1.35}
+.ni a:hover{color:var(--accent);text-decoration:underline}
+.meta{font-size:12px;color:var(--muted);display:flex;gap:3px 10px;flex-wrap:wrap;align-items:center;font-variant-numeric:tabular-nums}
+.etype{background:var(--panel-2);color:var(--text);padding:0 6px;border-radius:4px}
+.wbar{display:inline-block;width:42px;height:5px;border-radius:3px;background:var(--track);position:relative;vertical-align:1px;margin-left:4px}
+.wbar i{position:absolute;left:0;top:0;bottom:0;background:var(--accent);border-radius:3px}
+.next{font-size:12px;font-variant-numeric:tabular-nums}
+.empty{color:var(--muted);font-size:13.5px;padding:24px 14px;text-align:center}
+.empty b{color:var(--text)}
+.err{background:var(--down-soft);color:var(--down);border-radius:10px;padding:12px 14px;margin:14px 0;font-size:14px}
+.skel{height:12px;border-radius:6px;background:var(--track);margin:12px 0;animation:pulse 1.2s ease-in-out infinite}
+@keyframes pulse{50%{opacity:.5}}
+@media (prefers-reduced-motion:reduce){.skel{animation:none}}
+footer{margin-top:28px;font-size:12px;color:var(--muted);border-top:1px solid var(--border);padding-top:14px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="idblock">
+      <a class="back" id="back" href="/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>Painel</a>
+      <div>
+        <h1 id="tk">—</h1>
+        <div class="who" id="who">carregando…</div>
+      </div>
+      <button type="button" class="star" id="fav" aria-pressed="false" aria-label="Favoritar"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z" stroke-linejoin="round"/></svg></button>
+    </div>
+    <div class="priceblock" id="priceblock" aria-live="polite"></div>
+    <div class="tools">
+      <form class="switch" id="switchForm" role="search">
+        <label for="switch" class="sr">Ir para outro papel</label>
+        <input id="switch" list="tickers" placeholder="Ir para papel…" autocomplete="off" spellcheck="false">
+        <datalist id="tickers"></datalist>
+      </form>
+      <button type="button" class="btn" id="theme" aria-label="Tema"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg><span id="themeText">Auto</span></button>
+    </div>
+  </header>
+  <div class="sigchips" id="sigchips"></div>
+
+  <div id="errbox"></div>
+
+  <div class="controls">
+    <div class="seg" role="group" aria-label="Período" id="ranges"></div>
+    <div class="seg" role="group" aria-label="Filtrar notícias" id="filters"></div>
+    <div class="legend" aria-label="Legenda">
+      <span><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 1 11 10H1z" fill="var(--up)"/></svg>puxa para subida</span>
+      <span><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M1 2h10L6 11z" fill="var(--down)"/></svg>puxa para descida</span>
+      <span><svg viewBox="0 0 12 12" aria-hidden="true"><circle cx="6" cy="6" r="4.5" fill="var(--flat)"/></svg>neutra</span>
+      <span>tamanho = peso da notícia</span>
+    </div>
+  </div>
+
+  <div class="layout">
+    <section class="panel chartcard" aria-labelledby="chartTitle">
+      <div class="charthead">
+        <h2 id="chartTitle">Preço de fechamento e notícias</h2>
+        <span class="hint" id="chartHint">Passe o mouse (ou use ← →) para ver cada dia. Clique numa notícia para destacá-la na lista.</span>
+      </div>
+      <div class="zoomhint" id="zoomhint" hidden></div>
+      <div class="chartbox" id="chartbox">
+        <div class="zoomctl" id="zoomctl">
+          <button type="button" data-z="in"  title="Aproximar (+)" aria-label="Aproximar">+</button>
+          <button type="button" data-z="out" title="Afastar (−)" aria-label="Afastar">−</button>
+          <button type="button" data-z="all" title="Ver tudo (0)" aria-label="Ver tudo">⤢</button>
+        </div>
+        <svg id="chart" tabindex="0" role="img" aria-label="Gráfico de preço com notícias"></svg>
+        <div class="tip" id="tip" hidden></div>
+      </div>
+      <dl class="stats" id="stats"></dl>
+    </section>
+
+    <aside class="panel newscard" aria-labelledby="newsTitle">
+      <section class="cadbox" aria-labelledby="cadTitle">
+        <h2 id="cadTitle">Cadeia de afetação</h2>
+        <div id="cadeia"><div class="skel" style="width:70%"></div><div class="skel"></div></div>
+      </section>
+      <section class="cadbox" aria-labelledby="supTitle">
+        <h2 id="supTitle">Sensibilidade a surpresa macro</h2>
+        <div id="surpresa"><div class="skel" style="width:60%"></div></div>
+      </section>
+      <section class="cadbox" aria-labelledby="extTitle">
+        <h2 id="extTitle">Agenda macro externa</h2>
+        <div id="externos"><div class="skel" style="width:60%"></div></div>
+      </section>
+      <section class="cadbox" aria-labelledby="reportsTitle">
+        <h2 id="reportsTitle">Relatórios, resultados e plano contábil</h2>
+        <div id="reports"><div class="skel" style="width:60%"></div></div>
+      </section>
+      <div class="newshead">
+        <h2 id="newsTitle">Notícias</h2>
+        <label><span class="sr">Ordenar notícias</span>
+          <select id="nsort">
+            <option value="recent">Mais recentes</option>
+            <option value="w">Maior peso</option>
+            <option value="pos">Mais positivas</option>
+            <option value="neg">Mais negativas</option>
+          </select>
+        </label>
+      </div>
+      <ul class="newslist" id="news"></ul>
+    </aside>
+  </div>
+
+  <footer>
+    Cor = direção que o texto da notícia sugere (pontuação <i>s</i> do modelo), não o que o preço fez.
+    “Pregão seguinte” mostra o retorno bruto do papel no primeiro pregão depois da publicação, para comparar.
+    Observatório de pesquisa. Não é recomendação de investimento.
+  </footer>
+</div>
+
+<script>
+"use strict";
+const $ = (s, r = document) => r.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const isNum = v => typeof v === "number" && isFinite(v);
+const num = v => isNum(v) ? v : 0;
+const NF = {};
+const fmt = (v, d = 0) => !isNum(v) ? "—" : (NF[d] ||= new Intl.NumberFormat("pt-BR", { minimumFractionDigits: d, maximumFractionDigits: d })).format(v);
+const sgn = (v, d = 0) => !isNum(v) ? "—" : (v > 0 ? "+" : v < 0 ? "−" : "") + fmt(Math.abs(v), d);
+const pctS = (v, d = 1) => !isNum(v) ? "—" : sgn(100 * v, d) + "%";
+const pct = v => isNum(v) ? fmt(100 * v, 0) + "%" : "—";
+const brl = v => !isNum(v) ? "—" : "R$ " + fmt(v, 2);
+const safeUrl = u => /^https?:\/\//i.test(String(u || "")) ? String(u) : "#";
+const store = {
+  get(k, d) { try { const v = localStorage.getItem("obs-" + k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem("obs-" + k, JSON.stringify(v)); } catch (e) {} }
+};
+const SECTOR_LBL = { oil_gas: "Petróleo e gás", mining: "Mineração", banks: "Bancos", beverages: "Bebidas", industrials: "Indústria",
+  retail: "Varejo", financials: "Financeiro", pulp_paper: "Papel e celulose", utilities: "Energia elétrica", energy: "Energia",
+  telecom: "Telecom", health: "Saúde", healthcare: "Saúde", real_estate: "Imobiliário", steel: "Siderurgia", agribusiness: "Agronegócio",
+  food: "Alimentos", insurance: "Seguros", tech: "Tecnologia", technology: "Tecnologia", transport: "Transporte", logistics: "Logística",
+  education: "Educação", construction: "Construção", sanitation: "Saneamento", chemicals: "Química", consumer: "Consumo" };
+const sectorLabel = s => SECTOR_LBL[s] || String(s || "").replace(/_/g, " ").replace(/^./, c => c.toUpperCase());
+const EVT = { earnings: "Resultado", guidance: "Projeção", mna: "Fusão/aquisição", rating: "Recomendação", dividend: "Proventos",
+  equity_offer: "Oferta de ações", regulatory: "Regulatório", operational: "Operacional", distress: "Dificuldade financeira",
+  management: "Gestão", macro_linked: "Macro", subsidio: "Subsídio", retrospectiva: "Retrospectiva", unclassified: "Sem classificação", outro: "Outro" };
+const evtLabel = e => EVT[e] || String(e || "").replace(/_/g, " ");
+
+/* limiar de neutralidade da pontuação s (−1..+1) */
+const NEUTRAL = 0.1;
+const dirOf = s => s > NEUTRAL ? "up" : s < -NEUTRAL ? "down" : "flat";
+const DIRLBL = { up: "Sobe", down: "Desce", flat: "Neutra" };
+const ICON = {
+  up: '<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 1.5 11 10H1z" fill="currentColor"/></svg>',
+  down: '<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M1 2h10L6 10.5z" fill="currentColor"/></svg>',
+  flat: '<svg viewBox="0 0 12 12" aria-hidden="true"><circle cx="6" cy="6" r="4" fill="currentColor"/></svg>'
+};
+const RANGES = [[7, "1S"], [30, "1M"], [90, "3M"], [180, "6M"], [365, "1A"], [730, "2A"], [1825, "5A"], [0, "Máx"]];
+// GRANULARIDADE. `max_dias` reflete a RETENCAO da fonte, nao capricho: o Yahoo
+// guarda 5 dias de barras de 1 minuto, 1 mes de 5 minutos e 2 anos de 1 hora.
+// Pedir 1m com janela de 1 ano devolveria quase nada, entao a janela e
+// limitada junto com a granularidade.
+// [id, rotulo, retencao_dias, janela_padrao_dias]
+// A JANELA PADRAO existe porque manter a janela anterior ao trocar de
+// granularidade produz enquadramento sem sentido: 2 anos em barras de 1
+// minuto sao 200 mil barras que o navegador nao desenha, e 1 dia em barras
+// semanais e uma barra so. Cada granularidade tem a janela em que ela e
+// legivel.
+const GRANS = [
+  ["1sem", "Semana", 36500, 36500],   // todo o historico
+  ["1d",   "Dia",    36500,    730],  // 2 anos
+  ["1h",   "Hora",     730,     90],  // 3 meses
+  ["15m",  "15 min",    30,     30],  // 1 mes
+  ["5m",   "5 min",     30,      7],  // 5 dias uteis ~ 7 corridos
+  ["1m",   "Minuto",     5,      1],  // 1 pregao
+];
+const granDe = g => GRANS.find(x => x[0] === g) || GRANS[1];
+const DAY = 86400000;
+/* fechamento da B3 ~ 18h de Brasília = 21h UTC */
+// Diario vem "YYYY-MM-DD" e ancora no fechamento (21h UTC); intradiario vem
+// ISO com hora e ja carrega o instante. Sem distinguir, o intradiario virava
+// "YYYY-MM-DDTHH:MM:SS+00:00T21:00:00Z" e o Date.parse devolvia Invalid Date.
+const dateTs = d => (typeof d === "string" && d.length > 10)
+  ? Date.parse(d)
+  : Date.parse(d + "T21:00:00Z");
+const utcDate = t => new Date(t).toISOString().slice(0, 10);
+// A QUAL BARRA A NOTICIA PERTENCE.
+// Dois erros que isto corrige:
+//  (a) INTRADIARIO -- o agrupamento comparava `p.date` com utcDate(n.t). Com
+//      barras de minuto, `p.date` e "2026-09-28T13:09:00+00:00" e utcDate da
+//      "2026-09-28": NUNCA casavam, entao o tooltip e a faixa de pressao
+//      saiam vazios sem avisar.
+//  (b) DIARIO -- noticia das 21h UTC (18h BRT, DEPOIS do fechamento) caia no
+//      pregao que ja tinha fechado. Ela so pode influenciar o pregao
+//      SEGUINTE, e e isso que `dateTs` ja assume ao ancorar a barra em 21h.
+// Em ambos os casos a regra e a mesma: a noticia pertence a PRIMEIRA barra
+// cujo instante e >= o da noticia.
+const barraDaNoticia = (t, P) => {
+  if (!P.length) return -1;
+  let lo = 0, hi = P.length - 1;
+  if (t > P[hi].t) return -1;            // noticia posterior a ultima barra
+  while (lo < hi) { const mid = (lo + hi) >> 1; if (P[mid].t < t) lo = mid + 1; else hi = mid; }
+  return lo;
+};
+const fmtDate = (t, opt) => new Date(t).toLocaleDateString("pt-BR", opt || { day: "2-digit", month: "2-digit", year: "2-digit" });
+const fmtDT = t => new Date(t).toLocaleString("pt-BR", { day: "2-digit", month: "2-digit", year: "2-digit", hour: "2-digit", minute: "2-digit" });
+
+/* ---------- estado ---------- */
+const params = new URLSearchParams(location.search);
+const pathTk = (location.pathname.match(/\/acao\/([^/]+)/) || [])[1];
+const S = {
+  tk: String(params.get("t") || (pathTk ? decodeURIComponent(pathTk) : "") || location.hash.slice(1) || "").toUpperCase(),
+  dias: params.has("dias") ? Math.max(0, parseInt(params.get("dias"), 10) || 0) : store.get("chartDias", 90),
+  gran: params.get("gran") || store.get("chartGran", "1d"),
+  // Janela VISIVEL dentro do periodo carregado, em fracao [0..1].
+  // null = mostra tudo. Arrastar e dar zoom mexem aqui, nao recarregam dado.
+  vista: null,
+  filter: "all", nsort: store.get("newsSort", "recent"),
+  data: null, prices: [], news: [], sig: null, sel: null, hoverIdx: null,
+  favs: new Set(store.get("favs", [])), ctl: null,
+};
+if (!RANGES.some(r => r[0] === S.dias)) S.dias = 90;
+
+/* ---------- carregamento ---------- */
+async function load() {
+  if (!S.tk) { showError("Nenhum papel informado. Volte ao painel e clique no nome de uma ação."); $("#who").textContent = ""; return; }
+  document.title = `${S.tk} · Observatório de Ações`;
+  $("#tk").textContent = S.tk;
+  $("#back").href = "/#" + encodeURIComponent(S.tk);
+  renderFav();
+  if (S.ctl) S.ctl.abort();
+  const ctl = S.ctl = new AbortController();
+  $("#news").innerHTML = '<li><div class="skel" style="width:80%"></div><div class="skel"></div><div class="skel" style="width:65%"></div></li>';
+  try {
+    const r = await fetch(`/api/chart/${encodeURIComponent(S.tk)}?dias=${S.dias}&gran=${S.gran}`, { signal: ctl.signal, cache: "no-store" });
+    const d = await r.json().catch(() => ({}));
+    if (!r.ok || d.error) throw new Error(d.error || `o servidor respondeu ${r.status}`);
+    if (ctl.signal.aborted) return;
+    $("#errbox").innerHTML = "";
+    S.data = d;
+    S.prices = (d.prices || []).filter(p => isNum(p[1])).map(([date, close]) => ({ date, t: dateTs(date), close }));
+    S.news = (d.news || []).map((n, i) => ({ ...n, id: i, t: num(n.ts) * 1000, dir: dirOf(num(n.s)), next: nextReturn(num(n.ts) * 1000) }));
+    if (S.sel != null && !S.news[S.sel]) S.sel = null;
+    // CENTRO PRESERVADO entre granularidades: so da para aplicar aqui, porque
+    // depende da extensao da serie nova. Se o centro antigo cair fora do que
+    // a nova granularidade cobre (ex.: março com barras de 1 min, que so
+    // retem 5 dias), ignora em vez de mostrar janela vazia.
+    if (S.centroDesejado != null && S.prices.length) {
+      centralizar(S.centroDesejado, { silencioso: true });
+      S.centroDesejado = null;
+    }
+    renderAll();
+  } catch (e) {
+    if (e.name === "AbortError") return;
+    showError(`Não foi possível carregar ${S.tk}: ${e.message}.`);
+    $("#news").innerHTML = "";
+  }
+}
+function showError(msg) {
+  $("#errbox").innerHTML = `<div class="err" role="alert">${esc(msg)} <a class="btn" href="/" style="margin-left:8px">Voltar ao painel</a></div>`;
+}
+/* sinal atual + lista de papéis para o seletor (não bloqueia a página) */
+const HZ = (() => { try { return JSON.parse(localStorage.getItem("obs-horizonte")) || "d1"; } catch (e) { return "d1"; } })();
+async function loadSignals() {
+  try {
+    const d = await (await fetch("/api/signals?horizonte=" + encodeURIComponent(HZ), { cache: "no-store" })).json();
+    const list = d.signals || [];
+    S.hz = d.horizonte || null;
+    $("#tickers").innerHTML = list.map(s => `<option value="${esc(s.ticker)}">${esc(s.name || "")}</option>`).join("");
+    renderHeader();
+  } catch (e) { /* opcional */ }
+}
+/* detalhe do papel no horizonte escolhido no painel: sinal atual + cadeia de afetação */
+async function loadTicker() {
+  if (!S.tk) return;
+  try {
+    const r = await fetch(`/api/ticker/${encodeURIComponent(S.tk)}?horizonte=${encodeURIComponent(HZ)}`, { cache: "no-store" });
+    const d = await r.json();
+    if (!r.ok || d.error) throw new Error(d.error || r.status);
+    S.sig = d;
+    renderHeader(); renderCadeia(); renderSurpresa(); renderExternos();
+  } catch (e) { $("#cadeia").innerHTML = `<p class="cadnote">Cadeia indisponível (${esc(e.message)}).</p>`; }
+}
+const DRV = { USDBRL: "Dólar/real", DXY: "Dólar global (DXY)", EURUSD: "Euro/dólar", USDCNY: "Dólar/yuan", OURO: "Ouro", COBRE: "Cobre",
+  MINERIO: "Minério de ferro", BRENT: "Petróleo Brent", GAS: "Gás natural", SOJA: "Soja", ACUCAR: "Açúcar", CAFE: "Café", SPX: "S&P 500", HSI: "Hang Seng" };
+function renderCadeia() {
+  const c = S.sig && S.sig.cadeia;
+  if (!c || !c.top || !c.top.length) { $("#cadeia").innerHTML = `<p class="cadnote">Sem cadeia estimada (faltam cotações dos drivers ou do papel).</p>`; return; }
+  const max = Math.max(...c.top.map(t => num(t.share)), 1e-9);
+  $("#cadeia").innerHTML = c.top.map(t => {
+    const pos = t.sinal > 0, nm = DRV[t.driver] || t.driver;
+    return `<div class="cad" title="${esc(nm)}: ${fmt(100 * num(t.share), 0)}% da sensibilidade explicada; ${pos ? "move junto" : "move ao contrário"} (β ${esc(sgn(num(t.beta), 4))} por desvio do driver)">
+      <span class="dn"><span class="sg ${pos ? "pos" : "neg"}" aria-label="${pos ? "positivo" : "negativo"}">${pos ? "+" : "−"}</span>${esc(nm)}</span>
+      <span class="cbar"><i class="${pos ? "pos" : "neg"}" style="width:${(100 * num(t.share) / max).toFixed(1)}%"></i></span>
+      <span class="sh">${fmt(100 * num(t.share), 0)}%</span></div>`; }).join("") +
+    `<p class="cadnote">R² ${esc(fmt(c.r2, 2))} · ${esc(fmt(c.n))} pregões · <b>descritiva</b>: teste de permutação não feito; não entra em nenhuma probabilidade. + move junto · − move ao contrário.</p>`;
+}
+
+/* A ponte macro -> este papel. Descritiva: a dispersão transversal dos betas
+   reprovou no teste de permutação, então isto não entra em probabilidade. */
+function renderSurpresa() {
+  const su = S.sig && S.sig.surpresa, host = $("#surpresa");
+  if (!host) return;
+  if (!su || !su.indicadores || !su.indicadores.length) {
+    host.innerHTML = `<p class="cadnote">Sem sensibilidade estimada para este papel.</p>`; return;
+  }
+  host.innerHTML = su.indicadores.map(i => {
+    const u = i.ultima, imp = num(i.implicado_pp), pos = imp > 0;
+    return `<div class="cad" title="β ${esc(sgn(num(i.beta), 5))} por desvio de surpresa, estimado em ${esc(fmt(i.n))} divulgações">
+      <span class="dn"><span class="sg ${pos ? "pos" : "neg"}" aria-label="${pos ? "positivo" : "negativo"}">${pos ? "+" : "−"}</span>${esc(i.indicador)}</span>
+      <span class="sh" style="width:auto;white-space:nowrap">${u ? esc(sgn(num(u.surpresa), 2)) + " σ em " + esc(u.referencia) : "—"}</span>
+      <span class="sh" style="width:auto"><b class="${pos ? "pos" : "neg"}">${esc(sgn(imp, 2))} p.p.</b></span></div>`;
+  }).join("") +
+    `<p class="cadnote"><b>Não validada.</b> Os papéis não reagem de forma mensuravelmente diferente
+      a surpresa de IPCA nesta amostra (p = 0,508 em 131 divulgações). Com 19 divulgações o papel mais
+      negativo era MGLU3; com 131 o ranking se reorganiza. Não entra em nenhuma probabilidade.</p>`;
+}
+
+function renderExternos() {
+  const ex = S.sig && S.sig.eventos_externos, host = $("#externos");
+  if (!host) return;
+  const evs = ex && ex.eventos || [];
+  if (!evs.length) {
+    host.innerHTML = `<p class="cadnote">Sem Payroll, CPI EUA ou PMI China nos próximos 2 dias pela agenda aproximada.</p>`;
+    return;
+  }
+  host.innerHTML = evs.map(e => {
+    const hoje = e.dias_a_frente === 0 ? "hoje" : (e.dias_a_frente === 1 ? "amanhã" : `em ${esc(e.dias_a_frente)} dias`);
+    const ativo = e.aplica_volatilidade && num(e.forca_contexto) > 0;
+    const share = num(e.share_exposicao);
+    return `<div class="cad" title="${esc(e.motivo || '')}">
+      <span class="dn"><span class="sg ${ativo ? "neg" : "pos"}">${ativo ? "!" : "·"}</span>${esc(e.nome)}</span>
+      <span class="sh" style="width:auto;white-space:nowrap">${esc(hoje)} · ${esc(e.data)}</span>
+      <span class="sh" style="width:auto">${esc(DRV[e.instrumento] || e.instrumento)} ${fmt(100 * share, 0)}%</span>
+    </div>`;
+  }).join("") +
+    `<p class="cadnote"><b>Contexto ex-ante, não calibrado.</b> A agenda é conhecida antes do evento. Só o Payroll é candidato à cabeça de agitação; nada aqui altera a previsão de alta, queda ou a probabilidade exibida.</p>`;
+}
+
+function renderReports() {
+  const host = $("#reports");
+  if (!host) return;
+  // S.sig vem de loadSignals(), que roda em PARALELO a load() e nao a bloqueia.
+  // Quando o grafico carrega primeiro, S.sig ainda e null -- e as outras seis
+  // leituras desta tela ja usavam `S.sig &&`, so estas tres nao. Era bug
+  // latente: aparecia quando a requisicao do grafico vencia a dos sinais.
+  const sig = S.sig || {};
+  const reports = sig.relatorios || [];
+  const cont = sig.contabil || {};
+  const earn = sig.resultados || {};
+  const resumo = earn.resumo || {};
+  let h = "";
+  if (resumo && resumo.period) {
+    const z = resumo.surpresa_mediana == null ? "n/c" : fmt(resumo.surpresa_mediana, 2) + "σ";
+    h += `<p class="cadnote"><b>Surpresa trimestral — ${esc(resumo.period)}:</b> ${z}. ${esc(resumo.nota || "não validada")}</p>`;
+  } else {
+    h += `<p class="cadnote">Sem consenso prévio importado: ainda não existe surpresa PEAD calculável.</p>`;
+  }
+  if (reports.length) {
+    h += `<div class="cadnote"><b>Relatórios cadastrados</b></div>`;
+    h += reports.map(r => {
+      const pdf = r.downloadable ? `<a href="/files/report/${r.id}" target="_blank" rel="noopener">Abrir PDF</a>` : "URL remota";
+      const ai = r.ai && r.ai.status ? ` · IA: ${esc(r.ai.status)}` : "";
+      return `<div class="cad"><span class="dn">${esc(r.kind)} · ${esc(r.period || r.report_date || "sem período")}</span><span class="sh" style="width:auto">${pdf}${ai}</span></div>`;
+    }).join("");
+  } else {
+    h += `<p class="cadnote">Nenhum PDF local cadastrado. Use <code>obs report-add</code> para registrar ITR, DFP, release ou apresentação.</p>`;
+  }
+  const itens = cont.itens || [];
+  if (itens.length) {
+    const last = itens[0], ind = last.indicadores || {};
+    const parts = Object.entries(ind).filter(([_,v]) => v != null).slice(0,6)
+      .map(([k,v]) => `${esc(k)}: <b>${fmt(v,2)}</b>`).join(" · ");
+    h += `<p class="cadnote"><b>Último período contábil (${esc(last.dt_refer)}):</b> ${parts || "sem indicadores calculáveis"}</p>`;
+  } else {
+    h += `<p class="cadnote">Plano contábil ainda não sincronizado. O cadastro da CVM fornece emissor/CNPJ; a sincronização ITR/DFP exige o mapeamento do ticker ao CNPJ.</p>`;
+  }
+  h += `<p class="cadnote">A extração de PDF é local. Análise por IA externa permanece bloqueada até autorização explícita do operador.</p>`;
+  host.innerHTML = h;
+}
+
+/* retorno bruto do primeiro pregão depois da publicação (mesma convenção de label.py: data UTC) */
+function nextReturn(t) {
+  const d0 = utcDate(t), P = S.prices;
+  let j = P.findIndex(p => p.date > d0);
+  if (j <= 0) return j === 0 ? null : { pending: true };
+  return { date: P[j].date, r: P[j].close / P[j - 1].close - 1 };
+}
+
+/* ---------- topo ---------- */
+function renderFav() {
+  const on = S.favs.has(S.tk), b = $("#fav");
+  b.setAttribute("aria-pressed", String(on));
+  b.setAttribute("aria-label", on ? `Remover ${S.tk} dos favoritos` : `Favoritar ${S.tk}`);
+  b.title = on ? "Nos favoritos" : "Favoritar";
+}
+function renderHeader() {
+  const d = S.data || {};
+  const name = d.name || (S.sig && S.sig.name) || "";
+  const sector = d.sector || (S.sig && S.sig.sector);
+  $("#who").textContent = [name !== S.tk ? name : "", sector ? sectorLabel(sector) : ""].filter(Boolean).join(" · ");
+  const P = S.prices;
+  if (P.length) {
+    const last = P[P.length - 1], first = P[0];
+    const prev = P.length > 1 ? P[P.length - 2] : null;
+    const dd = prev ? last.close / prev.close - 1 : null;
+    // O PRECO MUDA ENTRE GRANULARIDADES, e nao e defeito: a serie de 1 minuto
+    // termina no ultimo minuto COLETADO (ex.: 16:27), nao no fechamento. Era
+    // confuso porque o rotulo dizia "fech." em todos os casos. Agora o rotulo
+    // diz o que o numero e: fechamento do pregao no diario, e o INSTANTE da
+    // barra no intradiario -- e a variacao deixa de se chamar "no dia" quando
+    // nao e no dia.
+    const intra = S.gran !== "1d";
+    const rot = intra ? `às ${esc(fmtDT(last.t))}` : `fech. ${esc(fmtDate(last.t))}`;
+    const rotVar = intra ? `na barra` : `no dia`;
+    const avisoParcial = intra && P.length > 1
+      ? `<span class="muted" style="font-size:12px;margin-left:6px">série vai até o último minuto coletado, não até o fechamento</span>` : "";
+    $("#priceblock").innerHTML = `<span class="price">${brl(last.close)}</span>
+      ${prev ? `<span class="chg ${dd >= 0 ? "up" : "down"}" title="Variação da última barra">${pctS(dd)} ${rotVar}</span>` : ""}
+      <span class="muted" style="font-size:13px">${rot}</span>${avisoParcial}`;
+  } else $("#priceblock").innerHTML = "";
+  const s = S.sig;
+  if (s) {
+    const chips = [`<span class="sc">Sinal agora: <b class="${num(s.z) > 0 ? "up-t" : num(s.z) < 0 ? "down-t" : ""}">z ${esc(sgn(num(s.z), 2))}</b></span>`];
+    const h = S.hz, cd = h ? h.cabecas.direcao : { valores: true }, ca = h ? h.cabecas.agitacao : { valores: true };
+    const NM = `<b class="nmd" title="sem medição neste horizonte: nenhum valor é exibido">não medido</b>`;
+    if (h) chips.unshift(`<span class="sc" title="${esc(h.descricao || "")}">Horizonte <b>${esc(h.rotulo)}</b></span>`);
+    chips.push(`<span class="sc">P(alta) ${!cd.valores ? NM : `<b>${isNum(s.p_up) ? pct(s.p_up) : "n/c"}</b>`}</span>`);
+    chips.push(`<span class="sc">P(queda) ${!cd.valores ? NM : `<b>${isNum(s.p_down) ? pct(s.p_down) : "n/c"}</b>`}</span>`);
+    const FX = { alta: "alta", media: "média", baixa: "baixa" };
+    let ag;
+    if (!ca.valores) ag = `Agitação ${NM}`;
+    else if (isNum(s.p_vol) && s.vol_calib) ag = `P(agitação) <b>${pct(s.p_vol)}</b> <span class="muted">base ${pct(s.vol_base)}</span>`;
+    else if (s.vol_faixa) ag = `Agitação <b>${FX[s.vol_faixa] || esc(s.vol_faixa)}</b> <span class="muted">(faixa relativa, não calibrado)</span>`;
+    else ag = `Agitação <b>n/c</b>`;
+    chips.push(`<span class="sc">${ag}</span>`);
+    chips.push(`<span class="sc">${esc(fmt(num(s.n_articles)))} notícia${num(s.n_articles) === 1 ? "" : "s"} nas últimas 36 h</span>`);
+    $("#sigchips").innerHTML = chips.join("");
+  }
+}
+
+/* ---------- controles ---------- */
+function renderControls() {
+  const gmax = (GRANS.find(g => g[0] === S.gran) || GRANS[0])[2];
+  // Range maior que a retencao da granularidade fica DESABILITADO em vez de
+  // sumir: o usuario precisa ver que o limite existe e de onde vem.
+  $("#ranges").innerHTML = RANGES.map(([d, l]) => {
+    const fora = d === 0 ? gmax < 36500 : d > gmax;
+    return `<button type="button" data-d="${d}" aria-pressed="${S.dias === d}"${fora ? ` disabled title="a fonte só retém ${gmax} dias nesta granularidade"` : ""}>${l}</button>`;
+  }).join("")
+    + `<span style="margin:0 8px;opacity:.35">|</span>`
+    + GRANS.map(([g, l, mx]) => {
+        // DESABILITA O QUE NAO TEM DADO. A API diz, por papel, quais
+        // granularidades existem -- mostrar botao que devolve grafico vazio
+        // faz o usuario ler ausencia de coleta como defeito.
+        const disp = (S.data && S.data.granularidades && S.data.granularidades[g]) || null;
+        const vazio = disp && !disp.tem;
+        const tt = vazio
+          ? `sem barras de ${l.toLowerCase()} para ${S.tk} — colete pela Central de Operações`
+          : `retenção da fonte: ${mx >= 36500 ? "completa" : mx + " dias"}${disp ? ` · ${fmt(disp.barras)} barras` : ""}`;
+        return `<button type="button" data-g="${g}" aria-pressed="${S.gran === g}"${vazio ? " disabled" : ""} title="${esc(tt)}">${l}</button>`;
+      }).join("");
+  const c = { all: S.news.length, up: 0, down: 0, flat: 0 };
+  S.news.forEach(n => c[n.dir]++);
+  const F = [["all", "Todas"], ["up", "Sobe"], ["down", "Desce"], ["flat", "Neutras"]];
+  $("#filters").innerHTML = F.map(([k, l]) => `<button type="button" data-f="${k}" aria-pressed="${S.filter === k}">${k !== "all" ? `<span style="color:var(--${k === "flat" ? "flat" : k})">${ICON[k]}</span>` : ""}${l} <span class="ct">${fmt(c[k])}</span></button>`).join("");
+  $("#filters").querySelectorAll("svg").forEach(s => { s.style.width = "11px"; s.style.height = "11px"; });
+  $("#nsort").value = S.nsort;
+}
+const shownNews = () => S.news.filter(n => S.filter === "all" || n.dir === S.filter);
+
+/* ---------- gráfico ---------- */
+let G = null; // geometria do último desenho
+function renderChart() {
+  const svg = $("#chart"), box = $("#chartbox");
+  const W = Math.max(300, box.clientWidth);
+  const small = W < 600;
+  const PH = small ? 250 : 340, SH = small ? 64 : 84, GAP = 34;
+  const m = { l: 8, r: small ? 54 : 66, t: 28, b: 24 };
+  const H = m.t + PH + GAP + SH + m.b;
+  svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+  svg.setAttribute("height", H);
+  const P = S.prices, N = shownNews();
+  if (!P.length && !S.news.length) {
+    svg.innerHTML = `<text x="${W / 2}" y="${H / 2}" text-anchor="middle">Sem cotações nem notícias para este período.</text>`;
+    G = null; return;
+  }
+  // domínio x: tempo contínuo
+  const ts = [...P.map(p => p.t), ...S.news.map(n => n.t)];
+  let x0 = Math.min(...ts), x1 = Math.max(...ts);
+  if (x1 - x0 < 2 * DAY) { x0 -= DAY; x1 += DAY; }
+  const padT = (x1 - x0) * 0.015; x0 -= padT; x1 += padT;
+  // APLICA A VISTA. Guardada em fracao do periodo total para sobreviver a
+  // troca de granularidade: arrastar ate o meio e trocar de Dia para Minuto
+  // mantem o enquadramento relativo em vez de voltar ao inicio.
+  const spanTotal = x1 - x0;
+  if (S.vista) {
+    const a0 = x0 + S.vista[0] * spanTotal, a1 = x0 + S.vista[1] * spanTotal;
+    x0 = a0; x1 = a1;
+  }
+  G_dom = { x0, x1, spanTotal, base0: x0 - (S.vista ? S.vista[0] * spanTotal : 0) };
+  // AJUDA SO QUANDO ELA SERVE. Arrastar nao faz nada com a janela inteira a
+  // vista -- nao ha dado fora dela -- entao o texto muda conforme o estado em
+  // vez de ensinar um gesto que naquele momento nao responde.
+  (() => {
+    const h = $("#zoomhint"); if (!h) return;
+    h.hidden = false;
+    h.innerHTML = S.vista
+      ? `Vendo <strong>${Math.round((S.vista[1] - S.vista[0]) * 100)}%</strong> do período.
+         Arraste para mover · <kbd>←</kbd> <kbd>→</kbd> · <kbd>+</kbd> <kbd>−</kbd> zoom
+         <button type="button" data-vista="tudo">ver tudo</button>`
+      : `Período inteiro à vista. Use <kbd>+</kbd>, <kbd>Ctrl</kbd>+roda ou
+         <button type="button" data-vista="zoom">aproximar</button> para então poder arrastar.`;
+  })();
+  const iw = W - m.l - m.r;
+  const X = t => m.l + (t - x0) / (x1 - x0) * iw;
+  // domínio y
+  // So os pontos VISIVEIS entram no eixo y -- com zoom, usar a serie inteira
+  // achataria a variacao da janela ate virar uma linha reta.
+  const Pv = P.filter(p => p.t >= x0 && p.t <= x1);
+  const base = Pv.length ? Pv : P;
+  let y0 = Math.min(...base.map(p => p.close)), y1 = Math.max(...base.map(p => p.close));
+  if (!P.length) { y0 = 0; y1 = 1; }
+  if (y1 - y0 < 1e-9) { y0 *= 0.98; y1 *= 1.02; }
+  const yp = (y1 - y0) * 0.12; y0 -= yp; y1 += yp;
+  const Y = v => m.t + (1 - (v - y0) / (y1 - y0)) * PH;
+  const priceAt = t => {
+    if (!P.length) return (y0 + y1) / 2;
+    if (t <= P[0].t) return P[0].close;
+    if (t >= P[P.length - 1].t) return P[P.length - 1].close;
+    let lo = 0, hi = P.length - 1;
+    while (hi - lo > 1) { const mid = (lo + hi) >> 1; if (P[mid].t <= t) lo = mid; else hi = mid; }
+    const a = P[lo], b = P[hi], k = (t - a.t) / (b.t - a.t);
+    return a.close + k * (b.close - a.close);
+  };
+  let out = "";
+  // grade y + rótulos
+  for (const v of niceTicks(y0, y1, small ? 4 : 6)) {
+    const y = Y(v);
+    out += `<line class="gl" x1="${m.l}" x2="${W - m.r}" y1="${y}" y2="${y}"/><text x="${W - m.r + 6}" y="${y + 4}">${esc(fmt(v, v < 10 ? 2 : v < 100 ? 1 : 0))}</text>`;
+  }
+  // eixo x
+  const sTop = m.t + PH + GAP, sBot = sTop + SH;
+  for (const tk of timeTicks(x0, x1, iw)) {
+    const x = X(tk.t);
+    out += `<line class="gl" x1="${x}" x2="${x}" y1="${m.t}" y2="${sBot}"/><text x="${x}" y="${sBot + 17}" text-anchor="middle">${esc(tk.label)}</text>`;
+  }
+  // preço
+  if (P.length) {
+    const pts = P.map(p => `${X(p.t).toFixed(1)},${Y(p.close).toFixed(1)}`);
+    out += `<path class="pa" d="M${X(P[0].t).toFixed(1)},${m.t + PH} L${pts.join(" L")} L${X(P[P.length - 1].t).toFixed(1)},${m.t + PH}Z"/>`;
+    out += `<path class="pl" d="M${pts.join(" L")}"/>`;
+  }
+  out += `<text class="lbl" x="${m.l + 2}" y="${m.t - 10}">Preço (R$)</text>`;
+  out += `<text class="lbl" x="${m.l + 2}" y="${sTop - 10}">Pressão das notícias por dia</text>`;
+
+  // marcadores: empilhados por direção quando caem no mesmo ponto
+  const maxW = Math.max(1e-9, ...S.news.map(n => num(n.w)));
+  const R = n => (small ? 3.5 : 4.5) + (small ? 4 : 6) * Math.sqrt(num(n.w) / maxW);
+  const stackUp = new Map(), stackDn = new Map(), stackFl = new Map();
+  const marks = [];
+  // desenha os de menor peso primeiro (os maiores ficam por cima)
+  const order = [...N].sort((a, b) => num(a.w) - num(b.w));
+  // posições calculadas em ordem cronológica para o empilhamento ser estável
+  const pos = new Map();
+  [...N].sort((a, b) => a.t - b.t).forEach(n => {
+    const x = X(n.t), yl = Y(priceAt(n.t)), r = R(n);
+    const key = Math.round(x / 9);
+    let y;
+    if (n.dir === "up") { const k = stackUp.get(key) || 0; y = yl - 14 - r - k; stackUp.set(key, k + 2 * r + 3); }
+    else if (n.dir === "down") { const k = stackDn.get(key) || 0; y = yl + 14 + r + k; stackDn.set(key, k + 2 * r + 3); }
+    else { const k = stackFl.get(key) || 0; y = yl - k; stackFl.set(key, k + 2 * r + 2); }
+    y = Math.max(m.t - 18, Math.min(m.t + PH + 18, y));
+    pos.set(n.id, { x, y, yl, r });
+  });
+  for (const n of order) {
+    const p = pos.get(n.id); const r = p.r;
+    const op = (0.5 + 0.5 * Math.min(1, Math.abs(num(n.s)) / 0.6)).toFixed(2);
+    if (n.dir !== "flat") out += `<line class="stem ${n.dir}" x1="${p.x}" x2="${p.x}" y1="${p.yl}" y2="${p.y}"/>`;
+    let shape;
+    if (n.dir === "up") shape = `<path class="mk up" d="M${p.x},${p.y - r * 1.15} L${p.x + r * 1.1},${p.y + r * 0.8} L${p.x - r * 1.1},${p.y + r * 0.8}Z"`;
+    else if (n.dir === "down") shape = `<path class="mk down" d="M${p.x - r * 1.1},${p.y - r * 0.8} L${p.x + r * 1.1},${p.y - r * 0.8} L${p.x},${p.y + r * 1.15}Z"`;
+    else shape = `<circle class="mk flat" cx="${p.x}" cy="${p.y}" r="${r * 0.85}"`;
+    out += `${shape} fill-opacity="${op}" data-id="${n.id}" data-ni="${n.id}"/>`;
+    marks.push({ id: n.id, ...p });
+  }
+  if (S.sel != null && pos.has(S.sel)) { const p = pos.get(S.sel); out += `<circle class="ring" cx="${p.x}" cy="${p.y}" r="${p.r + 6}"/>`; }
+
+  // faixa: pressão diária = Σ s·w / Σ w, opacidade pelo volume
+  const days = new Map();
+  for (const n of N) {
+    const bi = barraDaNoticia(n.t, P);
+    if (bi < 0) continue;                 // sem barra posterior: nao ha o que marcar
+    const o = days.get(bi) || { sw: 0, w: 0, n: 0, t: P[bi].t };
+    o.sw += num(n.s) * num(n.w); o.w += num(n.w); o.n++; days.set(bi, o);
+  }
+  const mid = sTop + SH / 2, maxVol = Math.max(1e-9, ...[...days.values()].map(o => o.w));
+  const bw = Math.max(3, Math.min(14, iw / ((x1 - x0) / DAY) * 0.7));
+  out += `<line class="zl" x1="${m.l}" x2="${W - m.r}" y1="${mid}" y2="${mid}"/>`;
+  out += `<text x="${W - m.r + 6}" y="${sTop + 10}">sobe</text><text x="${W - m.r + 6}" y="${sBot}">desce</text>`;
+  for (const [, o] of days) {
+    const net = o.w > 0 ? o.sw / o.w : 0, h = Math.max(2, Math.abs(net) * (SH / 2 - 2));
+    const dir = dirOf(net), x = X(o.t);
+    const y = net >= 0 ? mid - h : mid;
+    out += `<rect class="bar ${dir}" x="${(x - bw / 2).toFixed(1)}" y="${y.toFixed(1)}" width="${bw.toFixed(1)}" height="${h.toFixed(1)}" rx="1.5" fill-opacity="${(0.45 + 0.55 * Math.sqrt(o.w / maxVol)).toFixed(2)}"><title>${esc(fmtDT(o.t))}: ${o.n} notícia${o.n > 1 ? "s" : ""}, pressão ${sgn(net, 2)}</title></rect>`;
+  }
+  out += `<g id="hover"></g>`;
+  svg.innerHTML = out;
+  G = { X, Y, x0, x1, W, H, m, PH, sTop, sBot, marks, priceAt, inv: px => x0 + (px - m.l) / iw * (x1 - x0) };
+  svg.setAttribute("aria-label", `Gráfico de ${S.tk}: ${P.length} pregões, ${N.length} notícias. ${N.filter(n => n.dir === "up").length} puxam para subida e ${N.filter(n => n.dir === "down").length} para descida.`);
+  if (S.hoverIdx != null) drawHover(S.hoverIdx);
+}
+function niceTicks(a, b, n) {
+  const span = b - a, step0 = span / n, mag = Math.pow(10, Math.floor(Math.log10(step0)));
+  const step = [1, 2, 2.5, 5, 10].map(k => k * mag).find(s => s >= step0) || 10 * mag;
+  const out = []; for (let v = Math.ceil(a / step) * step; v <= b; v += step) out.push(+v.toFixed(10));
+  return out;
+}
+function timeTicks(x0, x1, iw) {
+  const span = (x1 - x0) / DAY, maxN = Math.max(2, Math.floor(iw / 78)), out = [];
+  if (span <= 75) {
+    const steps = [1, 2, 3, 7, 14]; const step = steps.find(s => span / s <= maxN) || 14;
+    const d = new Date(x0); d.setUTCHours(12, 0, 0, 0); d.setUTCDate(d.getUTCDate() + 1);
+    for (; d.getTime() < x1; d.setUTCDate(d.getUTCDate() + step)) out.push({ t: d.getTime(), label: fmtDate(d.getTime(), { day: "2-digit", month: "2-digit" }) });
+  } else if (span <= 365 * 4) {
+    const months = span / 30.4; const steps = [1, 2, 3, 6, 12]; const step = steps.find(s => months / s <= maxN) || 12;
+    const d = new Date(x0); d.setUTCDate(1); d.setUTCHours(12, 0, 0, 0); d.setUTCMonth(d.getUTCMonth() + 1);
+    while (d.getUTCMonth() % step) d.setUTCMonth(d.getUTCMonth() + 1);
+    for (; d.getTime() < x1; d.setUTCMonth(d.getUTCMonth() + step))
+      out.push({ t: d.getTime(), label: d.toLocaleDateString("pt-BR", { month: "short", year: "2-digit", timeZone: "UTC" }).replace(". de ", "/").replace(" de ", "/").replace(".", "") });
+  } else {
+    const years = span / 365; const step = [1, 2, 5].find(s => years / s <= maxN) || 5;
+    const d = new Date(Date.UTC(new Date(x0).getUTCFullYear() + 1, 0, 1, 12));
+    while (d.getUTCFullYear() % step) d.setUTCFullYear(d.getUTCFullYear() + 1);
+    for (; d.getTime() < x1; d.setUTCFullYear(d.getUTCFullYear() + step)) out.push({ t: d.getTime(), label: String(d.getUTCFullYear()) });
+  }
+  return out;
+}
+
+/* ---------- interação no gráfico ---------- */
+function nearestPriceIdx(t) {
+  const P = S.prices; if (!P.length) return null;
+  let lo = 0, hi = P.length - 1;
+  while (hi - lo > 1) { const mid = (lo + hi) >> 1; if (P[mid].t <= t) lo = mid; else hi = mid; }
+  return Math.abs(P[lo].t - t) <= Math.abs(P[hi].t - t) ? lo : hi;
+}
+function drawHover(i) {
+  const g = $("#hover"); if (!g || !G) return;
+  const p = S.prices[i]; if (!p) { g.innerHTML = ""; return; }
+  const x = G.X(p.t), y = G.Y(p.close);
+  g.innerHTML = `<line class="ch" x1="${x}" x2="${x}" y1="${G.m.t}" y2="${G.sBot}"/><circle class="dot" cx="${x}" cy="${y}" r="4.5"/>`;
+}
+function showTip(html, px, py) {
+  const tip = $("#tip"), box = $("#chartbox");
+  tip.innerHTML = html; tip.hidden = false;
+  const bw = box.clientWidth, tw = tip.offsetWidth, th = tip.offsetHeight;
+  let left = px + 14; if (left + tw > bw - 4) left = px - tw - 14; if (left < 4) left = 4;
+  let top = py - th - 12; if (top < 0) top = py + 16;
+  tip.style.left = left + "px"; tip.style.top = top + "px";
+}
+const hideTip = () => { $("#tip").hidden = true; };
+function dayTip(i) {
+  const P = S.prices, p = P[i]; if (!p) return "";
+  const prev = P[i - 1];
+  const dayNews = S.news.filter(n => barraDaNoticia(n.t, P) === i && (S.filter === "all" || n.dir === S.filter));
+  const c = { up: 0, down: 0, flat: 0 }; dayNews.forEach(n => c[n.dir]++);
+  // No intradiario a barra e um MINUTO (ou hora), nao um dia: mostrar so a
+  // data escondia exatamente a informacao que a granularidade fina existe
+  // para dar. E "Fechamento"/"No dia" viram "Preco"/"Na barra".
+  const intra = S.gran !== "1d";
+  const quando = intra
+    ? new Date(p.t).toLocaleString("pt-BR", { day: "2-digit", month: "short",
+        hour: "2-digit", minute: "2-digit" })
+    : new Date(p.t).toLocaleDateString("pt-BR", { weekday: "short",
+        day: "2-digit", month: "short", year: "numeric" });
+  return `<div class="muted">${esc(quando)}${intra ? ` · barra de ${S.gran.replace("m"," min").replace("h"," h")}` : ""}</div>
+    <div class="row"><span>${intra ? "Preço" : "Fechamento"}</span><b>${brl(p.close)}</b></div>
+    ${prev ? `<div class="row"><span>${intra ? "Na barra" : "No dia"}</span><b class="${p.close >= prev.close ? "up-t" : "down-t"}">${pctS(p.close / prev.close - 1, 2)}</b></div>` : ""}
+    ${dayNews.length ? `<div class="row"><span>Notícias</span><span><span class="up-t">▲ ${c.up}</span> · <span class="down-t">▼ ${c.down}</span> · ${c.flat} neutra${c.flat === 1 ? "" : "s"}</span></div>` : ""}`;
+}
+function newsTip(n) {
+  return `<div class="muted">${esc(fmtDT(n.t))} · ${esc(n.domain || "")}</div>
+    <div class="tt">${esc(n.title)}</div>
+    <div class="row"><span>Direção sugerida</span><b class="${n.dir === "up" ? "up-t" : n.dir === "down" ? "down-t" : ""}">${DIRLBL[n.dir]} (s ${esc(sgn(num(n.s), 2))})</b></div>
+    <div class="row"><span>Tipo</span><span>${esc(evtLabel(n.event_type))}</span></div>
+    <div class="row"><span>Peso</span><span>${esc(fmt(num(n.w), 3))}</span></div>
+    ${nextLine(n, true)}`;
+}
+function nextLine(n, row) {
+  const nx = n.next;
+  if (!nx) return "";
+  if (nx.pending) return row ? `<div class="row"><span>Pregão seguinte</span><span class="muted">ainda não houve</span></div>` : `<span class="next muted">pregão seguinte: ainda não houve</span>`;
+  const cls = nx.r >= 0 ? "up-t" : "down-t";
+  return row ? `<div class="row"><span>Pregão seguinte (${esc(fmtDate(dateTs(nx.date), { day: "2-digit", month: "2-digit" }))})</span><b class="${cls}">${pctS(nx.r, 2)}</b></div>`
+    : `<span class="next">pregão seguinte <b class="${cls}">${pctS(nx.r, 2)}</b></span>`;
+}
+function hitMark(px, py) {
+  if (!G) return null;
+  let best = null, bd = Infinity;
+  for (const k of G.marks) { const d = Math.hypot(k.x - px, k.y - py); if (d <= k.r + 5 && d < bd) { bd = d; best = k; } }
+  return best;
+}
+function localXY(e) {
+  const svg = $("#chart"), r = svg.getBoundingClientRect();
+  const sx = G ? G.W / r.width : 1;
+  return { px: (e.clientX - r.left) * sx, py: (e.clientY - r.top) * sx, cx: e.clientX - r.left, cy: e.clientY - r.top };
+}
+const chartEl = $("#chart");
+chartEl.addEventListener("pointermove", e => {
+  if (!G) return;
+  const { px, py, cx, cy } = localXY(e);
+  const mk = hitMark(px, py);
+  chartEl.style.cursor = mk ? "pointer" : "crosshair";
+  if (mk) { showTip(newsTip(S.news[mk.id]), cx, cy); return; }
+  const i = nearestPriceIdx(G.inv(px));
+  if (i == null) { hideTip(); return; }
+  S.hoverIdx = i; drawHover(i); showTip(dayTip(i), cx, cy);
+});
+chartEl.addEventListener("pointerleave", () => { hideTip(); S.hoverIdx = null; drawHover(-1); });
+chartEl.addEventListener("click", e => {
+  if (!G) return;
+  const { px, py } = localXY(e); const mk = hitMark(px, py);
+  if (mk) selectNews(mk.id, { scrollList: true });
+});
+chartEl.addEventListener("keydown", e => {
+  if (!G || !S.prices.length) return;
+  let i = S.hoverIdx == null ? S.prices.length - 1 : S.hoverIdx;
+  if (e.key === "ArrowLeft") i = Math.max(0, i - 1);
+  else if (e.key === "ArrowRight") i = Math.min(S.prices.length - 1, i + 1);
+  else if (e.key === "Home") i = 0;
+  else if (e.key === "End") i = S.prices.length - 1;
+  else if (e.key === "Escape") { hideTip(); S.hoverIdx = null; drawHover(-1); return; }
+  else return;
+  e.preventDefault();
+  S.hoverIdx = i; drawHover(i);
+  const p = S.prices[i], r = chartEl.getBoundingClientRect(), k = r.width / G.W;
+  showTip(dayTip(i), G.X(p.t) * k, G.Y(p.close) * k);
+});
+chartEl.addEventListener("blur", () => { hideTip(); });
+
+/* ---------- lista ---------- */
+function renderList() {
+  const N = shownNews();
+  const SK = { recent: (a, b) => b.t - a.t, w: (a, b) => num(b.w) - num(a.w), pos: (a, b) => num(b.s) - num(a.s), neg: (a, b) => num(a.s) - num(b.s) };
+  const L = [...N].sort(SK[S.nsort] || SK.recent);
+  const maxW = Math.max(1e-9, ...S.news.map(n => num(n.w)));
+  $("#newsTitle").textContent = `Notícias (${fmt(N.length)})`;
+  if (!L.length) {
+    $("#news").innerHTML = `<li class="empty">${S.news.length ? "Nenhuma notícia neste filtro." :
+      `<b>Nenhuma notícia pontuada para ${esc(S.tk)} neste período.</b><br>O coletor guarda as notícias a partir de quando começou a rodar; tente um período maior.`}</li>`;
+    return;
+  }
+  $("#news").innerHTML = L.map(n => `<li class="ni ${S.sel === n.id ? "on" : ""}" data-id="${n.id}">
+      <button type="button" class="badge ${n.dir}" data-loc="${n.id}" aria-label="Mostrar no gráfico: notícia que ${n.dir === "up" ? "puxa para subida" : n.dir === "down" ? "puxa para descida" : "é neutra"}">${ICON[n.dir]}${DIRLBL[n.dir]}<span class="sv">${esc(sgn(num(n.s), 2))}</span></button>
+      <a href="${esc(safeUrl(n.url))}" target="_blank" rel="noopener noreferrer">${esc(n.title || "(sem título)")}</a>
+      <div class="meta"><span title="${esc(fmtDT(n.t))}">${esc(fmtDT(n.t))}</span><span>${esc(n.domain || "")}</span>
+        <span class="etype">${esc(evtLabel(n.event_type))}</span>
+        <span title="Peso ${esc(fmt(num(n.w), 3))}">peso<span class="wbar"><i style="width:${(100 * num(n.w) / maxW).toFixed(0)}%"></i></span></span>
+        ${num(n.cluster_size) > 1 ? `<span>+${esc(fmt(num(n.cluster_size) - 1))} similares</span>` : ""}</div>
+      <div class="meta">${nextLine(n, false)}</div>
+    </li>`).join("");
+}
+function selectNews(id, { scrollList = false, fromList = false } = {}) {
+  S.sel = S.sel === id && fromList ? null : id;
+  document.querySelectorAll(".ni.on").forEach(li => li.classList.remove("on"));
+  if (S.sel != null) {
+    const li = $(`.ni[data-id="${S.sel}"]`);
+    if (li) { li.classList.add("on"); if (scrollList) li.scrollIntoView({ block: "nearest", behavior: "smooth" }); }
+  }
+  renderChart();
+  if (S.sel != null && G) {
+    const mk = G.marks.find(k => k.id === S.sel);
+    if (mk && fromList) {
+      const r = chartEl.getBoundingClientRect(), k = r.width / G.W;
+      if (r.top < 0 || r.bottom > innerHeight) chartEl.scrollIntoView({ block: "nearest", behavior: "smooth" });
+      showTip(newsTip(S.news[S.sel]), mk.x * k, mk.y * k);
+    }
+  } else hideTip();
+}
+$("#news").addEventListener("click", e => {
+  if (e.target.closest("a")) return;
+  const li = e.target.closest(".ni"); if (!li) return;
+  const id = +li.dataset.id;
+  selectNews(id, { fromList: true });   // abre o detalhe, como antes
+  irParaNoticia(id);                    // e leva o grafico ate ela
+});
+$("#nsort").addEventListener("change", e => { S.nsort = e.target.value; store.set("newsSort", S.nsort); renderList(); });
+
+/* ---------- estatísticas e dica de zoom ---------- */
+function renderStats() {
+  const P = S.prices, N = shownNews();
+  const c = { up: 0, down: 0, flat: 0 }; N.forEach(n => c[n.dir]++);
+  let sw = 0, w = 0; N.forEach(n => { sw += num(n.s) * num(n.w); w += num(n.w); });
+  const net = w > 0 ? sw / w : null;
+  const per = P.length > 1 ? P[P.length - 1].close / P[0].close - 1 : null;
+  const label = RANGES.find(r => r[0] === S.dias)[1];
+  $("#stats").innerHTML = `
+    <div class="stat"><dt>Variação (${esc(label)})</dt><dd class="${per == null ? "" : per >= 0 ? "up-t" : "down-t"}">${pctS(per)}</dd></div>
+    <div class="stat"><dt>Notícias</dt><dd>${fmt(N.length)} <small><span class="up-t">▲${c.up}</span> <span class="down-t">▼${c.down}</span> •${c.flat}</small></dd></div>
+    <div class="stat"><dt>Pressão líquida</dt><dd class="${net == null ? "" : dirOf(net) === "up" ? "up-t" : dirOf(net) === "down" ? "down-t" : ""}">${net == null ? "—" : `${sgn(net, 2)} <small>${DIRLBL[dirOf(net)].toLowerCase()}</small>`}</dd></div>
+    <div class="stat"><dt>Pregões</dt><dd>${fmt(P.length)} <small>${P.length ? esc(fmtDate(P[0].t)) + " – " + esc(fmtDate(P[P.length - 1].t)) : ""}</small></dd></div>`;
+  // notícias espremidas no fim do período? sugere aproximar
+  const zh = $("#zoomhint");
+  if (S.news.length && P.length > 10) {
+    const first = Math.min(...S.news.map(n => n.t)), span = P[P.length - 1].t - P[0].t;
+    const need = (Date.now() - first) / DAY;
+    const fit = RANGES.find(r => r[0] > 0 && r[0] >= need + 2);
+    if (span > 0 && (first - P[0].t) / span > 0.8 && fit && fit[0] < (S.dias || Infinity)) {
+      zh.innerHTML = `As notícias deste papel estão no fim do período. <button type="button" data-d="${fit[0]}">Aproximar (${fit[1]})</button>`;
+      zh.hidden = false; return;
+    }
+  }
+  zh.hidden = true;
+}
+
+function renderAll() { renderHeader(); renderControls(); renderChart(); renderList(); renderStats(); renderReports(); }
+
+/* ---------- eventos ---------- */
+function setRange(d) {
+  // ZERA A VISTA. `S.vista` e uma FRACAO do periodo carregado; ao trocar o
+  // periodo, manter a fracao muda o que ela significa. MEDIDO: com zoom em
+  // [0,80 .. 0,95] e 90 dias carregados, clicar "Max" passava a mostrar
+  // 2024-11 a 2026-05 de uma serie de 10 anos -- os ultimos 4 meses, inclusive
+  // hoje, ficavam fora da tela. O botao parecia nao funcionar.
+  // Escolher um periodo significa "me mostre este periodo".
+  S.vista = null;
+  S.dias = d; store.set("chartDias", d); S.sel = null; hideTip();
+  const u = new URL(location.href); u.searchParams.set("t", S.tk); u.searchParams.set("dias", d); u.searchParams.set("gran", S.gran); history.replaceState(null, "", u);
+  load();
+}
+function setGran(g) {
+  const [, , mx, padrao] = granDe(g);
+  // PRESERVA O CENTRO TEMPORAL. Trocar de granularidade nao deve saltar para
+  // "hoje": se o usuario esta olhando março, quer ver março com mais detalhe.
+  // O centro vem da janela VISIVEL atual (G_dom), nao da serie inteira.
+  const centro = (G_dom && S.prices.length)
+    ? (G_dom.x0 + G_dom.x1) / 2 : null;
+  S.gran = g; store.set("chartGran", g);
+  S.vista = null; S.sel = null; hideTip();
+  // janela padrao da granularidade, limitada pela retencao da fonte
+  const alvo = Math.min(padrao, mx);
+  S.dias = alvo >= 36500 ? 0 : (RANGES.map(r => r[0]).filter(d => d > 0)
+            .reduce((a, b) => Math.abs(b - alvo) < Math.abs(a - alvo) ? b : a));
+  store.set("chartDias", S.dias);
+  S.centroDesejado = centro;      // aplicado em load(), quando os dados chegam
+  const u = new URL(location.href);
+  u.searchParams.set("gran", g); u.searchParams.set("dias", S.dias);
+  history.replaceState(null, "", u);
+  load();
+}
+$("#ranges").addEventListener("click", e => {
+  const g = e.target.closest("[data-g]"); if (g) return setGran(g.dataset.g);
+  const b = e.target.closest("[data-d]"); if (b) setRange(+b.dataset.d);
+});
+$("#zoomhint").addEventListener("click", e => {
+  const v = e.target.closest("[data-vista]");
+  if (v) { if (v.dataset.vista === "tudo") { S.vista = null; renderChart(); } else zoomVista(0.4); return; }
+  const b = e.target.closest("[data-d]"); if (b) setRange(+b.dataset.d);
+});
+$("#filters").addEventListener("click", e => {
+  const b = e.target.closest("[data-f]"); if (!b) return;
+  S.filter = b.dataset.f; hideTip();
+  if (S.sel != null && S.filter !== "all" && S.news[S.sel].dir !== S.filter) S.sel = null;
+  renderControls(); renderChart(); renderList(); renderStats();
+});
+$("#fav").addEventListener("click", () => {
+  if (S.favs.has(S.tk)) S.favs.delete(S.tk); else S.favs.add(S.tk);
+  store.set("favs", [...S.favs]); renderFav();
+});
+$("#switchForm").addEventListener("submit", e => {
+  e.preventDefault();
+  const v = $("#switch").value.trim().toUpperCase(); if (!v) return;
+  location.href = `acao.html?t=${encodeURIComponent(v)}&dias=${S.dias}`;
+});
+$("#switch").addEventListener("change", e => {
+  const v = e.target.value.trim().toUpperCase();
+  if ([...$("#tickers").options].some(o => o.value === v)) location.href = `acao.html?t=${encodeURIComponent(v)}&dias=${S.dias}`;
+});
+const THEMES = ["auto", "light", "dark"], THEME_LBL = { auto: "Auto", light: "Claro", dark: "Escuro" };
+let theme = document.documentElement.getAttribute("data-theme") || "auto";
+function applyTheme(t) {
+  if (t === "auto") document.documentElement.removeAttribute("data-theme"); else document.documentElement.setAttribute("data-theme", t);
+  $("#themeText").textContent = THEME_LBL[t]; $("#theme").setAttribute("aria-label", `Tema: ${THEME_LBL[t]}. Clique para trocar.`);
+  try { if (t === "auto") localStorage.removeItem("obs-theme"); else localStorage.setItem("obs-theme", t); } catch (e) {}
+}
+applyTheme(theme);
+$("#theme").addEventListener("click", () => { theme = THEMES[(THEMES.indexOf(theme) + 1) % 3]; applyTheme(theme); });
+document.addEventListener("keydown", e => {
+  if (e.ctrlKey || e.metaKey || e.altKey || /^(INPUT|SELECT|TEXTAREA)$/.test(document.activeElement.tagName)) return;
+  if (e.key === "Escape" && S.sel != null) { selectNews(S.sel, { fromList: true }); }
+  else if (e.key === "f" || e.key === "F") $("#fav").click();
+  else if (e.key === "/") { e.preventDefault(); $("#switch").focus(); }
+});
+/* ---------- arrastar e dar zoom ----------
+   NAO recarrega dado: mexe so na janela visivel (S.vista), entao e instantaneo
+   e nao gasta requisicao. Os botoes de periodo continuam decidindo QUANTO dado
+   vem do servidor; o arrasto decide o que se ve dentro disso. */
+/* Centraliza `t` na janela visivel, mantendo a largura atual do zoom.
+   Devolve false quando `t` esta fora do periodo carregado -- quem chama
+   decide se avisa ou se troca de periodo antes. */
+function centralizar(t, opt = {}) {
+  const P = S.prices;
+  if (!P.length) return false;
+  const t0 = P[0].t, t1 = P[P.length - 1].t, span = t1 - t0;
+  if (span <= 0) return false;
+  if (t < t0 || t > t1) {
+    if (!opt.silencioso) return false;
+    return false;
+  }
+  const larg = S.vista ? (S.vista[1] - S.vista[0]) : 0.25;   // aproxima ao navegar
+  const f = (t - t0) / span;
+  S.vista = limitaVista([f - larg / 2, f + larg / 2]);
+  renderChart();
+  return true;
+}
+
+/* Clique na noticia da lista: leva o GRAFICO ate ela. */
+function irParaNoticia(i) {
+  const n = S.news[i];
+  if (!n) return;
+  S.sel = i;
+  const ok = centralizar(n.t);
+  if (!ok) {
+    // Fora do periodo carregado: amplia para o menor range que a contenha.
+    const falta = Date.now() - n.t;
+    const alvo = RANGES.map(r => r[0]).filter(d => d > 0)
+      .find(d => d * DAY >= falta * 1.1);
+    S.centroDesejado = n.t;
+    setRange(alvo || 0);
+    return;
+  }
+  pulsarMarcador(i);
+}
+
+/* Halo de ~2s no marcador, para o olho achar onde o grafico parou. */
+function pulsarMarcador(i) {
+  const g = document.querySelector(`#chart [data-ni="${i}"]`);
+  if (!g) return;
+  g.classList.add("pulsa");
+  setTimeout(() => g.classList.remove("pulsa"), 2100);
+}
+
+function limitaVista(v) {
+  let [a, b] = v;
+  const larg = Math.max(0.004, Math.min(1, b - a));   // zoom maximo ~0,4%
+  if (a < 0) { a = 0; b = larg; }
+  if (b > 1) { b = 1; a = 1 - larg; }
+  return (b - a >= 0.999) ? null : [a, b];            // null = mostra tudo
+}
+function moveVista(fracao) {
+  const v = S.vista || [0, 1];
+  S.vista = limitaVista([v[0] + fracao, v[1] + fracao]);
+  S.sel = null; hideTip(); renderChart();
+}
+function zoomVista(fator, ancora = 0.5) {
+  const v = S.vista || [0, 1];
+  const larg = (v[1] - v[0]) * fator;
+  const centro = v[0] + (v[1] - v[0]) * ancora;
+  S.vista = limitaVista([centro - larg * ancora, centro + larg * (1 - ancora)]);
+  S.sel = null; hideTip(); renderChart();
+}
+(() => {
+  const box = $("#chartbox");
+  if (!box) return;
+  let arrastando = false, xIni = 0, vIni = null;
+  box.addEventListener("pointerdown", e => {
+    if (e.button !== 0) return;
+    // Os botoes de zoom ficam DENTRO do chartbox. Sem esta saida, o
+    // pointerdown deles borbulha ate aqui, o setPointerCapture leva o ponteiro
+    // para o box e o `click` do botao nunca chega -- clicar em + ou - nao
+    // fazia nada, embora o handler estivesse certo (um .click() programatico
+    // funcionava).
+    if (e.target.closest("#zoomctl")) return;
+    arrastando = true; xIni = e.clientX; vIni = S.vista || [0, 1];
+    box.setPointerCapture(e.pointerId); box.style.cursor = "grabbing";
+  });
+  box.addEventListener("pointermove", e => {
+    if (!arrastando) return;
+    const larg = box.getBoundingClientRect().width || 1;
+    // arrastar para a DIREITA anda para TRAS no tempo, como em todo grafico
+    const d = -(e.clientX - xIni) / larg * (vIni[1] - vIni[0]);
+    S.vista = limitaVista([vIni[0] + d, vIni[1] + d]);
+    renderChart();
+  });
+  const soltar = e => {
+    if (!arrastando) return;
+    arrastando = false; box.style.cursor = "";
+    try { box.releasePointerCapture(e.pointerId); } catch (_) {}
+  };
+  box.addEventListener("pointerup", soltar);
+  box.addEventListener("pointercancel", soltar);
+  box.addEventListener("wheel", e => {
+    if (!e.shiftKey && Math.abs(e.deltaX) < Math.abs(e.deltaY) && !e.ctrlKey) return;
+    e.preventDefault();
+    if (e.ctrlKey) zoomVista(e.deltaY > 0 ? 1.2 : 1 / 1.2);
+    else moveVista((e.deltaX || e.deltaY) / (box.getBoundingClientRect().width || 1)
+                   * ((S.vista ? S.vista[1] - S.vista[0] : 1)));
+  }, { passive: false });
+  const ctl = document.getElementById("zoomctl");
+  if (ctl) ctl.addEventListener("click", e => {
+    const b2 = e.target.closest("[data-z]"); if (!b2) return;
+    e.stopPropagation();
+    if (b2.dataset.z === "in") zoomVista(1 / 1.4);
+    else if (b2.dataset.z === "out") zoomVista(1.4);
+    else { S.vista = null; renderChart(); }
+  });
+  box.style.cursor = "grab";
+  box.style.touchAction = "pan-y";
+})();
+document.addEventListener("keydown", e => {
+  if (/^(INPUT|SELECT|TEXTAREA)$/.test((e.target.tagName || ""))) return;
+  const passo = (S.vista ? S.vista[1] - S.vista[0] : 1) * 0.15;
+  if (e.key === "ArrowLeft") { e.preventDefault(); moveVista(-passo); }
+  else if (e.key === "ArrowRight") { e.preventDefault(); moveVista(passo); }
+  else if (e.key === "+" || e.key === "=") { e.preventDefault(); zoomVista(1 / 1.3); }
+  else if (e.key === "-") { e.preventDefault(); zoomVista(1.3); }
+  else if (e.key === "0") { e.preventDefault(); S.vista = null; renderChart(); }
+});
+
+let G_dom = null;
+let rz; new ResizeObserver(() => { cancelAnimationFrame(rz); rz = requestAnimationFrame(() => { if (S.data) renderChart(); }); }).observe($("#chartbox"));
+
+load();
+loadSignals();
+loadTicker();
+</script>
+</body>
+</html>

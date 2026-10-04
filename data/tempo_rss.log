@@ -1,0 +1,27 @@
+24 feeds
+     0.82s ok     https://feeds.bloomberg.com/markets/news.rss
+     0.36s ok     https://feeds.bloomberg.com/economics/news.rss
+     0.58s ok     https://feeds.bloomberg.com/industries/news.rss
+     0.60s ok     https://feeds.bloomberg.com/technology/news.rss
+     0.34s ok     https://search.cnbc.com/rs/search/combinedcms/view.xml?par
+     1.63s ok     https://www.ft.com/rss/home
+     0.27s ok     https://www.theguardian.com/uk/business/rss
+     0.12s ok     https://www.economist.com/finance-and-economics/rss.xml
+     0.36s ok     https://www.bloomberglinea.com.br/arc/outboundfeeds/rss/?o
+     0.14s ok     https://feeds.folha.uol.com.br/mercado/rss091.xml
+     0.21s ok     https://br.investing.com/rss/news_25.rss
+     1.12s ok     https://observador.pt/seccao/economia/feed/
+     1.16s ok     https://www.jornaldenegocios.pt/rss
+     0.32s ok     https://www.handelsblatt.com/contentexport/feed/schlagzeil
+     0.31s ok     https://services.lesechos.fr/rss/les-echos-economie.xml
+     0.12s ok     https://pox.globo.com/rss/valor/
+     0.02s ok     https://pox.globo.com/rss/valor/financas/
+     0.09s ok     https://www.infomoney.com.br/feed/
+     0.10s ok     https://braziljournal.com/feed/
+     0.06s ok     https://exame.com/feed/
+     0.07s ok     https://www.moneytimes.com.br/feed/
+     0.10s ok     https://www.seudinheiro.com/feed/
+     0.29s ok     https://www.suno.com.br/noticias/feed/
+     0.30s ok     https://einvestidor.estadao.com.br/feed/
+
+  TOTAL sequencial: 9.5s  (0.2 min)

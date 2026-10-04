@@ -1,0 +1,42 @@
+conjunto-ouro: 115 casos
+
+  ... 20/115
+  ... 40/115
+  ... 60/115
+  ... 80/115
+  ... 100/115
+
+respostas validas: 115 (0 falhas)
+
+scorer        acertos   em 100
+  lexico          101    87.8
+  LLM              62    53.9
+  diferenca       -39   -33.9
+
+discordancias relevantes: 61
+papel       lex     llm  quem acertou  titulo
+  MGLU3   -0.80   +0.50  lexico        Mercado Livre, Magazine Luiza (MGLU3): quem ganh
+  ABEV3   +0.78   -0.20  lexico        Lucro da Ambev (ABEV3) supera expectativa no 2T2
+  PETR4   +0.78   -0.15  lexico        Engorda de dividendos: Ação do agro supera Petro
+  ITUB4   +0.72   -0.20  lexico        Eztec (EZTC3) sobe forte na bolsa após ‘cheque g
+  VALE3   +0.54   -0.35  lexico        Vale (VALE3) sente o peso da guerra e real mais 
+  PETR4   +0.78   -0.05  lexico        Empresas do Brasil pagaram mais de R$ 22 bilhões
+  B3SA3   +0.78   +0.00  lexico        Engorda de dividendos: Ação do agro supera Petro
+  WEGE3   +0.93   +0.20  ambos         Dividendos e JCP: WEG (WEGE3) aprova quase meio 
+  ITUB4   +0.50   -0.15  lexico        Dividendos para setembro: Itaú (ITUB4) e Vale (V
+  VALE3   +0.50   -0.15  lexico        Dividendos para setembro: Itaú (ITUB4) e Vale (V
+  PETR4   +0.06   +0.70  ambos         Petrobras (PETR4) quase dobra lucro no 2T26 e su
+  BBDC4   +0.64   +0.00  lexico        Bradesco (BBDC4) aprova proventos no valor de R$
+  PETR4   +0.78   +0.15  ambos         “Meta é para os fracos. A Petrobras supera metas
+  PETR4   +0.00   +0.60  LLM           Mais petróleo na Margem Equatorial: Petrobras (P
+  PETR4   +0.00   +0.60  LLM           Petrobras anuncia nova descoberta de petróleo na
+  PETR4   +0.00   +0.60  LLM           Petrobras (PETR3; PETR4) anuncia nova descoberta
+  VALE3   +0.71   +0.15  ambos         Dividendos da Vale (VALE3): o gatilho que ainda 
+  B3SA3   +0.67   +0.15  ambos         Dividendos e JCP: Lojas Renner (LREN3), TIM (TIM
+  B3SA3   +0.50   +0.00  lexico        Dividendos de até 6%: veja a nova aposta da cart
+  BBAS3   +0.50   +0.00  lexico        5 ações para investir em outubro e embolsar divi
+  PETR4   +0.00   +0.50  LLM           Petrobras anuncia nova descoberta de petróleo na
+  ITUB4   +0.50   +0.00  lexico        Rendimentos de até 11,8%: as 10 ações do BTG Pac
+  PETR4   +0.50   +0.00  lexico        Rendimentos de até 11,8%: as 10 ações do BTG Pac
+  BBDC4   +0.50   +0.00  lexico        Dividendos de até 10,4%: confira as ações recome
+  BBDC4   +0.50   +0.00  lexico        O sumiço das LCIs e LCAs, os R$ 10 bilhões do Br

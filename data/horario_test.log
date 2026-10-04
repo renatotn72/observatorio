@@ -1,0 +1,24 @@
+Baixando barras de 1h (2 anos)...
+  [intraday] PETR4       3472 barras de 1h
+  [intraday] VALE3       3471 barras de 1h
+  [intraday] ITUB4       3472 barras de 1h
+  [intraday] BBDC4       3472 barras de 1h
+  [intraday] BBAS3       3472 barras de 1h
+  [intraday] ABEV3       3472 barras de 1h
+  [intraday] WEGE3       3472 barras de 1h
+  [intraday] MGLU3       3472 barras de 1h
+  [intraday] B3SA3       3472 barras de 1h
+  [intraday] SUZB3       3472 barras de 1h
+  [intraday] USDBRL      8618 barras de 1h
+  [intraday] BRENT      11410 barras de 1h
+  10 papeis, 2971 barras alinhadas
+
+tema                    defasagem         n       IC       p  acertos/100
+  cambio_exportador     mesma hora     2969  +0.2586   0.000        58.3  SIG
+  cambio_exportador     proxima hora   2968  +0.0307   0.118        51.0
+  custo_energia_insumo  mesma hora     2890  +0.0432   0.032        51.4  SIG
+  custo_energia_insumo  proxima hora   2889  +0.0014   0.954        50.0
+  risco_politico        mesma hora     2969  +0.1357   0.000        54.3  SIG
+  risco_politico        proxima hora   2968  +0.0024   0.886        50.1
+
+Comparar com o diario: contemporaneo +0,157 / D+1 +0,021.

@@ -1,0 +1,84 @@
+# Peso por veículo. ATENÇÃO: estes são palpites iniciais.
+# Rode `python3 -m obs.cli fit-source-weights` depois de acumular histórico
+# para SUBSTITUIR por pesos aprendidos (quais fontes de fato antecedem o movimento).
+default_weight: 0.35
+
+domains:
+  valor.globo.com: 1.0
+  www.infomoney.com.br: 0.85
+  einvestidor.estadao.com.br: 0.7
+  braziljournal.com: 0.9
+  www.reuters.com: 1.0
+  br.investing.com: 0.6
+  www.bloomberglinea.com.br: 0.8
+  exame.com: 0.65
+  www.cnnbrasil.com.br: 0.5
+  g1.globo.com: 0.55
+  petronoticias.com.br: 0.4
+  seudinheiro.com: 0.5
+  www.seudinheiro.com: 0.5
+  neofeed.com.br: 0.7
+  www.moneytimes.com.br: 0.6
+  www.suno.com.br: 0.6
+  # Bloomberg. O peso e PALPITE ate rodar `fit-source-weights`: o que importa
+  # nao e o prestigio do veiculo, e se ele ANTECEDE o movimento (taxa de furo).
+  www.bloomberg.com: 1.0
+  feeds.bloomberg.com: 1.0
+  www.bloomberglinea.com.br: 0.8
+  www.ft.com: 1.0
+  www.economist.com: 0.7
+  search.cnbc.com: 0.6
+  www.theguardian.com: 0.5
+  feeds.folha.uol.com.br: 0.6
+  br.investing.com: 0.6
+  observador.pt: 0.4
+  www.jornaldenegocios.pt: 0.4
+  www.handelsblatt.com: 0.5
+  services.lesechos.fr: 0.5
+
+# Feeds RSS (complementam o GDELT; sem chave de API)
+# MEDIDO em 2026-10-02, item por item. Nao adicione feed sem testar: feed morto
+# nao da erro, devolve zero -- e voce conclui que nao houve noticia.
+#   https://valor.globo.com/rss/          -> FALHOU (era o que estava aqui)
+#   https://pox.globo.com/rss/valor/      -> 100 itens  (o caminho certo do Valor)
+#   https://www.infomoney.com.br/mercados/feed/ -> 0 itens (a secao nao tem feed;
+#                                            use o feed raiz do InfoMoney)
+#   https://www.reutersagency.com/feed/   -> 404 e 401 nos demais caminhos.
+#     A Reuters DESCONTINUOU o RSS publico; 401 e exigencia de licenca, nao
+#     desafio anti-bot -- nao ha o que desbloquear. Ela entra pelo GDELT.
+#   https://feeds.bloomberg.com/<secao>/news.rss -> 20 itens cada, funcionam.
+#     Secoes validas medidas: markets, economics, industries, technology.
+#     "green" devolve 404.
+#
+# Alemao e frances ficam LIGADOS mas o lexico nao os pontua: a porta
+# score.py:IDIOMAS_LEXICO barra, porque "perte record" (frances) casava com o
+# POS "record" e dava +0.60 a uma noticia de prejuizo. Eles servem ao scorer
+# `llm`, que le o idioma. Para valer no lexico, seria preciso lexico proprio.
+rss:
+  # --- internacionais (ingles) ---
+  - https://feeds.bloomberg.com/markets/news.rss
+  - https://feeds.bloomberg.com/economics/news.rss
+  - https://feeds.bloomberg.com/industries/news.rss
+  - https://feeds.bloomberg.com/technology/news.rss
+  - https://search.cnbc.com/rs/search/combinedcms/view.xml?partnerId=wrss01&id=20910258
+  - https://www.ft.com/rss/home
+  - https://www.theguardian.com/uk/business/rss
+  - https://www.economist.com/finance-and-economics/rss.xml
+  # --- Brasil e Portugal ---
+  - https://www.bloomberglinea.com.br/arc/outboundfeeds/rss/?outputType=xml
+  - https://feeds.folha.uol.com.br/mercado/rss091.xml
+  - https://br.investing.com/rss/news_25.rss
+  - https://observador.pt/seccao/economia/feed/
+  - https://www.jornaldenegocios.pt/rss
+  # --- alemao e frances: so para o scorer llm (ver nota acima) ---
+  - https://www.handelsblatt.com/contentexport/feed/schlagzeilen
+  - https://services.lesechos.fr/rss/les-echos-economie.xml
+  - https://pox.globo.com/rss/valor/
+  - https://pox.globo.com/rss/valor/financas/
+  - https://www.infomoney.com.br/feed/
+  - https://braziljournal.com/feed/
+  - https://exame.com/feed/
+  - https://www.moneytimes.com.br/feed/
+  - https://www.seudinheiro.com/feed/
+  - https://www.suno.com.br/noticias/feed/
+  - https://einvestidor.estadao.com.br/feed/

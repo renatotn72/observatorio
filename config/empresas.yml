@@ -1,0 +1,49 @@
+# URLs oficiais de RI verificadas; CNPJ pode ser preenchido/confirmado pelo auto-sync CVM.
+empresas:
+  PETR4:
+    cnpj: "33000167000101"
+    # Fonte estatica (o HTML traz links). A Central de Resultados e dinamica:
+    # o HTML inicial so diz "Carregando dados", entao nao serve para requests.
+    ri_url: "https://www.investidorpetrobras.com.br/servicos-ao-investidor/central-de-downloads/"
+    ri_dynamic_url: "https://www.investidorpetrobras.com.br/resultados-e-comunicados/central-de-resultados/"
+    ri_domain: "www.investidorpetrobras.com.br"
+    # Nome na CVM, para o cvm-sync casar no IPE. SEM acento o filtro devolve
+    # zero resultados em silencio -- o modulo normaliza, mas o termo fica aqui
+    # como esta na base.
+    cvm_nome: "PETROLEO BRASILEIRO"
+  VALE3:
+    cnpj: ""
+    ri_url: "https://www.vale.com/pt/investidores"
+    ri_domain: "www.vale.com"
+  ITUB4:
+    cnpj: ""
+    ri_url: "https://www.itau.com.br/relacoes-com-investidores/"
+    ri_domain: "www.itau.com.br"
+  BBDC4:
+    cnpj: ""
+    ri_url: "https://www.bradescori.com.br/"
+    ri_domain: "www.bradescori.com.br"
+  BBAS3:
+    cnpj: ""
+    ri_url: "https://ri.bb.com.br/"
+    ri_domain: "ri.bb.com.br"
+  ABEV3:
+    cnpj: ""
+    ri_url: "https://ri.ambev.com.br/"
+    ri_domain: "ri.ambev.com.br"
+  WEGE3:
+    cnpj: ""
+    ri_url: "https://ri.weg.net/"
+    ri_domain: "ri.weg.net"
+  MGLU3:
+    cnpj: ""
+    ri_url: "https://ri.magazineluiza.com.br/"
+    ri_domain: "ri.magazineluiza.com.br"
+  B3SA3:
+    cnpj: ""
+    ri_url: "https://ri.b3.com.br/"
+    ri_domain: "ri.b3.com.br"
+  SUZB3:
+    cnpj: ""
+    ri_url: "https://ri.suzano.com.br/Portuguese/"
+    ri_domain: "ri.suzano.com.br"

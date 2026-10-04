@@ -1,0 +1,30 @@
+== 0. Derrubando processos antigos ==
+  [32m✓[0m painel derrubado
+  [32m✓[0m nenhum run orfao
+== 1. Banco ==
+  [32m✓[0m esquema pronto
+== 2. Proxy de IA ==
+  [32m✓[0m subiu na porta 8100
+== 3. Dados base ==
+  [32m✓[0m precos
+  [32m✓[0m drivers macro
+== 4. Painel ==
+  [32m✓[0m subiu
+== 5. Worker ==
+  [32m✓[0m subiu (log em data/worker.log)
+
+  Painel     http://127.0.0.1:8105/
+  Operações  http://127.0.0.1:8105/admin.html
+
+Para a IA ler documentos, exporte NO SEU SHELL:
+
+  export OBS_LLM_URL="http://127.0.0.1:8100/v1/chat/completions"
+  export OBS_LLM_KEY="local-proxy-client"
+  export OBS_LLM_MODEL="sai-dev-gpt5"
+  export OBS_ALLOW_EXTERNAL_LLM=1
+
+O worker ja esta rodando em segundo plano. Para acompanhar:
+
+  tail -f data/worker.log
+
+Terminado

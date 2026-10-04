@@ -1,0 +1,20 @@
+Construindo sinal historico da cadeia de afetacao (walk-forward)...
+  ... 2016-10-04 (0 papeis)
+  ... 2018-10-09 (10 papeis)
+  ... 2020-09-29 (10 papeis)
+  ... 2022-09-22 (10 papeis)
+  ... 2024-09-24 (10 papeis)
+  ... 2026-09-15 (10 papeis)
+
+pares (papel, dia): 19630   periodo 2017-06-09 .. 2026-10-01
+classes -> alta 26.2  neutro 46.6  queda 27.2
+
+cabeca       n_oos    base     AUC    skill  prec@10%            IC95
+  ALTA       15720   25.8  0.4948  -0.0002     23.9   [21.9, 26.1]
+  QUEDA      15720   26.9  0.5043  -0.0001     26.0   [23.8, 28.2]
+
+=== veredito ===
+  ALTA     REPROVADO  (AUC 0.495; skill -0.0002; IC95 inclui a taxa-base 25.8)
+  QUEDA    REPROVADO  (AUC 0.504; skill -0.0001; IC95 inclui a taxa-base 26.9)
+
+Isto mede o canal de DRIVERS. O canal de NOTICIA segue nao medido.

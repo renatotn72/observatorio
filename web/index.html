@@ -1,0 +1,886 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Observatório de Ações</title>
+<style>
+/* ---------------------------------------------------------------- base ---
+   Sem CDN: tudo daqui, fontes do sistema. A hierarquia da tela segue a
+   EVIDÊNCIA, não a disponibilidade de dado. Quatro regimes visuais:
+   medido (tinta sólida), não medido (hachura), reprovado (carimbo colado)
+   e descritivo (contorno fino). Nenhum deles usa verde/vermelho. */
+:root{
+  --papel:#FAFAF7; --branco:#fff;
+  --ink:#15181B; --ink2:#42484E; --ink3:#63696F;
+  --rule:#DCDBD4; --rule2:#ECEBE4; --trilho:#F2F1EB;
+  --med:#0E5A62; --med-claro:#D3D8D4; --med-fundo:#F3F7F7;
+  --rep:#8E3B22; --rep-fundo:#FBF7F5; --rep-rule:#E4D2CA;
+  --serif:Georgia,'Iowan Old Style','Times New Roman',serif;
+  --sans:system-ui,-apple-system,'Segoe UI',sans-serif;
+  --mono:ui-monospace,'SF Mono','Cascadia Mono',Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--papel);color:var(--ink);font:14px/1.5 var(--sans)}
+.wrap{max-width:1200px;margin:0 auto;padding:0 40px}
+h1,h2,h3{font-family:var(--serif);font-weight:400;letter-spacing:-.3px;margin:0}
+a{color:var(--med)} a:hover{color:var(--ink)}
+.mono{font-family:var(--mono)}
+.m0{margin:0}
+.hach{background-color:#F7F6F1;background-image:repeating-linear-gradient(135deg,#B4B9BE 0,#B4B9BE 1px,transparent 1px,transparent 9px)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+
+/* ------------------------------------------------------------- cabeçalho ---*/
+header{border-bottom:2px solid var(--ink);background:var(--papel);position:sticky;top:0;z-index:30}
+.hd{display:flex;flex-wrap:wrap;gap:18px;align-items:flex-end;justify-content:space-between;padding:22px 0 14px}
+.hd p{margin:4px 0 0;font-size:12.5px;color:var(--ink3)}
+.hz{display:flex;gap:0;border:1px solid var(--rule)}
+.hz button{border:0;border-right:1px solid var(--rule);background:var(--branco);color:var(--ink2);font:12px var(--mono);padding:9px 13px;cursor:pointer;min-height:38px}
+.hz button:last-child{border-right:0}
+.hz button[aria-pressed=true]{background:var(--ink);color:#fff}
+.hd-acoes{display:flex;flex-wrap:wrap;gap:9px;align-items:center}
+
+/* ------------------------------------------------------------- botões ---*/
+.btn{border:1px solid var(--ink);background:var(--papel);color:var(--ink);font:13px var(--sans);padding:0 14px;min-height:40px;cursor:pointer}
+.btn:hover{background:var(--branco)}
+.btn-prim{border-color:var(--med);background:var(--med);color:#fff}
+.btn-prim:hover{background:#0b464c}
+.btn-rep{border-color:var(--rep);background:var(--rep);color:#fff}
+.btn-sm{min-height:32px;font-size:12px;padding:0 10px}
+.btn-perg{border:1px solid var(--rule);background:var(--branco);color:var(--ink2);font:12px var(--sans);min-height:32px;padding:0 11px;cursor:pointer;white-space:nowrap}
+.btn-perg:hover{border-color:var(--ink);color:var(--ink)}
+
+/* ------------------------------------------------------------- selos ---*/
+.selo{display:inline-flex;align-items:center;gap:6px;padding:3px 9px;font:11px/1.4 var(--mono);letter-spacing:1.1px;white-space:nowrap}
+.selo-med{background:var(--med);color:#fff}
+.selo-nao{border:1px solid var(--ink);color:var(--ink)}
+.selo-rep{background:var(--rep);color:#fff}
+.selo-desc{border:1px solid var(--ink3);color:var(--ink2)}
+.ponto{width:7px;height:7px;border-radius:50%;background:#fff}
+
+/* ------------------------------------------------------------ veredito ---*/
+#veredito{padding:36px 0 40px;border-bottom:1px solid var(--rule)}
+#veredito .rotulo{margin:0 0 14px;font:11px var(--mono);letter-spacing:1.4px;color:var(--ink3)}
+#veredito h2{font-size:clamp(26px,3.4vw,38px);line-height:1.22;max-width:940px}
+#veredito .sub{margin:16px 0 0;max-width:780px;font-size:16px;line-height:1.55;color:var(--ink2)}
+.placar{display:flex;flex-wrap:wrap;margin-top:26px;border:1px solid var(--rule);background:var(--branco)}
+.placar div{flex:1 1 200px;padding:16px 20px;border-right:1px solid var(--rule)}
+.placar div:last-child{border-right:0}
+.placar b{display:block;font:28px var(--mono);font-weight:400;line-height:1.1}
+.placar span{display:block;font-size:12.5px;color:var(--ink2);margin-top:4px}
+
+/* ------------------------------------------------------------ seções ---*/
+section.banda{padding:44px 0 0}
+.banda-hd{display:flex;flex-wrap:wrap;gap:18px;align-items:flex-start;justify-content:space-between}
+.banda-hd h2{font-size:clamp(22px,2.4vw,30px)}
+.banda-hd .desc{margin:8px 0 0;max-width:680px;font-size:13.5px;line-height:1.55;color:var(--ink2)}
+.nota-lado{flex:0 1 320px;border-left:2px solid var(--med);padding:2px 0 2px 15px;font-size:12.5px;line-height:1.5;color:var(--ink2)}
+
+/* ----------------------------------------------------------- ranking ---*/
+.filtros{display:flex;flex-wrap:wrap;gap:9px;align-items:center;margin:22px 0 6px}
+.filtros input,.filtros select{font:13px var(--sans);padding:0 10px;min-height:38px;border:1px solid var(--rule);background:var(--branco);color:var(--ink)}
+.filtros input{flex:1 1 240px;max-width:320px}
+.eixo{display:flex;align-items:flex-end;padding-bottom:6px}
+.eixo .lab{width:172px;flex:none}
+.eixo .tr{flex:1 1 220px;min-width:0;position:relative;height:17px;font:10px var(--mono);color:var(--ink3)}
+.eixo .tr .acaso{position:absolute;bottom:0;transform:translateX(-50%);white-space:nowrap;font-size:11px;color:var(--ink);background:var(--papel);padding:0 7px}
+.eixo .v{width:92px;flex:none;text-align:right;font:10px var(--mono);letter-spacing:.6px;color:var(--ink3)}
+.eixo .d{width:112px;flex:none;text-align:right;font:10px var(--mono);letter-spacing:.6px;color:var(--ink3)}
+#lista{border-top:1px solid var(--ink);border-bottom:1px solid var(--ink)}
+.linha{display:flex;flex-wrap:wrap;align-items:center;border-bottom:1px solid var(--rule2);width:100%;background:none;border-left:0;border-right:0;border-top:0;text-align:left;font:inherit;color:inherit;cursor:pointer;padding:0}
+.linha:hover{background:var(--branco)}
+.linha[aria-expanded=true]{background:var(--branco)}
+.linha .lab{width:172px;flex:none;padding:9px 12px 9px 0}
+.linha .tk{font:14px var(--mono);font-weight:600;letter-spacing:.3px}
+.linha .nm{font-size:11px;color:var(--ink3);margin-top:1px}
+.linha .tr{flex:1 1 220px;min-width:0;position:relative;height:48px}
+.b-base{position:absolute;left:0;top:14px;height:20px;background:var(--med-claro)}
+.b-exc{position:absolute;top:14px;height:20px;background:var(--med)}
+.l-acaso{position:absolute;top:0;bottom:0;width:2px;background:var(--ink)}
+.linha .v{width:92px;flex:none;text-align:right;font:17px var(--mono);color:var(--ink3)}
+.linha.acima .v{color:var(--ink)}
+.linha .d{width:112px;flex:none;text-align:right;font:12px var(--mono);color:var(--ink3)}
+.linha.acima .d{color:var(--med)}
+.semnum{display:inline-block;padding:3px 8px;font:11px var(--mono);letter-spacing:.8px;border:1px solid var(--ink)}
+.rodape-rank{margin:13px 0 0;font-size:13px;line-height:1.55;color:var(--ink2);max-width:880px}
+
+/* ------------------------------------------------------------ recibo ---*/
+.recibo{margin-top:24px;border:1px solid var(--rule);background:var(--branco)}
+.recibo>.top{padding:13px 20px;border-bottom:1px solid var(--rule);display:flex;flex-wrap:wrap;gap:10px;align-items:baseline;justify-content:space-between}
+.recibo .cols{display:flex;flex-wrap:wrap}
+.recibo .col{flex:1 1 280px;min-width:0;padding:15px 20px;border-right:1px solid var(--rule)}
+.recibo .col:last-child{border-right:0}
+.recibo .col.falhou{background:var(--rep-fundo)}
+.kv{display:flex;justify-content:space-between;gap:14px;padding:4px 0;font-size:12px;color:var(--ink2);border-bottom:1px dotted var(--rule2)}
+.kv span+span{font-family:var(--mono);color:var(--ink);white-space:nowrap}
+
+/* ------------------------------------------------------------ direção ---*/
+.caixa-nao{border:2px solid var(--ink);background:var(--branco);margin-top:8px}
+.caixa-nao .cima{display:flex;flex-wrap:wrap}
+.caixa-nao .txt{flex:1 1 440px;min-width:0;padding:24px 26px}
+.caixa-nao .vazio{flex:1 1 300px;min-width:0;min-height:280px;border-left:2px solid var(--ink);display:flex;align-items:center;justify-content:center;padding:26px}
+.vazio-cartao{background:var(--papel);border:1px solid var(--ink);padding:19px 22px;text-align:center;max-width:300px}
+.porta{margin-top:16px;padding-top:13px;border-top:1px dotted #B8B7AE;font:12px/1.75 var(--mono);color:var(--ink2)}
+.tabela-tom{border-top:1px solid var(--ink)}
+.tom-hd,.tom-ln{display:flex;flex-wrap:wrap;align-items:center}
+.tom-hd{padding:14px 0 6px;font:10px var(--mono);letter-spacing:.6px;color:var(--ink3)}
+.tom-ln{padding:7px 0;border-bottom:1px solid var(--rule2)}
+.c-pap{width:150px;flex:none;font:13px var(--mono)}
+.c-tom{width:196px;flex:none;position:relative;height:22px}
+.c-tom .ax{position:absolute;left:8px;right:8px;top:10px;height:1px;background:#CFCEC6}
+.c-tom .zero{position:absolute;left:50%;top:2px;bottom:2px;width:1px;background:#8E8D85}
+.c-tom .tick{position:absolute;top:4px;width:3px;height:14px;background:var(--ink)}
+.c-z{width:66px;flex:none;text-align:right;font:12.5px var(--mono);color:var(--ink2)}
+.c-na{width:96px;flex:none;text-align:right;font:12.5px var(--mono);color:var(--ink2)}
+.c-pe{width:186px;flex:none;display:flex;align-items:center;justify-content:flex-end;gap:10px}
+.c-pe .g{width:104px;height:7px;background:#E6E5DD;position:relative}
+.c-pe .g i{position:absolute;left:0;top:0;bottom:0;background:var(--ink2)}
+.c-pe b{font:12.5px var(--mono);font-weight:400;color:var(--ink2);width:40px;text-align:right}
+.c-di{width:118px;flex:none;text-align:right;font:12.5px var(--mono);color:var(--ink3)}
+
+/* ------------------------------------------------------------- fontes ---*/
+.fontes{display:flex;flex-wrap:wrap;border:1px solid var(--rule);background:var(--branco)}
+.fontes .f{flex:1 1 250px;min-width:0;padding:18px 20px;border-right:1px solid var(--rule)}
+.fontes .f:last-child{border-right:0}
+.fontes .f b{font-size:14.5px}
+.fontes .f .q{margin:6px 0 0;font:12px/1.65 var(--mono);color:var(--ink2);white-space:pre-line}
+.fontes .f .al{margin-top:13px;padding-top:10px;border-top:1px dotted #CFCEC6}
+.fontes .f .al p{margin:0;font-size:12.5px;line-height:1.5;color:var(--ink2)}
+.cards2{display:flex;flex-wrap:wrap;gap:18px;margin-top:18px}
+.card-rep{flex:1 1 430px;min-width:0;border:1px solid var(--rep);background:var(--rep-fundo)}
+.card-desc{flex:1 1 360px;min-width:0;border:1px solid var(--rule);background:var(--branco)}
+.card-rep>.top,.card-desc>.top{padding:14px 20px;border-bottom:1px solid var(--rep-rule);display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+.card-desc>.top{border-bottom-color:var(--rule)}
+.card-rep .corpo,.card-desc .corpo{padding:16px 20px}
+.cifra-rep{font:26px var(--mono);color:var(--ink2);border-bottom:2px dotted var(--rep);display:inline-block;line-height:1.25}
+.chip{border:1px solid var(--rule);background:var(--papel);padding:7px 10px}
+.chip b{font:12px var(--mono)}
+.chip span{display:block;font-size:11px;color:var(--ink3);margin-top:2px}
+
+/* ------------------------------------------------------------ detalhe ---*/
+.detalhe{border-bottom:1px solid var(--rule2);background:var(--branco);padding:20px 22px}
+.det-grid{display:flex;flex-wrap:wrap;gap:22px}
+.det-col{flex:1 1 320px;min-width:0}
+.det-col h3{font-size:16px;margin-bottom:9px}
+.r2bar{display:flex;height:38px;border:1px solid var(--ink);margin:10px 0 6px}
+.r2bar .ex{background:var(--ink2);color:#fff;display:flex;align-items:center;padding-left:11px;font:12.5px var(--mono)}
+.r2bar .nao{display:flex;align-items:center;justify-content:flex-end;padding-right:11px;font:12.5px var(--mono);color:var(--ink2)}
+.drv{display:flex;align-items:center;padding:7px 0;border-bottom:1px solid var(--rule2)}
+.drv .n{width:92px;flex:none;font:12.5px var(--mono)}
+.drv .b{flex:1 1 120px;min-width:0;position:relative;height:20px}
+.drv .b .zero{position:absolute;left:50%;top:-3px;bottom:-3px;width:1px;background:#B8B7AE}
+.drv .b i{position:absolute;top:4px;height:13px;background:var(--ink2)}
+.drv .s{width:62px;flex:none;text-align:right;font:13px var(--mono)}
+.drv .t{width:132px;flex:none;text-align:right;font-size:11px;color:var(--ink3)}
+.manchete{padding:8px 0;border-bottom:1px solid var(--rule2);font-size:12.5px;line-height:1.45}
+.manchete .meta{font:11px var(--mono);color:var(--ink3);margin-top:3px}
+
+/* ----------------------------------------------------------- gaveta IA ---*/
+#abrir-ia{position:fixed;right:24px;bottom:24px;z-index:40;box-shadow:0 2px 10px rgba(0,0,0,.18)}
+#ia{position:fixed;top:0;right:0;bottom:0;width:440px;max-width:100%;background:var(--papel);border-left:2px solid var(--ink);z-index:50;display:flex;flex-direction:column;transform:translateX(102%);transition:transform .18s ease-out}
+#ia[data-aberto="1"]{transform:none}
+#ia .top{padding:16px 20px;border-bottom:2px solid var(--ink);display:flex;gap:12px;align-items:flex-start;justify-content:space-between}
+#ia .top h2{font-size:19px}
+#ia .top p{margin:5px 0 0;font-size:12px;color:var(--ink3)}
+#ia .corpo{flex:1 1 auto;overflow:auto;padding:18px 20px}
+#ia .pe{padding:14px 20px;border-top:1px solid var(--rule);background:var(--branco)}
+#ia textarea{width:100%;min-height:76px;font:13px/1.5 var(--sans);padding:10px;border:1px solid var(--rule);background:var(--papel);color:var(--ink);resize:vertical}
+#ia select{width:100%;font:12.5px var(--sans);padding:0 8px;min-height:38px;border:1px solid var(--rule);background:var(--papel);color:var(--ink);margin-bottom:9px}
+.sug{display:flex;flex-wrap:wrap;gap:6px;margin:9px 0 0}
+.sug button{border:1px solid var(--rule);background:var(--papel);color:var(--ink2);font:11.5px var(--sans);padding:5px 9px;cursor:pointer;text-align:left}
+.sug button:hover{border-color:var(--ink);color:var(--ink)}
+.resp{border:1px solid var(--rule);background:var(--branco);padding:16px 18px;margin-bottom:14px}
+.resp .txt{font-size:14px;line-height:1.6;white-space:pre-wrap}
+.resp .fatos{margin-top:13px;padding-top:11px;border-top:1px dotted var(--rule)}
+.resp .fatos div{display:flex;justify-content:space-between;gap:12px;padding:3px 0;font-size:12px;color:var(--ink2)}
+.resp .fatos b{font:12px var(--mono);font-weight:400;color:var(--ink);text-align:right}
+.ress{margin-top:12px;border-left:2px solid var(--rep);padding:2px 0 2px 11px;font-size:12px;line-height:1.5;color:var(--rep)}
+.acao{border:1px solid var(--ink);background:var(--branco);padding:13px 15px;margin-top:11px}
+.acao.deliberada{border-width:2px}
+.acao .lin1{display:flex;flex-wrap:wrap;gap:9px;align-items:center;justify-content:space-between}
+.acao b{font-size:13.5px}
+.acao p{margin:7px 0 0;font-size:12px;line-height:1.5;color:var(--ink2)}
+.aviso{border:1px solid var(--rep);background:var(--rep-fundo);padding:12px 14px;margin-top:10px;font-size:12px;line-height:1.55;color:var(--rep)}
+.ia-off{border:2px solid var(--ink);background:var(--branco);padding:16px 18px;margin-bottom:14px}
+.ia-off .selo{margin-bottom:10px}
+details.ctx{margin-top:12px;border:1px solid var(--rule);background:var(--branco)}
+details.ctx summary{padding:10px 14px;cursor:pointer;font-size:12.5px;color:var(--ink2)}
+details.ctx pre{margin:0;padding:12px 14px;border-top:1px solid var(--rule);background:#F4F3EE;font:11px/1.5 var(--mono);overflow:auto;max-height:340px;white-space:pre-wrap;word-break:break-word}
+.carregando{font:12px var(--mono);color:var(--ink3)}
+
+footer{margin-top:34px;padding:18px 0 48px;border-top:1px solid var(--rule);font-size:12.5px;line-height:1.65;color:var(--ink3);max-width:900px}
+
+@media (max-width:900px){
+  .wrap{padding:0 16px}
+  .linha .lab,.eixo .lab{width:124px}
+  .linha .v,.eixo .v{width:76px}
+  .linha .d,.eixo .d{width:92px}
+  .c-tom{width:140px}
+  .c-pe{width:150px}
+  .c-pe .g{width:70px}
+  #ia{width:100%}
+  #abrir-ia{right:16px;bottom:16px}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap hd">
+    <div>
+      <h1>Observatório de Ações</h1>
+      <p>Painel de pesquisa · <span id="n-papeis">—</span> papéis da B3 · não é recomendação de compra ou venda</p>
+    </div>
+    <div class="hd-acoes">
+      <div class="hz" id="hz" role="group" aria-label="Horizonte"></div>
+      <a class="btn" href="/admin.html" style="display:inline-flex;align-items:center;text-decoration:none">Operações</a>
+      <button class="btn" id="recarregar" type="button">Atualizar</button>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <section id="veredito">
+    <p class="rotulo">O QUE ESTE PAINEL FAZ</p>
+    <h2>Mede uma coisa só: a chance de o papel <em>se mexer bastante</em> amanhã.</h2>
+    <p class="sub">Não estima se vai <strong>subir</strong> ou <strong>cair</strong>. Essa parte do modelo não passou no teste de calibração, então o painel não publica número nenhum para ela — nem estimativa, nem barra vazia.</p>
+    <div class="placar" id="placar"></div>
+  </section>
+
+  <section class="banda" id="agitacao">
+    <div class="banda-hd">
+      <div style="flex:1 1 520px;min-width:0">
+        <span class="selo selo-med" id="selo-ag"><span class="ponto"></span>MEDIDO</span>
+        <h2 style="margin-top:13px">Agitação — chance de se mexer bastante amanhã</h2>
+        <p class="desc">Probabilidade de o papel ficar entre os 20% de maior <strong>retorno anormal em módulo</strong> no pregão seguinte. Movimento grande, <strong>sem lado</strong>: pode ser para cima ou para baixo, e o modelo não sabe qual.</p>
+      </div>
+      <div class="nota-lado">
+        Toda probabilidade aqui aparece <strong>colada à taxa-base</strong> — o que o acaso daria. Um número sozinho engana.
+        <div style="margin-top:10px"><button class="btn-perg" type="button" data-perg="agitacao">Perguntar sobre a agitação</button></div>
+      </div>
+    </div>
+
+    <div class="filtros">
+      <input id="busca" type="search" placeholder="Buscar papel ou empresa" aria-label="Buscar papel ou empresa">
+      <select id="setor" aria-label="Filtrar por setor"><option value="">Todos os setores</option></select>
+      <span class="carregando" id="cont-lista"></span>
+    </div>
+
+    <div class="eixo" id="eixo"></div>
+    <div id="lista"></div>
+    <p class="rodape-rank" id="rodape-rank"></p>
+    <div id="recibo"></div>
+  </section>
+
+  <section class="banda" id="direcao">
+    <div class="caixa-nao">
+      <div class="cima">
+        <div class="txt">
+          <span class="selo selo-nao">NÃO CALIBRADO</span>
+          <h2 style="margin-top:13px">Alta e queda: sem estimativa.</h2>
+          <p class="desc" style="margin-top:11px" id="dir-intro">A API devolve <code class="mono">p_up</code>, <code class="mono">p_down</code> e <code class="mono">p_flat</code> vazios.</p>
+          <div class="porta" id="porta"></div>
+          <div style="margin-top:14px"><button class="btn-perg" type="button" data-perg="direcao">Perguntar por que não está calibrada</button></div>
+        </div>
+        <div class="vazio hach">
+          <div class="vazio-cartao">
+            <p class="m0 mono" style="font-size:11px;letter-spacing:1.2px">AQUI NÃO VAI NÚMERO</p>
+            <p style="margin:8px 0 0;font-size:12.5px;line-height:1.55;color:var(--ink2)">O espaço da probabilidade de direção fica hachurado, no mesmo tamanho que teria se houvesse número. A ausência é desenhada, não escondida.</p>
+          </div>
+        </div>
+      </div>
+      <div style="border-top:2px solid var(--ink);padding:22px 26px 24px">
+        <div style="display:flex;flex-wrap:wrap;gap:16px;align-items:baseline;justify-content:space-between">
+          <strong style="font-size:15px">O que existe no lugar: entradas, não saídas</strong>
+          <span style="font-size:12.5px;color:var(--ink2);max-width:560px">O tom das notícias (<span class="mono">z</span>) alimenta o modelo. Não é previsão, não vira probabilidade e por isso não tem cor de alta nem de queda.</span>
+        </div>
+        <div class="tom-hd">
+          <div class="c-pap">papel</div><div class="c-tom">tom das notícias −1 … +1</div>
+          <div class="c-z">z</div><div class="c-na">matérias</div>
+          <div class="c-pe">peso efetivo (de 1,00)</div><div class="c-di">discordância</div>
+        </div>
+        <div class="tabela-tom" id="tom"></div>
+        <div style="display:flex;flex-wrap:wrap;gap:22px;margin-top:15px">
+          <p style="flex:1 1 380px;margin:0;font-size:12.5px;line-height:1.6;color:var(--ink2)"><strong>Matérias não é o mesmo que peso.</strong> <span id="nota-eff">—</span></p>
+          <p style="flex:1 1 320px;margin:0;font-size:12.5px;line-height:1.6;color:var(--rep)" id="nota-mglu"></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="banda" id="fontes-sec">
+    <div class="banda-hd">
+      <div style="flex:1 1 520px;min-width:0">
+        <h2>De onde vem a informação</h2>
+        <p class="desc">Quatro fontes, quatro destinos diferentes. Cada bloco diz o que alimenta e em que estado esse destino está.</p>
+      </div>
+      <div style="padding-top:6px"><button class="btn-perg" type="button" data-perg="painel">Perguntar sobre o painel inteiro</button></div>
+    </div>
+    <div class="fontes" id="fontes" style="margin-top:20px"></div>
+    <div class="cards2" id="cards2"></div>
+  </section>
+
+  <footer>
+    Observatório de pesquisa. Não é recomendação de investimento. Enquanto uma cabeça do modelo não estiver calibrada contra retornos realizados, nenhuma probabilidade é exibida para ela — por desenho, e não por falta de dados do dia.
+  </footer>
+</main>
+
+<button class="btn btn-prim" id="abrir-ia" type="button">Perguntar à IA</button>
+
+<aside id="ia" aria-label="Perguntar à IA" data-aberto="0">
+  <div class="top">
+    <div>
+      <h2>Perguntar</h2>
+      <p>Responde só com os dados desta tela. Propõe tarefas; nunca as executa.</p>
+    </div>
+    <button class="btn btn-sm" id="fechar-ia" type="button">Fechar</button>
+  </div>
+  <div class="corpo" id="ia-corpo"></div>
+  <div class="pe">
+    <label class="sr" for="ia-escopo">Escopo da pergunta</label>
+    <select id="ia-escopo"></select>
+    <label class="sr" for="ia-q">Pergunta</label>
+    <textarea id="ia-q" placeholder="Ex.: quais papéis têm chance maior de se mexer amanhã, e por quanto acima do acaso?"></textarea>
+    <div style="display:flex;gap:9px;margin-top:9px">
+      <button class="btn btn-prim" id="ia-enviar" type="button" style="flex:1 1 auto">Perguntar</button>
+    </div>
+    <div class="sug" id="ia-sug"></div>
+  </div>
+</aside>
+
+<script>
+"use strict";
+/* ====================================================================== API */
+const J = (u, o) => fetch(u, o).then(r => r.json());
+const POST = (u, b) => J(u, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(b)});
+
+/* =================================================================== estado */
+const S = {h:'d1', horizontes:[], sigs:[], st:null, busca:'', setor:'', aberto:null, ia:null, esperando:false};
+
+/* ================================================================ formatos */
+const nf = (x, d=1) => x==null ? '—' : Number(x).toLocaleString('pt-BR',{minimumFractionDigits:d, maximumFractionDigits:d}).replace('-','−');
+const pct = (x, d=1) => x==null ? null : nf(x*100, d)+'%';
+// `d` importa: skill de Brier +0,024 vira "+0,0" com uma casa, e um ganho
+// medido passa a parecer zero. Cada chamada declara a precisão que o número tem.
+const sinal = (x, d=1) => x==null ? '—' : (x < 0 ? '−' : '+') + nf(Math.abs(x), d);
+const pp = x => sinal(x)+' p.p.';
+const esc = s => String(s==null?'':s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const int = x => x==null ? '—' : Number(x).toLocaleString('pt-BR');
+const quando = ts => ts ? new Date(ts*1000).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}) : '—';
+const isoBr = s => { if (!s) return '—'; const d = new Date(s);
+  return isNaN(d) ? s : d.toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}); };
+
+/* ============================================================ carregamento */
+async function carregar(){
+  const [sg, st] = await Promise.all([J('/api/signals?horizonte='+S.h), J('/api/status')]);
+  S.sigs = sg.signals || [];
+  S.horizontes = (st.horizontes||[]).map(h => ({id:h.id, rotulo:h.rotulo}));
+  S.st = st;
+  if (!S.ia) S.ia = await J('/api/ia/estado').catch(() => ({ok:false, motivo:'rota /api/ia/estado indisponível'}));
+  render();
+}
+
+/* ================================================================= filtros */
+function visiveis(){
+  const q = S.busca.trim().toLowerCase();
+  return S.sigs.filter(s => {
+    if (S.setor && s.sector !== S.setor) return false;
+    if (!q) return true;
+    return (s.ticker||'').toLowerCase().includes(q) || (s.name||'').toLowerCase().includes(q);
+  });
+}
+
+/* ================================================================== render */
+function render(){
+  renderHz(); renderPlacar(); renderAgitacao(); renderDirecao(); renderFontes(); renderSetores();
+  document.getElementById('n-papeis').textContent = S.sigs.length;
+}
+
+function renderHz(){
+  document.getElementById('hz').innerHTML = S.horizontes.map(h =>
+    `<button type="button" data-h="${esc(h.id)}" aria-pressed="${h.id===S.h}">${esc(h.id.toUpperCase())}</button>`).join('');
+}
+
+function renderSetores(){
+  const sel = document.getElementById('setor');
+  if (sel.options.length > 1) return;
+  [...new Set(S.sigs.map(s => s.sector).filter(Boolean))].sort().forEach(x => {
+    const o = document.createElement('option'); o.value = x; o.textContent = x; sel.appendChild(o);
+  });
+}
+
+function renderPlacar(){
+  const com = S.sigs.filter(s => s.p_vol != null && s.vol_base != null);
+  const acima = com.filter(s => s.p_vol > s.vol_base).length;
+  const dir = S.sigs.filter(s => s.calibrated).length;
+  document.getElementById('placar').innerHTML = `
+    <div><b style="color:var(--med)">${acima}</b><span>${acima===1?'papel acima do acaso':'papéis acima do acaso'}</span></div>
+    <div><b style="color:var(--ink3)">${com.length - acima}</b><span>na taxa-base ou abaixo dela</span></div>
+    <div><b style="color:var(--ink3)">${dir}</b><span>previsões de alta ou de queda</span></div>
+    <div><b style="color:var(--rep)">12</b><span>hipóteses testadas e reprovadas · 3 passaram</span></div>`;
+}
+
+/* ------------------------------------------------------------- agitação ---*/
+function renderAgitacao(){
+  const rows = visiveis().slice().sort((a,b) => (b.p_vol ?? -1) - (a.p_vol ?? -1));
+  const comNum = rows.filter(r => r.p_vol != null && r.vol_calib);
+  const selo = document.getElementById('selo-ag');
+
+  // Se a agitação perder a calibração, a banda INTEIRA passa ao regime
+  // hachurado. Nenhum número sobrevive à queda da porta.
+  if (!comNum.length){
+    selo.className = 'selo selo-nao'; selo.textContent = 'NÃO CALIBRADO';
+    document.getElementById('eixo').innerHTML = '';
+    document.getElementById('lista').innerHTML =
+      `<div class="hach" style="padding:40px;display:flex;justify-content:center">
+         <div class="vazio-cartao">
+           <p class="m0 mono" style="font-size:11px;letter-spacing:1.2px">AQUI NÃO VAI NÚMERO</p>
+           <p style="margin:8px 0 0;font-size:12.5px;line-height:1.55;color:var(--ink2)">O calibrador da agitação não está aprovado na porta. Sem lastro, o painel não publica probabilidade.</p>
+         </div></div>`;
+    document.getElementById('rodape-rank').textContent = '';
+    document.getElementById('recibo').innerHTML = '';
+    document.getElementById('cont-lista').textContent = '';
+    return;
+  }
+  selo.className = 'selo selo-med'; selo.innerHTML = '<span class="ponto"></span>MEDIDO';
+
+  const vb = comNum[0].vol_base;
+  const maxpv = Math.max(...comNum.map(r => r.p_vol));
+  const escala = Math.max(0.40, maxpv * 1.15);
+  const bp = vb != null ? (vb / escala * 100) : null;
+
+  document.getElementById('eixo').innerHTML = `
+    <div class="lab"></div>
+    <div class="tr"><span style="position:absolute;left:0;bottom:0">0</span>
+      ${bp!=null?`<span class="acaso" style="left:${bp}%">acaso ${pct(vb)}</span>`:''}
+      <span style="position:absolute;right:0;bottom:0">${pct(escala,0)}</span></div>
+    <div class="v">p_vol</div><div class="d">vs. acaso</div>`;
+
+  document.getElementById('lista').innerHTML = rows.map(r => {
+    const aberto = S.aberto === r.ticker;
+    if (r.p_vol == null || !r.vol_calib){
+      return `<button class="linha" type="button" data-t="${esc(r.ticker)}" aria-expanded="${aberto}">
+        <span class="lab"><span class="tk">${esc(r.ticker)}</span><span class="nm">${esc(r.name||'')}</span></span>
+        <span class="tr hach" style="height:48px"></span>
+        <span class="v" style="font-size:12px"><span class="semnum">SEM CALIBRAÇÃO</span></span>
+        <span class="d"></span></button>` + (aberto ? detalheHTML(r.ticker) : '');
+    }
+    const acima = r.p_vol > vb;
+    const w = r.p_vol / escala * 100;
+    const base = acima ? bp : w;
+    const exc = acima ? (w - bp) : 0;
+    return `<button class="linha${acima?' acima':''}" type="button" data-t="${esc(r.ticker)}" aria-expanded="${aberto}">
+      <span class="lab"><span class="tk">${esc(r.ticker)}</span><span class="nm">${esc(r.name||'')}</span></span>
+      <span class="tr">
+        <span class="b-base" style="width:${base}%"></span>
+        ${exc>0?`<span class="b-exc" style="left:${bp}%;width:${exc}%"></span>`:''}
+        <span class="l-acaso" style="left:${bp}%"></span>
+      </span>
+      <span class="v">${pct(r.p_vol)}</span>
+      <span class="d">${pp((r.p_vol - vb)*100)}</span>
+    </button>` + (aberto ? detalheHTML(r.ticker) : '');
+  }).join('');
+
+  const nAcima = comNum.filter(r => r.p_vol > vb).length;
+  const topo = comNum.slice().sort((a,b) => b.p_vol - a.p_vol)[0];
+  document.getElementById('cont-lista').textContent = `${rows.length} de ${S.sigs.length} papéis`;
+  document.getElementById('rodape-rank').innerHTML =
+    `Só a parte da barra <strong style="color:var(--med)">à direita da linha</strong> é informação. À esquerda dela o modelo não está dizendo nada que uma moeda não dissesse. ` +
+    (nAcima === 0 ? `Hoje <strong>nenhum papel</strong> está acima do acaso.`
+     : nAcima === 1 ? `Hoje apenas <strong>${esc(topo.ticker)}</strong> se destaca, com ${pp((topo.p_vol-vb)*100)}.`
+     : `Hoje <strong>${nAcima} papéis</strong> ficam acima do acaso; o maior deles, ${esc(topo.ticker)}, com ${pp((topo.p_vol-vb)*100)}.`);
+  renderRecibo();
+}
+
+function renderRecibo(){
+  const ag = (S.st && S.st.agitacao) || {};
+  // Porta vinda da API, nunca escrita aqui: numero de qualidade no HTML ja
+  // fez o painel anunciar a porta da agitacao como se fosse a da direcao.
+  const pAg = (S.st && S.st.portas && S.st.portas.agitacao) || {};
+  const cal = (ag.calibrador || {}).metrics || {};
+  const wf = ((S.st && S.st.medidas) || {}).agitacao_auc_wf || {};
+  if (!ag.calibrador){ document.getElementById('recibo').innerHTML = ''; return; }
+  const ic = cal.auc_ic95 ? ` [${nf(cal.auc_ic95[0],3)}; ${nf(cal.auc_ic95[1],3)}]` : '';
+  const per = cal.periodo ? cal.periodo.join(' a ') : '—';
+  document.getElementById('recibo').innerHTML = `
+    <div class="recibo">
+      <div class="top">
+        <strong style="font-size:14px">Recibo da medição — calibrador <span class="mono">${esc(ag.calibrador.name)}</span></strong>
+        <span class="mono" style="font-size:11px;color:var(--ink3)">ajustado em ${esc(isoBr(ag.calibrador.fitted))} · ${int(ag.calibrador.n)} observações · ${esc(per)}</span>
+      </div>
+      <div class="cols">
+        <div class="col">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:9px">
+            <span style="width:8px;height:8px;background:var(--med);border-radius:50%"></span>
+            <strong style="font-size:13px">Passou na porta do calibrador</strong></div>
+          <div class="kv"><span>n fora da amostra</span><span>${int(cal.n_oos)}</span></div>
+          <div class="kv"><span>AUC fora da amostra</span><span>${nf(cal.auc_oos,3)}${esc(ic)}</span></div>
+          <div class="kv"><span>skill de Brier</span><span>${sinal(cal.skill_brier_oos,3)} (mín. ${sinal(pAg.min_skill_brier,2)})</span></div>
+          <div class="kv"><span>maior desvio de confiabilidade</span><span>${nf(cal.confiabilidade_max_gap,3)}</span></div>
+        </div>
+        <div class="col falhou">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:9px">
+            <span style="width:8px;height:8px;background:var(--rep)"></span>
+            <strong style="font-size:13px;color:var(--rep)">Não passou no protocolo estrito</strong></div>
+          <div class="kv"><span>AUC walk-forward</span><span>${nf(wf.valor,3)}${wf.ic95?` [${nf(wf.ic95[0],3)}; ${nf(wf.ic95[1],3)}]`:''}</span></div>
+          <div class="kv"><span>desenho</span><span style="font-family:var(--sans);font-size:11.5px;text-align:right">${esc(wf.desenho||'—')}</span></div>
+          <p style="margin:9px 0 0;font-size:11.5px;line-height:1.5;color:var(--rep)">${esc(wf.motivo||'')}</p>
+        </div>
+        <div class="col">
+          <strong style="font-size:13px;display:block;margin-bottom:9px">Do que o número é feito</strong>
+          <p style="margin:0;font-size:12px;line-height:1.6;color:var(--ink2)">${esc((cal.features||[]).join(' · '))}</p>
+          <p style="margin:10px 0 0;font-size:12px;line-height:1.6;color:var(--rep);font-weight:600">Nenhuma notícia entra aqui.</p>
+        </div>
+      </div>
+    </div>`;
+}
+
+/* -------------------------------------------------------------- direção ---*/
+function renderDirecao(){
+  const med   = (S.st && S.st.medidas) || {};
+  const porta = (S.st && S.st.portas && S.st.portas.direcao) || {};
+  const pAg   = (S.st && S.st.portas && S.st.portas.agitacao) || {};
+  const d1    = med.direcao_d1_auc || {};
+  const dias  = S.st ? S.st.dias_sinal : null;
+  const minD  = porta.min_rotulos || 120;
+  // DIAS, nao rotulos: varios sinais do mesmo dia apontam para o mesmo
+  // retorno de D+1, entao contar rotulos infla a amostra. Ver api._status.
+  const falta = (dias==null) ? null : Math.max(0, minD - dias);
+  // O MOTIVO CERTO, nao o generico. "Nenhum calibrador passou na porta"
+  // sugere que houve tentativa e reprovacao; com 1 dia de historico nada foi
+  // sequer TENTADO. Sao estados diferentes e o usuario precisa distinguir.
+  // Declarado no escopo da FUNCAO: o bloco "o que falta" tambem usa, e ter
+  // isto dentro do `if (elIntro)` derrubava renderDirecao com ReferenceError.
+  const tent = S.st && S.st.direcao_tentativa;
+  const elIntro = document.getElementById('dir-intro');
+  if (elIntro){
+    const vazios = `A API devolve <code class="mono">p_up</code>, <code class="mono">p_down</code> e <code class="mono">p_flat</code> vazios. Isso não é carregamento e não é falta de dado do dia: é <strong>ausência de evidência</strong>. `;
+    // Tentativa registrada manda sobre a contagem de dias: se o calibrador JA
+    // rodou e reprovou, dizer "faltam N dias" esconderia o resultado.
+    elIntro.innerHTML = vazios + (
+      tent
+        ? `O calibrador <strong>foi ajustado com ${int(tent.n)} rótulos e reprovou</strong> — ${esc((tent.reason||'').replace(/^nao passou na porta: /,'').replace(/\. O visor.*$/,''))}.`
+        : (falta != null && falta > 0
+            ? `Não há histórico suficiente para <em>tentar</em> calibrar a direção — faltam ${falta} dias de pregão. Nenhum calibrador foi ajustado ainda.`
+            : `O calibrador de direção não passou na porta, então o painel não publica probabilidade.`));
+  }
+
+  // O QUE FALTA depende de ONDE parou. Dizer "faltam N dias" quando o
+  // calibrador ja rodou e reprovou por DESEMPENHO troca o bloqueio real por
+  // um secundario -- juntar mais dias nao conserta skill de +0,0004.
+  const porDesempenho = tent && tent.falhou_por === 'desempenho';
+  const bloco = porDesempenho
+    ? `<strong style="color:var(--rep)">desempenho, não amostra</strong>
+       &nbsp;—&nbsp;o calibrador rodou com ${int(tent.n)} rótulos de
+       ${dias==null?'—':dias} dias.<br>
+       <span style="color:var(--ink3)">skill de Brier obtido:
+       <strong>${sinal(tent.skill_up,4)}</strong> na alta e
+       <strong>${sinal(tent.skill_down,4)}</strong> na queda; a porta pede
+       ${sinal(porta.min_skill_brier,2)} nos dois. Mais dias não corrigem isso —
+       o sinal precisa carregar informação que hoje não carrega.</span>`
+    : `<strong style="color:var(--rep)">${falta==null?'—':falta} dias de pregão</strong>
+       &nbsp;—&nbsp;há ${dias==null?'—':dias} no banco, a porta pede ${minD}.<br>
+       <span style="color:var(--ink3)">Rodar as tarefas não produz rótulo: ele só
+       existe quando o pregão <em>seguinte</em> acontece. Hoje há
+       ${int(S.st?S.st.labels:null)} rótulos em
+       ${dias==null?'—':dias} ${dias===1?'dia':'dias'} distintos.</span>`;
+  document.getElementById('porta').innerHTML =
+    `<p class="m0 mono" style="font-size:11px;letter-spacing:1px;color:var(--ink3)">O QUE FALTA PARA CALIBRAR</p>
+     <div style="margin-top:6px">${bloco}</div>
+     <p class="m0 mono" style="font-size:11px;letter-spacing:1px;color:var(--ink3);margin-top:12px">A PORTA DA DIREÇÃO</p>
+     <div style="margin-top:6px">${minD} dias · skill de Brier &gt; ${nf(porta.min_skill_brier,2)}
+     nos dois lados · sem limiar de AUC<br>
+     <span style="color:var(--ink3)">(a porta da agitação é outra: ≥ ${int(pAg.min_oos)} fora da amostra e AUC ≥ ${nf(pAg.min_auc,2)})</span></div>
+     <p class="m0 mono" style="font-size:11px;letter-spacing:1px;color:var(--ink3);margin-top:12px">E O QUE JÁ FOI MEDIDO</p>
+     <div style="margin-top:6px">
+     direção em D+1: AUC <strong style="color:var(--rep)">${nf(d1.valor,4)}</strong>
+     fora da amostra, n = ${d1.n_oos?d1.n_oos.toLocaleString('pt-BR'):'—'}<br>
+     ruído puro, no mesmo arcabouço: ${d1.controles?nf(d1.controles.ruido_puro,4):'—'}<br>
+     <span style="color:var(--rep)">${d1.veredito?esc(d1.veredito.split('.')[0]):''}</span><br>
+     canal de notícias: não medido</div>`;
+
+  const rows = visiveis().slice().sort((a,b) => (b.n_articles||0) - (a.n_articles||0));
+  document.getElementById('tom').innerHTML = rows.map(r => {
+    const posZ = ((Math.max(-1, Math.min(1, r.z||0)) + 1) / 2) * 100;
+    return `<div class="tom-ln">
+      <div class="c-pap">${esc(r.ticker)}</div>
+      <div class="c-tom"><span class="ax"></span><span class="zero"></span>
+        <span class="tick" style="left:calc(8px + (100% - 16px) * ${posZ/100})"></span></div>
+      <div class="c-z">${sinal(r.z,2)}</div>
+      <div class="c-na">${int(r.n_articles)}</div>
+      <div class="c-pe"><span class="g"><i style="width:${Math.min(100,(r.n_eff||0)*100)}%"></i></span>
+        <b>${r.n_eff==null?'—':nf(r.n_eff, r.n_eff<0.1?3:2)}</b></div>
+      <div class="c-di">${r.dispersion==null?'—':nf(r.dispersion,2)}</div>
+    </div>`;
+  }).join('');
+
+  // As duas leituras que o par n_articles/n_eff produz, calculadas ao vivo.
+  const comN = S.sigs.filter(s => (s.n_articles||0) > 0);
+  const maior = comN.slice().sort((a,b) => b.n_articles - a.n_articles)[0];
+  const menor = comN.slice().sort((a,b) => (a.n_eff||0) - (b.n_eff||0))[0];
+  document.getElementById('nota-eff').innerHTML = maior
+    ? `As ${int(maior.n_articles)} matérias de <strong>${esc(maior.ticker)}</strong> renderam peso efetivo ${nf(maior.n_eff,2)} de 1,00 — repetição do mesmo fato, idade e veículo de pouco alcance descontam.` +
+      (menor && menor !== maior ? ` ${menor.n_articles===1?'A única matéria':'As '+int(menor.n_articles)+' matérias'} de ${esc(menor.ticker)} rendeu${menor.n_articles===1?'':'ram'} ${nf(menor.n_eff,3)}.` : '')
+    : 'Nenhum papel tem matéria pontuada agora.';
+
+  // O papel mais agitado sem nenhuma notícia é a prova de que as duas coisas
+  // não se falam. Só aparece quando de fato acontece.
+  const semN = S.sigs.filter(s => !s.n_articles && s.p_vol != null && s.vol_base != null && s.p_vol > s.vol_base)
+                     .sort((a,b) => b.p_vol - a.p_vol)[0];
+  document.getElementById('nota-mglu').innerHTML = semN
+    ? `<strong>${esc(semN.ticker)} tem 0 matérias</strong> e está acima do acaso na agitação. É a prova visível de que a agitação não vem das notícias: vem do histórico de preços.`
+    : `A agitação não lê notícia nenhuma: ela vem do histórico de preços e do painel macro.`;
+}
+
+/* --------------------------------------------------------------- fontes ---*/
+function renderFontes(){
+  const st = S.st || {}, sur = st.surpresa || {}, cad = st.cadeia || {};
+  const cal = ((st.agitacao||{}).calibrador||{}).metrics || {};
+  const per = cal.periodo ? cal.periodo.join(' a ') : '—';
+  const nSur = (sur.por_indicador||[]).reduce((a,b) => a + (b.n||0), 0);
+  const F = [
+    ['Preços diários', `${int(st.prices)} cotações\n${per}`, 'Agitação (toda ela) e a cadeia de afetação.', 'MEDIDO', 'selo-med'],
+    ['Notícias', `${int(st.articles)} matérias · ${int(st.mentions)} menções\n${int(st.scores)} pontuadas · ${int(st.labels)} rótulos D+1`, 'Tom z. Não alimenta a agitação e não vira probabilidade.', 'NÃO CALIBRADO', 'selo-nao'],
+    ['Focus / divulgações', `${int(nSur)} divulgações · ${(sur.por_indicador||[]).length} indicadores`, 'Surpresa macro, que entra no sinal mesmo reprovada.', 'REPROVADO', 'selo-rep'],
+    ['Painel macro', `${int(cad.n_drivers)} drivers · janela de ${int(cad.janela)} pregões\nR² de ${nf(cad.r2_min,3)} a ${nf(cad.r2_max,3)}`, 'Cadeia de afetação e uma feature da agitação.', 'DESCRITIVO', 'selo-desc'],
+  ];
+  document.getElementById('fontes').innerHTML = F.map(([n,q,d,e,c]) => `
+    <div class="f"><b>${esc(n)}</b><p class="q">${esc(q)}</p>
+      <div class="al"><p class="mono" style="font-size:10px;letter-spacing:1px;color:var(--ink3);margin-bottom:5px">ALIMENTA</p>
+        <p>${esc(d)}</p><span class="selo ${c}" style="margin-top:8px">${esc(e)}</span></div></div>`).join('');
+
+  const t = sur.teste || {};
+  const drv = {};
+  S.sigs.forEach(s => { if (s.cadeia_top) (drv[s.cadeia_top] = drv[s.cadeia_top] || []).push(s.ticker); });
+  document.getElementById('cards2').innerHTML = `
+    <div class="card-rep">
+      <div class="top"><strong style="font-size:15px">Surpresa macro</strong>
+        <span class="selo selo-rep">LIGADA E REPROVADA</span></div>
+      <div class="corpo">
+        <p style="margin:0 0 12px;font-size:13px;line-height:1.6;color:var(--ink2)">Entra no sinal por decisão explícita do usuário, mas <strong style="color:var(--rep)">falhou no teste de permutação</strong>. Toda contribuição dela aparece com a ressalva colada ao número, nunca em nota de rodapé.</p>
+        <div style="display:flex;flex-wrap:wrap;align-items:flex-end;gap:13px;padding:11px 0;border-top:1px solid var(--rep-rule);border-bottom:1px solid var(--rep-rule)">
+          <div><div class="mono" style="font-size:11px;color:var(--ink3)">p da permutação</div>
+            <div class="cifra-rep">${nf(t.p,3)}</div></div>
+          <span class="selo selo-rep" style="margin-bottom:5px">LIMITE p ≤ ${nf(t.p_maximo,2)}</span>
+          <span style="font-size:12px;color:var(--ink3);margin-bottom:6px">${int(t.n_divulgacoes)} divulgações de IPCA</span>
+        </div>
+        <p style="margin:11px 0 0;font:11.5px/1.7 var(--mono);color:var(--ink2)">${esc((sur.motivo||'').slice(0,320))}</p>
+        <div style="margin-top:12px"><button class="btn-perg" type="button" data-perg="surpresa">Perguntar sobre a surpresa macro</button></div>
+      </div>
+    </div>
+    <div class="card-desc">
+      <div class="top"><strong style="font-size:15px">Cadeia de afetação</strong>
+        <span class="selo selo-desc">DESCRITIVA</span></div>
+      <div class="corpo">
+        <p style="margin:0 0 12px;font-size:13px;line-height:1.6;color:var(--ink2)">Responde <strong>por que este papel se move</strong> — não para onde. Regressão dos retornos diários em ${int(cad.n_drivers)} drivers, janela de ${int(cad.janela)} pregões. Nunca passou por teste de permutação e <strong>não entra em nenhuma probabilidade</strong>.</p>
+        <div style="display:flex;flex-wrap:wrap;gap:7px">
+          ${Object.entries(drv).sort((a,b)=>b[1].length-a[1].length).map(([d,ts]) =>
+            `<span class="chip"><b>${esc(d)}</b><span>${ts.map(esc).join(' · ')}</span></span>`).join('')}
+        </div>
+        <div style="margin-top:12px"><button class="btn-perg" type="button" data-perg="cadeia">Perguntar sobre a cadeia</button></div>
+      </div>
+    </div>`;
+}
+
+/* -------------------------------------------------------------- detalhe ---*/
+const CACHE = {};
+function detalheHTML(t){
+  const d = CACHE[t];
+  if (!d) return `<div class="detalhe carregando">carregando ${esc(t)}…</div>`;
+  const c = d.cadeia;
+  let cadHTML = '<p style="margin:0;font-size:12.5px;color:var(--ink3)">Sem cadeia estimada para este papel.</p>';
+  if (c && c.top && c.top.length){
+    const r2 = c.r2 * 100;
+    const mx = Math.max(...c.top.map(x => x.share));
+    cadHTML = `
+      <div class="r2bar"><span class="ex" style="width:${r2}%">${nf(r2,1)}%</span>
+        <span class="nao hach" style="width:${100-r2}%">${nf(100-r2,1)}%</span></div>
+      <div style="display:flex;justify-content:space-between;font-size:11.5px;color:var(--ink2);margin-bottom:12px">
+        <span><strong>explicado pelo painel macro</strong> · R² ${nf(c.r2,3)}</span><span>não explicado</span></div>
+      ${c.top.map(x => {
+        const w = (x.share / Math.max(mx, 0.0001)) * 44;
+        const mesmo = x.sinal > 0;
+        return `<div class="drv"><span class="n">${esc(x.driver)}</span>
+          <span class="b"><i style="${mesmo?`left:50%;width:${w}%`:`right:50%;width:${w}%`}"></i><span class="zero"></span></span>
+          <span class="s">${nf(x.share*100,1)}%</span>
+          <span class="t">${mesmo?'mesmo sentido':'sentido contrário'}</span></div>`;
+      }).join('')}
+      <p style="margin:10px 0 0;font-size:11.5px;line-height:1.5;color:var(--ink3)">${esc(c.nota||'')}</p>`;
+  }
+  const itens = (d.items||[]).slice(0,6);
+  return `<div class="detalhe">
+    <div class="det-grid">
+      <div class="det-col">
+        <h3>Por que ${esc(t)} se move</h3>
+        ${cadHTML}
+      </div>
+      <div class="det-col">
+        <h3>Evidência de notícia</h3>
+        <div class="kv"><span>matérias brutas</span><span>${int(d.n_articles)}</span></div>
+        <div class="kv"><span>peso efetivo (de 1,00)</span><span>${nf(d.n_eff,3)}</span></div>
+        <div class="kv"><span>discordância entre fontes</span><span>${nf(d.dispersion,2)}</span></div>
+        <div class="kv"><span>tom z (entrada, não previsão)</span><span>${sinal(d.z,3)}</span></div>
+        <div class="kv"><span>probabilidade de alta</span><span class="semnum" style="font-size:10px">SEM CALIBRAÇÃO</span></div>
+        ${itens.length ? `<h3 style="margin-top:16px">Manchetes que formaram o tom</h3>
+          ${itens.map(i => `<div class="manchete">${esc(i.title)}
+            <div class="meta">${esc(i.domain)} · peso ${nf(i.w,3)} · ${nf(i.age_h,1)} h${i.cluster_size>1?` · ${i.cluster_size} repetições`:''}</div></div>`).join('')}` : ''}
+        <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:14px">
+          <a class="btn btn-sm" href="/acao.html?t=${encodeURIComponent(t)}" style="display:inline-flex;align-items:center;text-decoration:none">Abrir gráfico</a>
+          <button class="btn-perg" type="button" data-perg="papel" data-t="${esc(t)}">Perguntar sobre ${esc(t)}</button>
+        </div>
+      </div>
+    </div></div>`;
+}
+
+async function abrir(t){
+  S.aberto = (S.aberto === t) ? null : t;
+  renderAgitacao();
+  if (S.aberto && !CACHE[t]){
+    CACHE[t] = await J(`/api/ticker/${encodeURIComponent(t)}?horizonte=${S.h}`);
+    if (S.aberto === t) renderAgitacao();
+  }
+}
+
+/* ===================================================================== IA ===*/
+const ESCOPOS = [
+  ['painel','O painel inteiro'], ['agitacao','A agitação'], ['direcao','Direção e tom das notícias'],
+  ['evidencia','Matérias e peso efetivo'], ['cadeia','Cadeia de afetação'],
+  ['surpresa','Surpresa macro'], ['operacoes','Operações e tarefas'],
+];
+const SUGESTOES = {
+  painel: ['Quais papéis têm chance maior de se mexer amanhã?','O sistema sabe dizer se vão subir ou cair?','De onde vem cada número desta tela?'],
+  agitacao: ['Quanto o topo está acima do acaso?','Por que 20% pode ser igual a jogar moeda?','O que entra no cálculo da agitação?'],
+  direcao: ['Por que não há probabilidade de alta?','O que falta para calibrar a direção?','O z serve para prever o preço?'],
+  evidencia: ['Por que 15 matérias viram peso 0,73?','Qual papel tem mais evidência de notícia?','O que é discordância entre fontes?'],
+  cadeia: ['Por que a Petrobras se move?','Quanto do movimento o macro explica?','A cadeia serve para prever?'],
+  surpresa: ['Por que ela está ligada se foi reprovada?','O que significa p = 0,508?','Quanto ela pesa no sinal?'],
+  operacoes: ['Quando foi a última coleta de notícias?','O que está agendado agora?','O que precisa rodar para calibrar a direção?'],
+  papel: ['Por que este papel se move?','Qual a chance de ele se mexer amanhã?','O que as notícias dele dizem?'],
+};
+let IA_ESCOPO = 'painel', IA_TICKER = null, IA_RESP = null;
+
+function abrirIA(escopo, ticker){
+  if (escopo){ IA_ESCOPO = escopo; IA_TICKER = ticker || null; }
+  document.getElementById('ia').dataset.aberto = '1';
+  renderIAEscopo(); renderIA();
+  document.getElementById('ia-q').focus();
+}
+
+function renderIAEscopo(){
+  const sel = document.getElementById('ia-escopo');
+  const extra = IA_TICKER ? [[`papel`, `Papel: ${IA_TICKER}`]] : [];
+  sel.innerHTML = [...extra, ...ESCOPOS].map(([v,l]) =>
+    `<option value="${esc(v)}"${v===IA_ESCOPO?' selected':''}>${esc(l)}</option>`).join('');
+  document.getElementById('ia-sug').innerHTML =
+    (SUGESTOES[IA_ESCOPO]||SUGESTOES.painel).map(q => `<button type="button" data-q="${esc(q)}">${esc(q)}</button>`).join('');
+}
+
+function renderIA(){
+  const el = document.getElementById('ia-corpo');
+  let html = '';
+
+  if (S.ia && !S.ia.ok){
+    html += `<div class="ia-off"><span class="selo selo-nao">IA DESLIGADA</span>
+      <p style="margin:0;font-size:13px;line-height:1.6;color:var(--ink2)">${esc(S.ia.motivo||'')}</p>
+      <p style="margin:10px 0 0;font:11.5px/1.7 var(--mono);color:var(--ink2)">OBS_ALLOW_EXTERNAL_LLM=1<br>OBS_LLM_URL=http://127.0.0.1:8100/v1/chat/completions<br>OBS_LLM_KEY=…<br>OBS_LLM_MODEL=…</p>
+      <p style="margin:10px 0 0;font-size:12px;line-height:1.55;color:var(--ink3)">Mesmo desligada, o pacote de fatos que ela receberia continua visível abaixo a cada pergunta.</p></div>`;
+  }
+
+  if (S.esperando) html += `<p class="carregando">consultando…</p>`;
+
+  const r = IA_RESP;
+  if (r && !S.esperando){
+    if (r.ok){
+      html += `<div class="resp"><div class="txt">${esc(r.resposta)}</div>`;
+      if (r.fatos && r.fatos.length){
+        html += `<div class="fatos">` + r.fatos.map(f =>
+          `<div><span>${esc(f.rotulo)}</span><b>${esc(f.valor)}</b></div>`).join('') + `</div>`;
+      }
+      html += `</div>`;
+      (r.ressalvas||[]).forEach(x => { html += `<div class="ress">${esc(x)}</div>`; });
+      (r.acoes||[]).forEach((a,i) => {
+        const del = a.classe === 'deliberada';
+        html += `<div class="acao${del?' deliberada':''}" data-acao="${i}">
+          <div class="lin1"><b>${esc(a.label)}</b>
+            <span class="selo ${del?'selo-nao':'selo-desc'}">${del?'DELIBERADA':'ROTINA'}</span></div>
+          <p>${esc(a.motivo)}</p>
+          ${del?`<div class="aviso">Esta tarefa sobrescreve o que o painel publica. A IA só propôs: confirme abaixo para enfileirar.</div>`:''}
+          <div style="margin-top:10px"><button class="btn ${del?'btn-rep':'btn-prim'} btn-sm" type="button" data-run="${esc(a.job)}" data-del="${del?1:0}">${del?'Confirmar e enfileirar':'Enfileirar agora'}</button>
+            <span class="mono" style="font-size:11px;color:var(--ink3);margin-left:8px" data-run-msg="${esc(a.job)}"></span></div>
+        </div>`;
+      });
+      if (r.model) html += `<p class="mono" style="font-size:10.5px;color:var(--ink3);margin-top:12px">modelo: ${esc(r.model)}</p>`;
+    } else if (!r.ia_desligada){
+      html += `<div class="aviso">${esc(r.error||'falha na consulta')}</div>`;
+    }
+    if (r.contexto){
+      html += `<details class="ctx"><summary>O que a IA viu (${esc(r.escopo)}${r.ticker?' · '+esc(r.ticker):''})</summary>
+        <pre>${esc(JSON.stringify(r.contexto, null, 1))}</pre></details>`;
+    }
+  }
+
+  if (!html) html = `<p style="margin:0;font-size:13px;line-height:1.6;color:var(--ink2)">Escolha o escopo, escreva a pergunta — ou toque numa sugestão. A resposta sai apenas dos dados desta tela, e o pacote de fatos usado fica visível junto.</p>`;
+  el.innerHTML = html;
+  el.scrollTop = 0;
+}
+
+async function perguntar(){
+  const q = document.getElementById('ia-q').value.trim();
+  if (!q || S.esperando) return;
+  S.esperando = true; renderIA();
+  try{
+    IA_RESP = await POST('/api/perguntar', {pergunta:q, escopo:IA_ESCOPO, ticker:IA_ESCOPO==='papel'?IA_TICKER:null, horizonte:S.h});
+  }catch(e){
+    IA_RESP = {ok:false, error:String(e)};
+  }
+  S.esperando = false; renderIA();
+}
+
+/* ================================================================ eventos */
+document.getElementById('hz').addEventListener('click', e => {
+  const b = e.target.closest('[data-h]'); if (!b) return;
+  S.h = b.dataset.h; S.aberto = null; carregar();
+});
+document.getElementById('recarregar').addEventListener('click', carregar);
+document.getElementById('busca').addEventListener('input', e => { S.busca = e.target.value; renderAgitacao(); renderDirecao(); });
+document.getElementById('setor').addEventListener('change', e => { S.setor = e.target.value; renderAgitacao(); renderDirecao(); });
+document.getElementById('lista').addEventListener('click', e => {
+  const b = e.target.closest('[data-perg]');
+  if (b){ e.stopPropagation(); abrirIA(b.dataset.perg, b.dataset.t); return; }
+  const l = e.target.closest('.linha'); if (l) abrir(l.dataset.t);
+});
+document.body.addEventListener('click', e => {
+  const b = e.target.closest('[data-perg]');
+  if (b && !e.target.closest('#lista')) abrirIA(b.dataset.perg, b.dataset.t);
+});
+document.getElementById('abrir-ia').addEventListener('click', () => abrirIA('painel'));
+document.getElementById('fechar-ia').addEventListener('click', () => { document.getElementById('ia').dataset.aberto = '0'; });
+document.getElementById('ia-escopo').addEventListener('change', e => { IA_ESCOPO = e.target.value; renderIAEscopo(); });
+document.getElementById('ia-enviar').addEventListener('click', perguntar);
+document.getElementById('ia-q').addEventListener('keydown', e => {
+  if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) perguntar();
+});
+document.getElementById('ia-sug').addEventListener('click', e => {
+  const b = e.target.closest('[data-q]'); if (!b) return;
+  document.getElementById('ia-q').value = b.dataset.q; perguntar();
+});
+// A IA propõe; quem enfileira é este clique. Nunca o servidor por conta dela.
+document.getElementById('ia-corpo').addEventListener('click', async e => {
+  const b = e.target.closest('[data-run]'); if (!b) return;
+  b.disabled = true;
+  const msg = document.querySelector(`[data-run-msg="${b.dataset.run}"]`);
+  try{
+    const r = await POST('/api/admin/run', {job:b.dataset.run});
+    if (msg) msg.textContent = r.queued ? `enfileirado (#${r.id})` : (r.reason || 'não enfileirado');
+  }catch(err){ if (msg) msg.textContent = 'falhou: ' + err; }
+});
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') document.getElementById('ia').dataset.aberto = '0';
+});
+
+carregar();
+setInterval(() => { if (document.getElementById('ia').dataset.aberto !== '1') carregar(); }, 120000);
+</script>
+</body>
+</html>

@@ -1,0 +1,14 @@
+enfileirados: ['refresh_prices', 'refresh_drivers', 'refresh_ri', 'build_labels']
+grupos: {'refresh_prices': 'mercado', 'refresh_drivers': 'mercado', 'refresh_ri': 'documento', 'build_labels': 'modelo'}
+-> refresh_prices e refresh_drivers compartilham 'mercado', entao so um entra nesta leva; os outros dois sao grupos distintos.
+
+work_batch #1 -> 2 jobs em paralelo, 10.5s
+work_batch #2 -> 0 jobs, 0.0s
+
+TOTAL 10.5s para 2 jobs
+  build_labels         done         0s  ok
+  refresh_drivers      done         6s  ok
+  refresh_prices       done        10s  ok
+  build_labels         done         1s  ok
+  refresh_ri           running  -1790955042s  ok
+  refresh_drivers      done         5s  ok

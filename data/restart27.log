@@ -1,0 +1,12 @@
+== 0. Derrubando processos antigos ==
+  [32m✓[0m worker derrubado
+  [32m✓[0m painel derrubado
+  [32m✓[0m nenhum run orfao
+== 1. Banco ==
+  [32m✓[0m esquema pronto
+== 2. Proxy de IA ==
+  [32m✓[0m subiu na porta 8100
+== 3. Dados base ==
+  [32m✓[0m precos
+  [32m✓[0m drivers macro
+== 4. Painel ==

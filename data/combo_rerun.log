@@ -1,0 +1,18 @@
+  [yf] EMBR3.SA: falhou
+  [yf] CPLE6.SA: falhou
+18 acoes
+414 pregoes
+
+========================================================================
+ALVO UNICO: residuo transversal do GAP de abertura T+1
+========================================================================
+A) exposicao a ENERGIA         agrupado: IC=+0.0512 (limiar ingenuo 0.0285)
+   -> Fama-MacBeth             dias= 262  IC_medio= +0.0167  t= +0.74
+B) exposicao a CAMBIO          agrupado: IC=-0.0847 (limiar ingenuo 0.0285)
+   -> Fama-MacBeth             dias= 262  IC_medio= -0.0787  t= -3.70  SIG
+C) A + B combinados            agrupado: IC=+0.0812 (limiar ingenuo 0.0285)
+   -> Fama-MacBeth             dias= 262  IC_medio= +0.0601  t= +3.03  SIG
+
+========================================================================
+melhor |IC| num alvo unico: 0.0847
+-> acerto direcional: 52.7%  (52.7 em 100)

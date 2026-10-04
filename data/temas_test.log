@@ -1,0 +1,21 @@
+
+=== 1. CONTEMPORANEO -- o sinal descreve certo? ===
+tema                      proxy         n       IC  p_tempo  p_sinal  acerto/100
+  juros_credito           --                                sem serie diaria que sirva d
+  cambio_exportador       USDBRL     2197  +0.1574    0.000    0.199       55.0  SIG
+  intervencao_estatal     --                                sem serie diaria que sirva d
+  tributacao              --                                sem serie diaria que sirva d
+  consumo_renda           --                                sem serie diaria que sirva d
+  custo_energia_insumo    BRENT      2426  +0.0736    0.000      n/a       52.3  SIG
+  infraestrutura_logistica--                                sem serie diaria que sirva d
+  ambiental_regulatorio   --                                sem serie diaria que sirva d
+  risco_politico          USDBRL     2197  +0.1178    0.000      n/a       53.8  SIG
+
+=== 2. DEFASADO (D+1) -- o sinal PREVE? ===
+tema                      proxy         n       IC  p_tempo  p_sinal  acerto/100
+  cambio_exportador       USDBRL     2196  +0.0212    0.305    0.216       50.7
+  custo_energia_insumo    BRENT      2425  +0.0124    0.519      n/a       50.4
+  risco_politico          USDBRL     2196  +0.0209    0.315      n/a       50.7
+
+Leitura: passar no 1 e falhar no 2 significa que o modelo acerta a
+economia e o mercado ja precificou -- serve para EXPLICAR, nao prever.

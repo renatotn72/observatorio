@@ -1,0 +1,17 @@
+modelo                             AUC    skill   prec@5%
+  todas as 5                    0.5902  +0.0240     38.0
+  sem Payroll (4)               0.5912  +0.0244     38.3
+  sem Payroll nem vol-5 (3)     0.5913  +0.0242     38.8
+  so vol-20 + |ret| hoje (2)    0.5911  +0.0222     37.7
+  so vol-20 (1)                 0.5851  +0.0204     35.5
+
+=== margem de erro da precisao no topo 5% ===
+(Wilson 95%; e a faixa honesta do 'acerta X em 100')
+  todas as 5                    38.0  [35.1, 41.0]  n=1021
+  sem Payroll (4)               38.3  [35.4, 41.3]  n=1021
+  sem Payroll nem vol-5 (3)     38.8  [35.8, 41.8]  n=1021
+  so vol-20 + |ret| hoje (2)    37.7  [34.8, 40.7]  n=1021
+  so vol-20 (1)                 35.5  [32.6, 38.4]  n=1021
+
+  taxa-base: 19.7 em 100
+  Se o intervalo nao exclui a taxa-base, o modelo nao provou nada.

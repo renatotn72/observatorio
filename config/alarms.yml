@@ -1,0 +1,30 @@
+# O alarme NAO dispara em P(alta) absoluto. Dispara em VANTAGEM sobre a
+# taxa-base historica do papel, com porta de evidencia e de novidade.
+defaults:
+  min_edge: 0.12          # |P(classe) - taxa_base| minimo
+  min_n_eff: 2.0          # evidencia efetiva minima (soma de pesos das noticias)
+  require_novelty: true   # exige ao menos 1 noticia "primeira reportagem"
+  require_calibrated: true  # NAO alarmar com modelo nao calibrado
+  cooldown_min: 90        # minutos de silencio por papel apos disparar
+  market_hours_only: false
+  channels: [console, file]
+
+rules:
+  - ticker: PETR4
+    direction: both        # up | down | both
+    min_edge: 0.10
+  - ticker: VALE3
+    direction: both
+  - ticker: MGLU3
+    direction: down
+    min_edge: 0.15
+  - ticker: "*"            # regra coringa para o resto da watchlist
+    direction: both
+    min_edge: 0.15
+    cooldown_min: 180
+
+notify:
+  file_path: data/alarms.log
+  # telegram:
+  #   bot_token: env:TELEGRAM_BOT_TOKEN
+  #   chat_id: env:TELEGRAM_CHAT_ID

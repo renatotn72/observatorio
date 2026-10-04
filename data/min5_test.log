@@ -1,0 +1,27 @@
+Baixando barras de 5m (1mo)...
+  [intraday] PETR4       1736 barras de 5m
+  [intraday] VALE3       1738 barras de 5m
+  [intraday] ITUB4       1731 barras de 5m
+  [intraday] BBDC4       1736 barras de 5m
+  [intraday] BBAS3       1737 barras de 5m
+  [intraday] ABEV3       1737 barras de 5m
+  [intraday] WEGE3       1733 barras de 5m
+  [intraday] MGLU3       1725 barras de 5m
+  [intraday] B3SA3       1728 barras de 5m
+  [intraday] SUZB3       1735 barras de 5m
+  [intraday] USDBRL      2811 barras de 5m
+  [intraday] BRENT       5551 barras de 5m
+  10 papeis, 1717 barras alinhadas
+
+tema                    defasagem         n       IC       p  acertos/100
+  cambio_exportador     mesma barra    1716  +0.1641   0.000        55.2  SIG
+  cambio_exportador     proxima barra   1715  +0.0171   0.460        50.5
+  cambio_exportador     +2 barras      1714  +0.0135   0.588        50.4
+  custo_energia_insumo  mesma barra    1716  +0.0429   0.080        51.4
+  custo_energia_insumo  proxima barra   1715  -0.0069   0.776        49.8
+  custo_energia_insumo  +2 barras      1714  -0.0248   0.314        49.2
+  risco_politico        mesma barra    1709  +0.0283   0.270        50.9
+  risco_politico        proxima barra   1708  +0.0236   0.346        50.8
+  risco_politico        +2 barras      1707  +0.0021   0.916        50.1
+
+Comparar com o diario: contemporaneo +0,157 / D+1 +0,021.

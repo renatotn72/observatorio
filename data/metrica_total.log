@@ -1,0 +1,46 @@
+amostra: 24500 pares (papel, dia)  taxa-base 19.7%
+periodo: 2016-12-02 .. 2026-10-02
+
+=== 1. UNITARIA: cada feature sozinha (fora da amostra) ===
+feature                                            AUC    skill
+  |ret| hoje                                    0.5428  +0.0108
+  vol 5 pregoes                                 0.5762  +0.0181
+  vol 20 pregoes                                0.5851  +0.0204
+  vol do painel macro                           0.5272  +0.0021
+  Payroll EUA no dia-alvo (calendário aproximado)  0.4614  -0.0003
+
+=== 2. INTEGRADA ===
+  modelo completo (5 features)               0.5902  +0.0240
+
+  deixa-uma-de-fora (quanto PERDE sem ela):
+feature retirada                                   AUC    delta
+  |ret| hoje                                    0.5885  -0.0017
+  vol 5 pregoes                                 0.5902  +0.0000
+  vol 20 pregoes                                0.5821  -0.0081
+  vol do painel macro                           0.5888  -0.0014
+  Payroll EUA no dia-alvo (calendário aproximado)  0.5912  +0.0011
+
+  acumulada (em ordem de valor unitario):
+ate                                                AUC    ganho
+  +vol 20 pregoes                               0.5851  +0.0851
+  +vol 5 pregoes                                0.5876  +0.0025
+  +|ret| hoje                                   0.5900  +0.0025
+  +vol do painel macro                          0.5912  +0.0012
+  +Payroll EUA no dia-alvo (calendário aproximado)  0.5902  -0.0011
+
+=== 3. OPERACIONAL: acertos em 100 ===
+  taxa-base (chute): 19.8 em 100
+
+quando o sistema aponta             acertos/100   vs base       n
+  os  5% mais agitados                      38.0     1.92x    1021
+  os 10% mais agitados                      34.7     1.75x    2042
+  os 20% mais agitados                      29.7     1.50x    4084
+  os 30% mais agitados                      26.8     1.36x    6126
+  os 20% mais calmos                      15.0     0.76x    4084
+
+=== 4. AS TRES CABECAS ===
+  AGITACAO   MEDIDA   AUC 0.5902, n_oos 20420
+  DIRECAO    BLOQUEADA  0 rotulos (min 120)
+             se o IC do canal de noticia for 0.09, dá 52.9 em 100
+             IC necessario para 70 em 100: 0.588 (6.5x o medido)
+  ATENCAO    BLOQUEADA  21 dias-papel com noticia (min 120)

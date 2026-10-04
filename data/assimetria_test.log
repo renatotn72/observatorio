@@ -1,0 +1,10 @@
+ janela  horiz  cortes       IC      t       p  veredito
+    252     21       0   historico insuficiente
+    252     63      27  +0.0658   0.92   0.330  REPROVADO
+    252    126     101  +0.1190   3.16   0.000  PASSOU
+    504     63      26  +0.2154   3.28   0.000  PASSOU
+    504    126      89  +0.1800   4.56   0.000  PASSOU
+    126     21       0   historico insuficiente
+
+3 de 6 especificacoes passaram.
+Com 6 testes a 5%, esperar ~0.3 falso positivo. Uma aprovacao isolada nesta grade NAO e evidencia -- precisaria sobreviver a correcao de multiplicidade e a uma janela de validacao separada.
