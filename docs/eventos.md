@@ -114,6 +114,39 @@ fica deliberadamente de fora.
 Classificação errada polui a leitura da tela, não a medição — diferente do `s`,
 onde errar o lado estraga o resultado.
 
+## Teste de cada item da legenda
+
+`scripts/test_legenda.py` amarra **cada afirmação da legenda ao DOM do
+gráfico** — 40 verificações, com o painel de pé:
+
+```bash
+python3 -m obs.cli serve --port 8199 &
+python3 scripts/test_legenda.py
+```
+
+Existe porque legenda e gráfico são dois códigos desenhando a mesma coisa, e
+quando divergem a legenda vira mentira com aparência de documentação. Já
+aconteceu: as regras de estilo do marcador têm escopo `#chart` e não alcançavam
+as amostras da legenda, então o triângulo **vazado** do macro saía cheio,
+idêntico ao corporativo — e a legenda afirmava que os dois se distinguiam.
+
+O que cada caso confere:
+
+| item da legenda | o que o teste verifica |
+|---|---|
+| as 5 formas | a amostra usa a geometria declarada, e o gráfico desenha a mesma para notícia daquele tipo |
+| "triângulo vazado" | `fill: none` **na legenda e no gráfico**, e o corporativo cheio para contraste |
+| ← passado | o chevron aponta para a esquerda (x do meio é o menor) |
+| → futuro | o chevron aponta para a direita |
+| ● presente | é círculo, não seta |
+| "mais de uma marca" | notícia com duas orientações desenha duas marcas |
+| verde / vermelho / cinza | a cor computada é verde/vermelha/cinza **e** a nota tem o sinal correspondente |
+| cinza é redondo | o elemento é `circle`, não `path` |
+| tamanho = peso | a notícia de maior peso tem raio maior |
+| haste pontilhada | existe, é vertical e tem `stroke-dasharray` |
+| faixa inferior | as barras existem, para cima e para baixo |
+| "não entram no cálculo" | filtrar a legenda **não muda o `z`**, só o que a tela mostra |
+
 ## Na tela
 
 A legenda é **clicável e filtra**, nas duas dimensões, compondo com o filtro de

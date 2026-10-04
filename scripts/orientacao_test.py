@@ -52,6 +52,7 @@ com media. A escolha do agregador NAO explica o sinal. Fica registrado para
 ninguem repetir o teste.
 
 USO
+    python3 scripts/orientacao_test.py --simples        # acertos em 100, sem jargao
     python3 scripts/orientacao_test.py                  # tudo
     python3 scripts/orientacao_test.py --gran 1h
     python3 scripts/orientacao_test.py --papel PETR4
@@ -395,7 +396,76 @@ def imprime(titulo, res, corte_fdr):
               f"   [{r['ic95'][0]:>5.1f} – {r['ic95'][1]:>5.1f}]  {vd}")
 
 
-def main(grans=None, papeis_pedidos=None, como_json=False):
+def em_100(res, corte):
+    """A mesma medicao, em acertos por 100, sem jargao.
+
+    Existe porque a tabela tecnica nao e legivel para quem nao faz
+    estatistica, e a pergunta real do usuario e simples: "acerta quantas em
+    100, e isso e melhor que chutar?".
+    """
+    print(f"\n\n{'#' * 78}")
+    print("#  ACERTOS EM CADA 100 TENTATIVAS")
+    print(f"{'#' * 78}")
+    print("""
+Como ler, sem estatistica:
+  'noticia'  = de cada 100 vezes, quantas o sinal da noticia acertou.
+  'chute'    = de cada 100 vezes, quantas voce acertaria SEM ler noticia
+               nenhuma, so apostando sempre no lado mais comum.
+  'ganho'    = a diferenca. E so isso que a noticia acrescenta.
+  'confianca'= se o resultado aguenta ser testado ou pode ser sorte.
+
+DIRECAO      = acertar se o papel sobe ou desce.
+VOLATILIDADE = acertar quais vao se mexer muito (os 20% maiores).""")
+    for gran in ORDEM_GRAN:
+        sel = [r for r in res if r["gran"] == gran]
+        if not sel:
+            continue
+        print(f"\n{'=' * 78}")
+        print(f"{rotulo_gran(gran)}")
+        print(f"{'=' * 78}")
+        for alvo in ("direcao", "volatilidade"):
+            linhas = [r for r in sel if r["alvo"] == alvo]
+            if not linhas:
+                continue
+            print(f"\n  {alvo.upper()}")
+            print(f"  {'a noticia fala do':<20}{'o movimento medido e do':<26}"
+                  f"{'noticia':>9}{'chute':>8}{'ganho':>8}   confianca")
+            for o in ORIENTACOES:
+                for janela in ("passado", "futuro"):
+                    s = [r for r in linhas if r["orient"] == o
+                         and r["janela"] == janela]
+                    if not s:
+                        continue
+                    ac = est.median(r["acerto"] for r in s)
+                    ba = est.median(r["base"] for r in s)
+                    com_poder = [r for r in s if r["n"] >= MIN_N]
+                    if not com_poder:
+                        conf = "dado insuficiente"
+                    elif corte > 0 and min(r["p"] for r in com_poder) <= corte:
+                        conf = "AGUENTA O TESTE"
+                    else:
+                        conf = "pode ser sorte"
+                    print(f"  {o:<20}{janela:<26}{ac:>9.1f}{ba:>8.1f}"
+                          f"{ac - ba:>+8.1f}   {conf}")
+    com_poder = [r for r in res if r["n"] >= MIN_N]
+    if com_poder:
+        m = max(com_poder, key=lambda r: r["acerto"] - r["base"])
+        print(f"\n{'=' * 78}")
+        print("O MELHOR CASO DE TODA A MEDICAO (entre os que tem dado suficiente)")
+        print(f"{'=' * 78}")
+        print(f"  {rotulo_gran(m['gran'])}, {m['alvo']}, noticia de "
+              f"{m['orient']}, movimento do {m['janela']}")
+        print(f"  acertou {m['acerto']:.1f} em 100 contra {m['base']:.1f} do "
+              f"chute  =  ganho de {m['acerto'] - m['base']:.1f}")
+        print(f"  baseado em {m['n']} observacoes")
+        print("\n  E isso aguenta o teste? "
+              + ("SIM" if corte > 0 and m["p"] <= corte else
+                 "NAO -- um ganho desse tamanho aparece por sorte com"))
+        if not (corte > 0 and m["p"] <= corte):
+            print("  frequencia, com esta quantidade de dados.")
+
+
+def main(grans=None, papeis_pedidos=None, como_json=False, simples=False):
     rnd = random.Random(SEMENTE)
     con = connect()
     evs = eventos(con)
@@ -535,6 +605,8 @@ def main(grans=None, papeis_pedidos=None, como_json=False):
     print(f"\nPor papel: nenhuma celula de papel individual alcancou n >= "
           f"{MIN_N} em granularidade nenhuma. A unica leitura possivel com este")
     print("acervo e a agregada (TODOS).")
+    if simples:
+        em_100(todas, corte)
     if como_json:
         p = "data/orientacao_test.json"
         with open(p, "w", encoding="utf-8") as fh:
@@ -548,4 +620,4 @@ if __name__ == "__main__":
     a = sys.argv[1:]
     g = [a[i + 1] for i, x in enumerate(a) if x == "--gran" and i + 1 < len(a)]
     p = [a[i + 1] for i, x in enumerate(a) if x == "--papel" and i + 1 < len(a)]
-    main(g or None, p or None, "--json" in a)
+    main(g or None, p or None, "--json" in a, "--simples" in a)

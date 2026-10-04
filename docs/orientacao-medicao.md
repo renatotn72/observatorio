@@ -8,6 +8,93 @@ sobrevive à correção de teste múltiplo.
 
 ---
 
+## Em acertos por 100 — a versão sem estatística
+
+```bash
+python3 scripts/orientacao_test.py --simples
+```
+
+**Como ler:** `notícia` é quantas de cada 100 o sinal acertou. `chute` é
+quantas você acertaria **sem ler notícia nenhuma**, apostando sempre no lado
+mais comum. `ganho` é a diferença — é só isso que a notícia acrescenta.
+
+**Direção** = acertar se sobe ou desce.
+**Volatilidade** = acertar quais vão se mexer muito (os 20% maiores).
+
+### Direção — acertos em 100
+
+| granularidade | notícia fala do | movimento é do | notícia | chute | ganho | confiança |
+|---|---|---|---|---|---|---|
+| **1 minuto** | passado | passado | 45,8 | 50,8 | −5,0 | dado insuficiente |
+| | passado | futuro | 62,8 | 51,0 | +11,8 | dado insuficiente |
+| | presente | futuro | 56,3 | 51,1 | +5,3 | dado insuficiente |
+| | futuro | passado | 58,6 | 51,4 | +7,2 | dado insuficiente |
+| | futuro | futuro | 53,8 | 51,3 | +2,6 | dado insuficiente |
+| **5 minutos** | passado | passado | 54,5 | 52,0 | +2,5 | dado insuficiente |
+| | passado | futuro | 53,8 | 52,1 | +1,7 | dado insuficiente |
+| | presente | passado | 46,1 | 51,8 | −5,6 | pode ser sorte |
+| | presente | futuro | 55,2 | 51,9 | +3,3 | pode ser sorte |
+| | futuro | passado | 50,0 | 52,6 | −2,6 | pode ser sorte |
+| | futuro | futuro | 51,0 | 52,6 | −1,6 | pode ser sorte |
+| **15 minutos** | passado | passado | 50,8 | 52,8 | −2,0 | dado insuficiente |
+| | passado | futuro | 57,4 | 52,7 | +4,7 | dado insuficiente |
+| | presente | passado | 55,6 | 52,2 | +3,3 | pode ser sorte |
+| | presente | futuro | 56,4 | 52,9 | +3,6 | pode ser sorte |
+| | futuro | passado | 47,7 | 54,5 | −6,8 | pode ser sorte |
+| | futuro | futuro | 55,6 | 53,5 | +2,1 | pode ser sorte |
+| **1 hora** | passado | passado | **54,5** | 50,6 | **+4,0** | pode ser sorte |
+| | passado | futuro | 50,0 | 50,7 | −0,7 | pode ser sorte |
+| | presente | passado | 53,0 | 50,5 | +2,5 | pode ser sorte |
+| | presente | futuro | 54,1 | 50,6 | +3,5 | pode ser sorte |
+| | futuro | passado | 52,6 | 51,1 | +1,5 | pode ser sorte |
+| | futuro | futuro | 50,0 | 51,0 | −1,0 | pode ser sorte |
+| **1 dia** | passado | passado | 51,2 | 50,9 | +0,3 | pode ser sorte |
+| | passado | futuro | 45,8 | 50,9 | −5,1 | pode ser sorte |
+| | presente | passado | 54,5 | 50,8 | +3,7 | pode ser sorte |
+| | presente | futuro | 50,0 | 50,9 | −0,9 | pode ser sorte |
+| | futuro | passado | 50,0 | 50,9 | −0,9 | pode ser sorte |
+| | futuro | futuro | 48,2 | 50,9 | −2,7 | pode ser sorte |
+
+### Volatilidade — acertos em 100
+
+| granularidade | notícia fala do | movimento é do | notícia | chute | ganho | confiança |
+|---|---|---|---|---|---|---|
+| **1 minuto** | passado | futuro | 7,1 | 21,1 | −13,9 | dado insuficiente |
+| | presente | futuro | 0,0 | 21,2 | −21,2 | dado insuficiente |
+| | futuro | futuro | 16,7 | 22,7 | −6,1 | dado insuficiente |
+| **5 minutos** | presente | passado | 16,3 | 22,0 | −5,6 | pode ser sorte |
+| | presente | futuro | 0,0 | 21,9 | −21,9 | pode ser sorte |
+| | futuro | passado | 16,7 | 21,7 | −5,1 | pode ser sorte |
+| | futuro | futuro | 16,7 | 21,4 | −4,8 | pode ser sorte |
+| **15 minutos** | presente | futuro | 21,1 | 21,4 | −0,3 | pode ser sorte |
+| | futuro | passado | 17,5 | 23,8 | −6,3 | pode ser sorte |
+| | futuro | futuro | **25,0** | 22,2 | **+2,8** | pode ser sorte |
+| **1 hora** | passado | futuro | 19,1 | 22,2 | −3,1 | pode ser sorte |
+| | futuro | passado | 22,2 | 22,2 | 0,0 | pode ser sorte |
+| | futuro | futuro | 15,4 | 21,4 | −6,0 | pode ser sorte |
+| **1 dia** | passado | futuro | **33,3** | 20,7 | **+12,6** | pode ser sorte |
+| | presente | futuro | 25,0 | 21,4 | +3,6 | pode ser sorte |
+| | futuro | futuro | 21,4 | 20,8 | +0,6 | pode ser sorte |
+
+### O melhor caso de toda a medição
+
+**15 minutos, direção, notícia de futuro, movimento futuro:
+acertou 58,6 em 100 contra 50,7 do chute — ganho de 7,9**, sobre 211
+observações.
+
+**Aguenta o teste? Não.** Um ganho desse tamanho aparece por sorte com
+frequência, nesta quantidade de dados. Foram 1.166 tentativas; quando se tenta
+tanta coisa, sair um 58,6 em algum lugar é o esperado, não o notável.
+
+### A leitura em uma frase
+
+Nenhuma linha da tabela aguenta ser testada. O melhor ganho é de ~8 em 100 e
+não resiste; a maioria fica entre −5 e +4, que é a margem em que o acaso se
+move com este tamanho de amostra. **Com os dados de hoje, ler a orientação
+temporal da notícia não ajuda a acertar nem o passado nem o futuro.**
+
+---
+
 ## Antes das tabelas: um erro meu, encontrado e corrigido
 
 A primeira versão desta medição comparava o acerto com uma taxa-base estimada
