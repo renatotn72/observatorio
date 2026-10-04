@@ -122,14 +122,27 @@ def main(so_gran=None, como_csv=False):
               f"   em {len(li)} simbolos")
         linhas += li
 
-    # papeis da watchlist que NAO tem preco nenhum
+    # papeis do UNIVERSO que NAO tem preco nenhum.
+    # Universo, nao watchlist: desde que `universo:` existe em
+    # config/watchlist.yml, "falta preco" e uma pergunta sobre os 89 papeis a
+    # coletar, nao sobre os 10 que a media transversal usa. Com watchlist a
+    # resposta seria sempre "nenhum" e o diagnostico nao diagnosticaria nada.
     from obs import config
     tem = {x["ticker"] for x in linhas}
-    faltam = [t for t in config.tickers() if t not in tem]
+    uni = config.universo()
+    faltam = [t for t in uni if t not in tem]
     print(f"\n{'=' * 100}")
-    print("PAPEIS DA WATCHLIST SEM PRECO NENHUM")
+    print("PAPEIS DO UNIVERSO SEM PRECO NENHUM")
     print(f"{'=' * 100}")
-    print("  " + (", ".join(faltam) if faltam else "nenhum"))
+    print(f"universo: {len(uni)} papeis | com preco: {len(uni) - len(faltam)} "
+          f"| SEM PRECO: {len(faltam)}")
+    if faltam:
+        for i in range(0, len(faltam), 10):
+            print("  " + "  ".join(f"{t:<8}" for t in faltam[i:i + 10]))
+        print("\n  -> python3 -m obs.cli yf-diario   "
+              "(historico completo, uma requisicao por papel)")
+    else:
+        print("  nenhum")
 
     con.close()
     if como_csv:

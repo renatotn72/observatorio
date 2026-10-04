@@ -28,6 +28,21 @@ def tickers() -> dict:
     return watchlist().get("tickers", {})
 
 
+def universo() -> list[str]:
+    """Papeis com PRECO coletado: a watchlist mais a lista `universo:`.
+
+    Separado de `tickers()` de proposito. `tickers()` define tres coisas de
+    uma vez -- quem o matcher procura na noticia, quem tem preco, e quem
+    compoe a media transversal que serve de benchmark (`__crosssec__`).
+    Ampliar `tickers()` trocaria o benchmark e mudaria TODO retorno anormal do
+    banco, junto com as medicoes ja registradas. `universo:` amplia so a
+    coleta de preco; ver o comentario em config/watchlist.yml.
+    """
+    w = watchlist()
+    fora = [str(t).strip().upper() for t in (w.get("universo") or [])]
+    return sorted(set(w.get("tickers", {})) | set(fora))
+
+
 def sources() -> dict:
     return _load("sources.yml")
 

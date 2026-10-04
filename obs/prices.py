@@ -153,7 +153,7 @@ def fetch_yahoo(tickers: list[str], range_: str = "2y") -> dict[str, list[dict]]
     return out
 
 
-OHLCV = ("open", "high", "low", "volume")
+OHLCV = ("open", "high", "low", "volume", "adjclose")
 
 
 def _marca_origem(atual: str | None, nova: str) -> str:
@@ -169,7 +169,12 @@ def _marca_origem(atual: str | None, nova: str) -> str:
 
 
 def _origem_ohlc(b: dict, origem: str) -> str | None:
-    """Carimba a origem do OHLCV so se a barra trouxe algum deles."""
+    """Carimba a origem do OHLCV so se a barra trouxe algum deles.
+
+    `adjclose` viaja junto com o OHLCV, e nao com o fechamento, porque e a
+    mesma pergunta: quem preencheu as colunas de apoio da barra. Quem deu o
+    fechamento continua em `origem`.
+    """
     return origem if any(b.get(k) is not None for k in OHLCV) else None
 
 
@@ -197,18 +202,19 @@ def grava_diario(series: dict[str, list[dict]], origem: str,
             ja = {}
             if complementar:
                 ja = {r["date"]: r for r in con.execute(
-                    "SELECT date,close,open,high,low,volume,origem,origem_ohlc"
-                    " FROM prices WHERE ticker=?", (sym,))}
+                    "SELECT date,close,open,high,low,volume,adjclose,origem,"
+                    "origem_ohlc FROM prices WHERE ticker=?", (sym,))}
             for b in rows:
                 velha = ja.get(b["date"])
                 if velha is None:
                     cur = con.execute(
                         "INSERT OR REPLACE INTO prices"
-                        "(ticker,date,close,open,high,low,volume,origem,origem_ohlc)"
-                        " VALUES (?,?,?,?,?,?,?,?,?)",
+                        "(ticker,date,close,open,high,low,volume,adjclose,"
+                        " origem,origem_ohlc)"
+                        " VALUES (?,?,?,?,?,?,?,?,?,?)",
                         (sym, b["date"], b["close"], b.get("open"), b.get("high"),
-                         b.get("low"), b.get("volume"), origem,
-                         _origem_ohlc(b, origem)))
+                         b.get("low"), b.get("volume"), b.get("adjclose"),
+                         origem, _origem_ohlc(b, origem)))
                     n += cur.rowcount
                     continue
                 # barra existente, modo complementar: so o que esta vazio.
@@ -219,10 +225,10 @@ def grava_diario(series: dict[str, list[dict]], origem: str,
                 valores = {k: (velha[k] if velha[k] is not None else b.get(k))
                            for k in OHLCV}
                 con.execute(
-                    "UPDATE prices SET open=?,high=?,low=?,volume=?,origem_ohlc=?"
-                    " WHERE ticker=? AND date=?",
+                    "UPDATE prices SET open=?,high=?,low=?,volume=?,"
+                    "adjclose=?,origem_ohlc=? WHERE ticker=? AND date=?",
                     (valores["open"], valores["high"], valores["low"],
-                     valores["volume"],
+                     valores["volume"], valores["adjclose"],
                      _marca_origem(velha["origem_ohlc"], origem),
                      sym, b["date"]))
                 n += 1
@@ -264,6 +270,106 @@ def divergencia(series: dict[str, list[dict]], origem: str,
     con.close()
     out.sort(key=lambda x: (x["ticker"], x["date"]))
     return out
+
+
+# Acima disto, a divergencia e GRANDE e nenhuma tendencia a torna aceitavel.
+# 5% de diferenca media num fechamento nao e arredondamento nem horario de
+# corte: e outra serie.
+DIF_GRANDE = 0.05
+
+
+def _veredito_div(x: dict) -> tuple[str, str]:
+    """(classe, frase) para uma linha do resumo de divergencia.
+
+    A TENDENCIA SOZINHA NAO BASTA, e isto conserta um defeito da primeira
+    versao: ela classificava como "estavel no tempo, misturavel" um papel com
+    146% de diferenca media, so porque a diferenca nao crescia para tras.
+    Diferenca estavel de 146% nao e arredondamento -- e serie de outra coisa
+    (desdobramento nao ajustado numa das fontes, ou simplesmente papel
+    trocado). Magnitude manda primeiro; a tendencia so decide entre as causas.
+    """
+    grande = x["dif_media"] >= DIF_GRANDE
+    if grande and x["cresce_para_tras"]:
+        return ("nao_misturar",
+                "GRANDE e CRESCE para tras -> ajuste por proventos diferente")
+    if grande:
+        return ("investigar",
+                "GRANDE e estavel -> series incompativeis (desdobramento nao "
+                "ajustado? papel trocado?)")
+    if x["cresce_para_tras"]:
+        return ("nao_misturar",
+                "pequena mas CRESCE para tras -> assinatura de ajuste")
+    return ("misturavel", "pequena e estavel -> arredondamento/horario")
+
+
+def resumo_divergencia(divs: list[dict], csv: str | None = None) -> dict:
+    """Agrega a divergencia por papel, e grava o detalhe em arquivo.
+
+    POR QUE AGREGAR: num backfill de 89 papeis x 2.600 pregoes, duas fontes
+    que usam regras de ajuste diferentes produzem DEZENAS DE MILHARES de
+    linhas de divergencia. Despejar isso na tela e o mesmo que nao relatar --
+    ninguem le, e a informacao que importa (em QUAIS papeis, e se a diferenca
+    CRESCE para tras) fica enterrada.
+
+    O que importa esta no agregado: `cresce_para_tras` compara a diferenca
+    media na primeira metade da serie com a da segunda. Se a antiga for maior,
+    e a assinatura de ajuste por proventos -- uma fonte corrige o passado a
+    cada provento e a outra nao, e a correcao acumula para tras. Diferenca
+    estavel ao longo do tempo e outra coisa (horario de fechamento,
+    arredondamento), e nao impede misturar.
+    """
+    por: dict[str, list[dict]] = {}
+    for d in divs:
+        por.setdefault(d["ticker"], []).append(d)
+    linhas = []
+    for tkr, lst in sorted(por.items()):
+        lst.sort(key=lambda x: x["date"])
+        meio = len(lst) // 2 or 1
+        antiga = sum(x["diferenca"] for x in lst[:meio]) / meio
+        recente = (sum(x["diferenca"] for x in lst[meio:]) / len(lst[meio:])
+                   if lst[meio:] else antiga)
+        linhas.append({
+            "ticker": tkr, "barras": len(lst),
+            "primeira": lst[0]["date"], "ultima": lst[-1]["date"],
+            "dif_media": sum(x["diferenca"] for x in lst) / len(lst),
+            "dif_max": max(x["diferenca"] for x in lst),
+            "dif_metade_antiga": antiga, "dif_metade_recente": recente,
+            "cresce_para_tras": antiga > recente * 1.5})
+    for x in linhas:
+        x["veredito"] = _veredito_div(x)
+    if csv and divs:
+        import csv as _csv
+        import os
+        os.makedirs(os.path.dirname(csv) or ".", exist_ok=True)
+        with open(csv, "w", newline="", encoding="utf-8") as fh:
+            w = _csv.DictWriter(fh, fieldnames=list(divs[0]))
+            w.writeheader()
+            w.writerows(divs)
+    return {"papeis": linhas, "total": len(divs), "csv": csv if divs else None}
+
+
+def imprime_divergencia(divs: list[dict], csv: str | None = None) -> None:
+    if not divs:
+        return
+    r = resumo_divergencia(divs, csv)
+    print(f"\nDISCORDANCIA COM O QUE JA ESTAVA NO BANCO: {r['total']} barra(s) "
+          f"em {len(r['papeis'])} papel(is). NADA foi sobrescrito.")
+    print(f"{'papel':<9}{'barras':>8}{'de':>12}{'ate':>12}"
+          f"{'dif media':>11}{'dif max':>9}  diagnostico")
+    ordem = {"nao_misturar": 0, "investigar": 1, "misturavel": 2}
+    for x in sorted(r["papeis"], key=lambda y: (ordem[y["veredito"][0]],
+                                                -y["dif_media"]))[:25]:
+        print(f"{x['ticker']:<9}{x['barras']:>8}{x['primeira']:>12}"
+              f"{x['ultima']:>12}{100*x['dif_media']:>10.1f}%"
+              f"{100*x['dif_max']:>8.1f}%  {x['veredito'][1]}")
+    if len(r["papeis"]) > 25:
+        print(f"   ... e {len(r['papeis'])-25} outros papeis")
+    cont = {}
+    for x in r["papeis"]:
+        cont[x["veredito"][0]] = cont.get(x["veredito"][0], 0) + 1
+    print(f"resumo: {cont}")
+    if r["csv"]:
+        print(f"detalhe barra a barra: {r['csv']}")
 
 
 def fetch_uol(tickers: list[str], range_: str = "years") -> dict[str, list[dict]]:
@@ -308,7 +414,24 @@ FONTES = {
               "complementar": False},
     "uol": {"diario": fetch_uol, "rotulo": "UOL Cotacoes",
             "complementar": True},
+    # `yahoo` acima e o atalho de 2 anos que `sync` usa na rotina.
+    # `yahoo_full` e o chart v8 com period1=0: a serie INTEIRA, mais adjclose
+    # e proventos (obs/yahoo.py). Fonte diferente de endpoint diferente, nao
+    # dois nomes para a mesma coisa -- e por isso aparece separada aqui.
+    "yahoo_full": {"diario": lambda tk, r="1d": _yahoo_full(tk),
+                   "rotulo": "Yahoo chart v8 (historico completo)",
+                   "complementar": True},
 }
+
+
+def _yahoo_full(tickers: list[str]) -> dict[str, list[dict]]:
+    from . import yahoo
+    out = {}
+    for t in tickers:
+        barras, _ev, m = yahoo.diario(t)
+        if barras and not m.get("erro"):
+            out[t] = barras
+    return out
 
 
 def sync(range_: str = "1mo", fonte: str = "auto") -> int:
@@ -357,12 +480,50 @@ def sync(range_: str = "1mo", fonte: str = "auto") -> int:
     return n
 
 
-def returns_by_date(con) -> dict[str, dict[str, float]]:
-    """{ticker: {date: retorno_simples_do_dia}}."""
-    rows = con.execute("SELECT ticker,date,close FROM prices ORDER BY ticker,date").fetchall()
+def serie_usada(con) -> dict[str, str]:
+    """Qual coluna serve de preco para cada papel: 'adjclose' ou 'close'.
+
+    A DECISAO E POR PAPEL, E INTEIRA -- nunca barra a barra. Um
+    `COALESCE(adjclose, close)` pareceria mais simples e seria um defeito:
+    bastaria metade da serie ter ajustado para o retorno dar um salto
+    gigantesco na fronteira entre as duas metades, salto que nao aconteceu no
+    mercado e que nada no dado denunciaria. Logo: se o papel tem `adjclose`
+    em TODAS as barras, ele e usado; se falta em uma, a serie inteira usa
+    `close`.
+    """
+    rows = con.execute(
+        "SELECT ticker, COUNT(*) n, SUM(adjclose IS NOT NULL) aj "
+        "FROM prices GROUP BY ticker").fetchall()
+    return {r["ticker"]: ("adjclose" if r["n"] and r["aj"] == r["n"]
+                          else "close") for r in rows}
+
+
+def returns_by_date(con, ajustado: bool = True) -> dict[str, dict[str, float]]:
+    """{ticker: {date: retorno_simples_do_dia}}.
+
+    `ajustado=True` (padrao) usa `adjclose` nos papeis que o tem completo.
+    E a serie CERTA para retorno: `close` cru cai no valor do provento em cada
+    data-ex, e essa queda entra na conta como se fosse perda do acionista,
+    quando ele recebeu o dinheiro. Em papel que paga bem, isso vira um vies
+    negativo sistematico -- pequeno por dia, grande em dez anos.
+
+    ATENCAO AO COMPARAR MEDICOES: antes de `adjclose` existir no banco, todo
+    numero de docs/metricas.md foi calculado sobre `close`. Resultado antigo e
+    resultado novo do mesmo teste podem diferir por isso, e a diferenca nao e
+    erro de nenhum dos dois -- e mudanca da serie de entrada.
+    `ajustado=False` reproduz o calculo antigo, e e assim que se mede o
+    tamanho do efeito em vez de supor.
+    """
+    col = serie_usada(con) if ajustado else {}
+    rows = con.execute("SELECT ticker,date,close,adjclose FROM prices "
+                       "ORDER BY ticker,date").fetchall()
     by: dict[str, list[tuple[str, float]]] = {}
     for r in rows:
-        by.setdefault(r["ticker"], []).append((r["date"], r["close"]))
+        usa = col.get(r["ticker"], "close")
+        preco = r["adjclose"] if usa == "adjclose" else r["close"]
+        if preco is None:
+            continue
+        by.setdefault(r["ticker"], []).append((r["date"], preco))
     rets: dict[str, dict[str, float]] = {}
     for tkr, ser in by.items():
         d = {}

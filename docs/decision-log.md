@@ -188,6 +188,53 @@ cegas acerta ~20 em 100, não 50. O texto dizia "acerta menos que a moeda" para
 resultado que estava acima do chute real. Corrigido: o comparador é a taxa-base
 da própria pergunta, e o cabeçalho avisa qual é a régua.
 
+### Registrada em 2026-10-04: `adjclose` entra, e a série de retorno muda
+O chart v8 do Yahoo (`period1=0&events=div|split|earn`) traz
+`indicators.adjclose`, que e a serie certa para calcular retorno: `close` cru
+cai o valor do provento em cada data-ex e a conta registra isso como perda do
+acionista, que recebeu o dinheiro. Os dois sao gravados em colunas separadas --
+`close` para a tela, `adjclose` para a conta.
+
+CONSEQUENCIA QUE PRECISA FICAR DITA: todo numero de docs/metricas.md foi
+calculado sobre `close`, porque `adjclose` nao existia no banco. Depois da
+coleta, o mesmo teste pode dar outro resultado, e a diferenca nao e erro de
+nenhum dos dois -- e mudanca da serie de entrada.
+`returns_by_date(con, ajustado=False)` reproduz o calculo antigo, para o
+tamanho do efeito ser MEDIDO em vez de suposto.
+
+A escolha da coluna e POR PAPEL e INTEIRA. `COALESCE(adjclose, close)` seria
+mais curto e seria defeito: metade da serie ajustada e metade crua da um salto
+na fronteira que nao houve no mercado, e nada no dado denunciaria.
+
+### Registrada em 2026-10-04: `ativos` tinha a chave errada
+A tabela nasceu com `PRIMARY KEY (ticker)`. Com duas fontes de cadastro -- UOL
+pelo data-id, Yahoo pelo simbolo .SA -- a segunda a sondar apagaria o id da
+primeira, e a coleta dela passaria a pedir o id errado SEM ERRO: a linha
+continua existindo e parecendo valida. Chave corrigida para (ticker, fonte),
+com recriacao da tabela na migracao, e todas as consultas da UOL passaram a
+filtrar por `fonte`.
+
+### Registrada em 2026-10-04: os 89 papeis NAO entraram em `tickers:`
+`tickers:` define, de uma vez, quem o matcher procura, quem tem preco e quem
+compoe a media transversal que serve de benchmark. Ampliar para 89 trocaria o
+benchmark de 10 para 89 papeis, e como retorno anormal e retorno menos essa
+media, TODO retorno anormal do banco mudaria de valor junto com cada numero de
+docs/metricas.md -- uma re-baseline de todas as medicoes disparada por um
+download de preco.
+
+A lista entrou como `universo:`, que coleta preco e mais nada. A troca de
+benchmark vale a pena (media de 89 e proxy melhor que media de 10) e fica
+registrada como DECISAO PENDENTE do usuario, com o caminho descrito em
+docs/precos-universo.md: mover para `tickers:` com aliases e re-rodar as
+medicoes guardando o antes e o depois.
+
+### Registrada em 2026-10-04: meu resumo de divergencia mentia por omissao
+A primeira versao classificava como "estavel no tempo -> misturavel" um papel
+com 146% de diferenca media entre as fontes, so porque a diferenca nao crescia
+para tras. Diferenca estavel de 146% nao e arredondamento nem horario de corte
+-- e outra serie. A magnitude passou a mandar primeiro (limiar de 5%) e a
+tendencia so escolhe entre as causas.
+
 A configuração e a documentação podem divergir. Sempre declarar:
 1. o que o código está fazendo;
 2. o que a evidência validou;

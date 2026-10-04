@@ -401,7 +401,7 @@ def grava_catalogo(itens: list[dict]) -> int:
             con.execute(
                 "INSERT INTO ativos(ticker,fonte,categoria,status,visto_ts) "
                 "VALUES (?,?,?,'nao_sondado',?) "
-                "ON CONFLICT(ticker) DO UPDATE SET categoria=excluded.categoria,"
+                "ON CONFLICT(ticker,fonte) DO UPDATE SET categoria=excluded.categoria,"
                 " visto_ts=excluded.visto_ts",
                 (it["ticker"], NOME, it["categoria"], agora))
             n += 1
@@ -412,8 +412,12 @@ def grava_catalogo(itens: list[dict]) -> int:
 def grava_id(ticker: str, data_id: str | None, nome: str | None) -> None:
     con = connect()
     with con:
-        con.execute("UPDATE ativos SET id_externo=?, nome=? WHERE ticker=?",
-                    (data_id, nome, ticker))
+        # `fonte` no WHERE porque `ativos` agora guarda uma linha por
+        # (ticker, fonte): sem ele, isto escreveria o data-id da UOL na linha
+        # do Yahoo do mesmo papel.
+        con.execute("UPDATE ativos SET id_externo=?, nome=? "
+                    "WHERE ticker=? AND fonte=?",
+                    (data_id, nome, ticker, NOME))
     con.close()
 
 
@@ -423,8 +427,8 @@ def grava_sondagem(ticker: str, status: str, motivo: str,
     with con:
         con.execute(
             "UPDATE ativos SET status=?, motivo=?, barras=?, ultima_barra=?, "
-            "sondado_ts=? WHERE ticker=?",
-            (status, motivo or None, barras, ultima, now_ts(), ticker))
+            "sondado_ts=? WHERE ticker=? AND fonte=?",
+            (status, motivo or None, barras, ultima, now_ts(), ticker, NOME))
     con.close()
 
 
@@ -546,8 +550,9 @@ def coletar(tickers: list[str] | None = None, periodo: str = "years",
     if tickers:
         marc = ",".join("?" * len(tickers))
         rows = con.execute(
-            f"SELECT ticker, id_externo FROM ativos WHERE ticker IN ({marc}) "
-            f"AND id_externo IS NOT NULL", [t.upper() for t in tickers]).fetchall()
+            f"SELECT ticker, id_externo FROM ativos WHERE fonte=? AND "
+            f"ticker IN ({marc}) AND id_externo IS NOT NULL",
+            [NOME, *[t.upper() for t in tickers]]).fetchall()
     else:
         q = ("SELECT ticker, id_externo FROM ativos WHERE fonte=? AND "
              "status='ativo' AND id_externo IS NOT NULL ORDER BY ticker")
@@ -619,8 +624,9 @@ def coletar_intraday(tickers: list[str], verbose: bool = True) -> int:
     intra.init(con)
     marc = ",".join("?" * len(tickers))
     rows = con.execute(
-        f"SELECT ticker, id_externo FROM ativos WHERE ticker IN ({marc}) "
-        f"AND id_externo IS NOT NULL", [t.upper() for t in tickers]).fetchall()
+        f"SELECT ticker, id_externo FROM ativos WHERE fonte=? AND "
+        f"ticker IN ({marc}) AND id_externo IS NOT NULL",
+        [NOME, *[t.upper() for t in tickers]]).fetchall()
     n = 0
     for r in rows:
         barras = intradiario(r["id_externo"])
@@ -652,14 +658,15 @@ def estado() -> dict:
     con = connect()
     out = {"por_categoria": {}, "por_status": {}, "sem_dado": []}
     for r in con.execute("SELECT categoria, COUNT(*) n FROM ativos "
-                         "GROUP BY 1 ORDER BY n DESC"):
+                         "WHERE fonte=? GROUP BY 1 ORDER BY n DESC", (NOME,)):
         out["por_categoria"][r["categoria"]] = r["n"]
     for r in con.execute("SELECT status, COUNT(*) n FROM ativos "
-                         "GROUP BY 1 ORDER BY n DESC"):
+                         "WHERE fonte=? GROUP BY 1 ORDER BY n DESC", (NOME,)):
         out["por_status"][r["status"]] = r["n"]
     out["sem_dado"] = [dict(r) for r in con.execute(
         "SELECT ticker, categoria, motivo, barras, ultima_barra FROM ativos "
-        "WHERE status IN ('sem_dado','descontinuado') ORDER BY ticker")]
+        "WHERE fonte=? AND status IN ('sem_dado','descontinuado') "
+        "ORDER BY ticker", (NOME,))]
     out["com_barras"] = con.execute(
         "SELECT COUNT(DISTINCT ticker) FROM prices WHERE origem=?",
         (NOME,)).fetchone()[0]

@@ -112,9 +112,16 @@ CREATE TABLE IF NOT EXISTS prices (
 -- nao muda a cada coleta e reextrai-lo por barra seria pagar scraping de
 -- pagina para cada cotacao.
 CREATE TABLE IF NOT EXISTS ativos (
-  ticker       TEXT PRIMARY KEY,
-  fonte        TEXT NOT NULL,      -- de onde veio o id (uol, ...)
-  id_externo   TEXT,               -- data-id da UOL
+  ticker       TEXT NOT NULL,
+  -- de onde veio o id: uol, yahoo, ...
+  -- A CHAVE E (ticker, fonte), NAO ticker. As fontes tem fatos de cadastro
+  -- INDEPENDENTES sobre o mesmo papel: para a UOL o PETR4 e o id interno
+  -- 6836, para o Yahoo e o simbolo PETR4.SA. Com chave so no ticker, a
+  -- segunda fonte a sondar apagaria o id da primeira e a coleta dela
+  -- passaria a pedir o id errado -- em silencio, porque a linha continua
+  -- existindo e parecendo valida.
+  fonte        TEXT NOT NULL,
+  id_externo   TEXT,               -- data-id da UOL, simbolo .SA do Yahoo
   nome         TEXT,
   -- acao | bdr | etf_fii | outro. Guardada, nunca descartada: BDR fica de
   -- fora por padrao mas o usuario pode reincluir por opcao.
@@ -125,9 +132,35 @@ CREATE TABLE IF NOT EXISTS ativos (
   ultima_barra TEXT,               -- data da mais recente
   motivo       TEXT,               -- por que caiu em sem_dado
   sondado_ts   INTEGER,            -- quando foi sondado (nao resondar < 30d)
-  visto_ts     INTEGER             -- quando apareceu no catalogo pela ultima vez
+  visto_ts     INTEGER,            -- quando apareceu no catalogo pela ultima vez
+  PRIMARY KEY (ticker, fonte)
 );
 CREATE INDEX IF NOT EXISTS ix_ativos_cat ON ativos(categoria, status);
+
+-- Proventos e desdobramentos, que `events=div|split` do chart v8 do Yahoo
+-- entrega junto do preco (obs/yahoo.py).
+--
+-- POR QUE ISTO MERECE TABELA PROPRIA, e nao uma coluna em `prices`
+-- Ela responde uma pergunta que o projeto nao conseguia responder: a serie
+-- esta AJUSTADA por proventos? Ate agora docs/precos-fontes.md registrava o
+-- ajuste da serie atual como "provavel", inferido de nao haver salto > 35% em
+-- 10 anos -- inferencia, nao medicao. Com a DATA de cada desdobramento, o
+-- teste e direto: no dia de um desdobramento 2:1, serie ajustada nao salta e
+-- serie crua cai pela metade. E o teste que a armadilha 3 de obs/uol.py pedia
+-- e que nao tinha como rodar por falta justamente destas datas.
+CREATE TABLE IF NOT EXISTS proventos (
+  ticker      TEXT NOT NULL,
+  data        TEXT NOT NULL,       -- YYYY-MM-DD (data-ex / data do evento)
+  tipo        TEXT NOT NULL,       -- dividendo | desdobramento
+  valor       REAL,                -- dividendo: valor por acao
+  numerador   REAL,                -- desdobramento: 2 em "2:1"
+  denominador REAL,                -- desdobramento: 1 em "2:1"
+  razao       TEXT,                -- "2:1", como a fonte escreve
+  origem      TEXT,
+  visto_ts    INTEGER,
+  PRIMARY KEY (ticker, data, tipo)
+);
+CREATE INDEX IF NOT EXISTS ix_prov_tipo ON proventos(tipo, data);
 
 -- Rotulos: retorno ANORMAL (vs benchmark) classificado em alta/neutro/queda
 CREATE TABLE IF NOT EXISTS labels (
@@ -217,7 +250,7 @@ def _migra(con) -> list[str]:
     cols = {r["name"] for r in con.execute("PRAGMA table_info(prices)")}
     for nome, tipo in (("open", "REAL"), ("high", "REAL"), ("low", "REAL"),
                        ("volume", "REAL"), ("origem", "TEXT"),
-                       ("origem_ohlc", "TEXT")):
+                       ("origem_ohlc", "TEXT"), ("adjclose", "REAL")):
         if nome not in cols:
             con.execute(f"ALTER TABLE prices ADD COLUMN {nome} {tipo}")
             feitas.append(f"prices.{nome}")
@@ -253,7 +286,36 @@ def _migra(con) -> list[str]:
             if nome not in cols:
                 con.execute(f"ALTER TABLE intraday ADD COLUMN {nome} {tipo}")
                 feitas.append(f"intraday.{nome}")
+
+    # `ativos` nasceu com PRIMARY KEY (ticker). Com duas fontes de cadastro --
+    # UOL pelo data-id, Yahoo pelo simbolo .SA -- a segunda a sondar apagaria
+    # o id da primeira, e a coleta dela passaria a pedir o id errado SEM
+    # ERRO: a linha continua existindo e parecendo valida. A chave certa e
+    # (ticker, fonte).
+    #
+    # SQLite nao troca PRIMARY KEY com ALTER, so recriando a tabela. Detecto
+    # pelo PRAGMA (uma coluna marcada pk=1 em vez de duas) e recrio copiando
+    # o conteudo, dentro da transacao que `init` ja abriu.
+    pk = [r["name"] for r in con.execute("PRAGMA table_info(ativos)")
+          if r["pk"]]
+    if pk == ["ticker"]:
+        con.execute("ALTER TABLE ativos RENAME TO ativos_antiga")
+        con.executescript(_TRECHO_ATIVOS)
+        con.execute(
+            "INSERT OR REPLACE INTO ativos SELECT ticker, fonte, id_externo,"
+            " nome, categoria, status, barras, ultima_barra, motivo,"
+            " sondado_ts, visto_ts FROM ativos_antiga")
+        con.execute("DROP TABLE ativos_antiga")
+        feitas.append("ativos.PK -> (ticker, fonte)")
     return feitas
+
+
+# Usado so pela migracao acima, para recriar `ativos` com a chave certa.
+# Fica recortado do SCHEMA para nao haver duas definicoes divergindo.
+_TRECHO_ATIVOS = SCHEMA[SCHEMA.index("CREATE TABLE IF NOT EXISTS ativos ("):
+                        SCHEMA.index("CREATE INDEX IF NOT EXISTS ix_ativos_cat")
+                        + len("CREATE INDEX IF NOT EXISTS ix_ativos_cat "
+                              "ON ativos(categoria, status);")]
 
 
 def init(verbose: bool = False) -> None:

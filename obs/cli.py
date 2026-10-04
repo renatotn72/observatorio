@@ -206,6 +206,68 @@ def cmd_uol_coletar(a):
     print(f"-> {r['papeis']} papeis, {r['barras']} barras gravadas ({modo})")
 
 
+# -------------------------------------------------------- Yahoo chart v8 ----
+def cmd_yf_diario(a):
+    """Historico diario COMPLETO (period1=0), com adjclose e proventos."""
+    from . import yahoo
+    db.init()
+    tk = [x.strip().upper() for x in a.ticker.split(",")] if a.ticker else None
+    r = yahoo.coletar_diario(tickers=tk, complementar=not a.substituir)
+    print(f"-> {r['papeis']} papeis, {r['barras']} barras, "
+          f"{r['proventos']} proventos")
+
+
+def cmd_yf_intraday(a):
+    """Intradiario deslizando a janela para tras ate ela secar."""
+    from . import yahoo
+    db.init()
+    tk = [x.strip().upper() for x in a.ticker.split(",")] if a.ticker else None
+    ints = tuple(x.strip() for x in a.intervalos.split(",") if x.strip())
+    r = yahoo.coletar_intraday(tickers=tk, intervalos=ints,
+                               janelas_max=a.janelas)
+    for k, v in r["por_intervalo"].items():
+        print(f"-> {k}: {v} barras")
+
+
+def cmd_yf_estado(a):
+    from . import yahoo
+    e = yahoo.estado()
+    print(f"papeis com diario do Yahoo : {e['papeis_com_diario']}")
+    print(f"barras com adjclose        : {e['com_adjclose']}")
+    print(f"proventos                  : {e['proventos']}")
+    print(f"barras por intervalo       : {e['por_intervalo']}")
+    if e["sem_dado"]:
+        print(f"\nSEM SERIE ({len(e['sem_dado'])}):")
+        for r in e["sem_dado"]:
+            print(f"   {r['ticker']:<10}{r['motivo']}")
+
+
+def cmd_yf_ajuste(a):
+    """A serie esta ajustada por proventos? Confere num desdobramento."""
+    from . import config, yahoo
+    alvos = ([x.strip().upper() for x in a.ticker.split(",")] if a.ticker
+             else config.universo())
+    print(f"{'papel':<9}{'splits':>7}{'close salta?':>14}"
+          f"{'adjclose salta?':>17}  veredito")
+    for t in alvos:
+        r = yahoo.conferir_ajuste(t)
+        if not r["casos"]:
+            continue
+
+        def _s(v):
+            return "—" if v is None else ("SIM" if v else "nao")
+        if r["close_salta"] and not r["adjclose_salta"]:
+            vd = "adjclose E ajustada; close e crua (o esperado)"
+        elif not r["close_salta"] and not r["adjclose_salta"]:
+            vd = "nenhuma salta: close TAMBEM ja vem ajustada"
+        elif r["adjclose_salta"]:
+            vd = "ATENCAO: adjclose salta -- nao e serie ajustada"
+        else:
+            vd = "inconclusivo"
+        print(f"{t:<9}{r['desdobramentos']:>7}{_s(r['close_salta']):>14}"
+              f"{_s(r['adjclose_salta']):>17}  {vd}")
+
+
 def cmd_uol_estado(a):
     """Relatorio de aceite: contagem por categoria e por status."""
     from . import uol
@@ -559,7 +621,7 @@ def main(argv=None):
     s = add("prices", cmd_prices, help="sincroniza cotacoes")
     s.add_argument("--range", default="1mo")
     s.add_argument("--fonte", default="auto",
-                   choices=["auto", "brapi", "yahoo", "uol"])
+                   choices=["auto", "brapi", "yahoo", "uol", "yahoo_full"])
     s.add_argument("--complementar", action="store_true",
                    help="preenche o que esta vazio sem trocar fechamento nem "
                         "origem ja gravados (exige --fonte nomeada)")
@@ -590,6 +652,29 @@ def main(argv=None):
                         "ela nao apaga fechamento nem origem ja gravados)")
     add("uol-estado", cmd_uol_estado,
         help="contagem por categoria e status, e a lista de SEM_DADO")
+    # --- Yahoo chart v8: a serie INTEIRA numa requisicao (period1=0), mais
+    # adjclose e proventos. O `prices --fonte yahoo` continua sendo o atalho
+    # de 2 anos da rotina; isto aqui e o backfill.
+    s = add("yf-diario", cmd_yf_diario,
+            help="historico diario COMPLETO do universo, "
+                 "com adjclose e proventos")
+    s.add_argument("--ticker", default="",
+                   help="lista separada por virgula; vazio = config universo:")
+    s.add_argument("--substituir", action="store_true",
+                   help="faz o Yahoo MANDAR na barra (padrao e complementar)")
+    s = add("yf-intraday", cmd_yf_intraday,
+            help="intradiario deslizando a janela (1m 8d, 5-30m 60d, 1h 720d)")
+    s.add_argument("--ticker", default="")
+    s.add_argument("--intervalos", default="1h,15m,5m,1m",
+                   help="do mais grosso ao mais fino: o grosso cobre mais "
+                        "tempo por requisicao")
+    s.add_argument("--janelas", type=int, default=400,
+                   help="teto de janelas por papel/intervalo (seguranca)")
+    add("yf-estado", cmd_yf_estado,
+        help="o que o Yahoo trouxe: barras, adjclose, proventos, intervalos")
+    s = add("yf-ajuste", cmd_yf_ajuste,
+            help="confere ajuste por proventos num desdobramento conhecido")
+    s.add_argument("--ticker", default="")
     s = add("signals", cmd_signals, help="calcula sinal e probabilidades")
     s.add_argument("--scorer", default=None, choices=SCORERS_CLI, help=AJUDA_SCORER)
     s = add("label", cmd_label, help="rotula com retorno anormal futuro")

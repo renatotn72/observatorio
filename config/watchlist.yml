@@ -46,3 +46,123 @@ tickers:
     name: Suzano
     sector: pulp_paper
     aliases: [suzano, "suzano papel", SUZB3]
+
+# ---------------------------------------------------------------------------
+# UNIVERSO DE PRECOS -- 89 papeis pedidos em 04/10/2026.
+#
+# POR QUE ISTO E UMA LISTA SEPARADA, E NAO 89 ENTRADAS EM `tickers:`
+# `tickers:` faz TRES coisas ao mesmo tempo: define quem o matcher procura na
+# noticia, quem tem preco coletado, e -- o que importa aqui -- quem entra na
+# media transversal que serve de benchmark (`__crosssec__`). Jogar 89 papeis
+# ali trocaria o benchmark de 10 para 89 papeis, e com isso TODO retorno
+# anormal do banco mudaria de valor, junto com toda medicao ja registrada em
+# docs/metricas.md. Seria uma re-baseline silenciosa disparada por um
+# download.
+#
+# Entao `universo:` coleta preco e mais nada. O benchmark continua sendo a
+# media dos 10 de `tickers:` ate que a troca seja uma decisao tomada, nao um
+# efeito colateral. Uma media de 89 papeis e um proxy de mercado melhor que
+# uma de 10 -- mas trocar exige re-rodar as medicoes e registrar o antes e o
+# depois (ver docs/precos-universo.md).
+#
+# Nome e setor NAO estao escritos aqui de proposito: `meta.longName` vem na
+# mesma resposta do preco e e a fonte autoritativa. Digitar 89 nomes a mao
+# seria inventar o que a API entrega.
+#
+# UMA CORRECAO NA LISTA RECEBIDA: veio "SBSPSP3", que nao existe -- sao sete
+# caracteres com "SP" repetido. A Sabesp e SBSP3, e e ela que esta aqui.
+#
+# DOIS PARES PREDECESSOR/SUCESSOR vieram juntos, e isso esta certo: ARZZ3 e
+# AZZA3 (Arezzo virou Azzas na fusao com o Grupo Soma) e NTCO3 e AXIA3
+# (Natura &Co virou Axia). O papel antigo tem o historico, o novo tem o
+# presente; quem descartar o antigo perde serie.
+universo:
+  - ABEV3
+  - ALOS3
+  - ALPA4
+  - AMER3
+  - ARZZ3
+  - ASAI3
+  - AXIA3
+  - AZUL4
+  - AZZA3
+  - B3SA3
+  - BBAS3
+  - BBDC3
+  - BBDC4
+  - BBSE3
+  - BEEF3
+  - BHIA3
+  - BPAC11
+  - BRAP4
+  - BRFS3
+  - BRKM5
+  - CCRO3
+  - CIEL3
+  - CMIG4
+  - CMIN3
+  - COGN3
+  - CPFE3
+  - CPLE6
+  - CRFB3
+  - CSAN3
+  - CSMG3
+  - CSNA3
+  - CVCB3
+  - CYRE3
+  - DXCO3
+  - EGIE3
+  - ELET3
+  - ELET6
+  - EMBR3
+  - ENEV3
+  - ENGI11
+  - EQTL3
+  - EZTC3
+  - FLRY3
+  - GGBR4
+  - GMAT3
+  - GOAU4
+  - GOLL4
+  - HAPV3
+  - HYPE3
+  - IGTI11
+  - IRBR3
+  - ITSA4
+  - ITUB4
+  - JBSS3
+  - KLBN11
+  - LREN3
+  - LWSA3
+  - MGLU3
+  - MOVI3
+  - MRFG3
+  - MRVE3
+  - MULT3
+  - NTCO3
+  - PCAR3
+  - PETR3
+  - PETR4
+  - PRIO3
+  - PSSA3
+  - RADL3
+  - RAIZ4
+  - RENT3
+  - SANB11
+  - SBSP3
+  - SLCE3
+  - SMTO3
+  - STBP3
+  - SUZB3
+  - TAEE11
+  - TIMS3
+  - TOTS3
+  - TRPL4
+  - UGPA3
+  - USIM5
+  - VALE3
+  - VAMO3
+  - VBBR3
+  - VIVT3
+  - WEGE3
+  - YDUQ3

@@ -35,6 +35,9 @@ CONFIG_PADRAO = {
     "intraday_intervalo": "1m",   # granularidade das barras coletadas
     "intraday_range": "5d",       # o Yahoo so retem 5 dias de 1m
     "ohlcv_range": "10y",         # cobre toda a serie diaria que o banco tem
+    # do mais grosso ao mais fino: 1h cobre 720 dias por requisicao e 1m so 8,
+    # entao se a coleta for interrompida o que ficou e a parte mais barata.
+    "yf_intervalos": "1h,15m,5m,1m",
 }
 
 
@@ -131,6 +134,14 @@ JOBS={
  # Os tres passos sao jobs separados de proposito: descobrir e sondar sao caros
  # e raros (catalogo nao muda todo dia), coletar e a rotina. Juntar os tres
  # faria a rotina pagar o scraping do catalogo.
+ # Yahoo chart v8 (period1=0): a serie INTEIRA numa requisicao por papel,
+ # com adjclose e proventos. Nao e `refresh_prices` com outro nome -- aquele
+ # pede 2 anos pelo endpoint curto e SUBSTITUI a barra; este traz o historico
+ # todo e COMPLEMENTA. `yf_intraday` fica fora do agendamento porque desliza
+ # janela de 8 dias para 1m: sao centenas de requisicoes por papel e isso e
+ # backfill, nao rotina.
+ "yf_diario":{"label":"Yahoo: histórico diário completo (+adjclose, proventos)","schedule":False},
+ "yf_intraday":{"label":"Yahoo: intradiário deslizando a janela","schedule":False},
  "uol_descobrir":{"label":"UOL: descobrir papéis (catálogo)","schedule":False},
  "uol_sondar":{"label":"UOL: sondar papéis (data-id + validação)","schedule":False},
  "uol_coletar":{"label":"UOL: coletar cotações","schedule":True},
@@ -227,6 +238,10 @@ def execute(job):
     if job=="fill_ohlcv":
         return _run_cli(["prices","--fonte","yahoo","--range",
                          get_config("ohlcv_range", "10y"), "--complementar"])
+    if job=="yf_diario": return _run_cli(["yf-diario"])
+    if job=="yf_intraday":
+        return _run_cli(["yf-intraday", "--intervalos",
+                         get_config("yf_intervalos", "1h,15m,5m,1m")])
     if job=="uol_descobrir": return _run_cli(["uol-descobrir"])
     if job=="uol_sondar": return _run_cli(["uol-sondar","--categorias","acao"])
     if job=="uol_coletar": return _run_cli(["uol-coletar","--periodo","months"])
@@ -266,7 +281,8 @@ GRUPOS = {
     "collect_intraday": "mercado",
     "backfill_rss": "rss",
     "refresh_prices": "mercado", "refresh_drivers": "mercado",
-    "fill_ohlcv": "mercado",
+    "fill_ohlcv": "mercado", "yf_diario": "mercado",
+    "yf_intraday": "mercado",
     # mesmo grupo: sondar depende do catalogo, coletar depende da sondagem.
     # O grupo e o que garante a ordem (ver o comentario de GRUPOS).
     "uol_descobrir": "uol", "uol_sondar": "uol", "uol_coletar": "uol",

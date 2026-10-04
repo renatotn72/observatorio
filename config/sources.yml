@@ -96,8 +96,36 @@ rss:
 # A coluna `prices.origem` carimba cada barra. Sem isso, misturar fontes com
 # regras de ajuste diferentes produz salto onde nao houve evento.
 precos:
+  yahoo_full:
+    rotulo: Yahoo chart v8 — historico completo
+    ativo: true
+    endpoint: https://query2.finance.yahoo.com/v8/finance/chart/<PAPEL>.SA
+    params: period1=0&period2=9791133200&interval=1d&events=div|split|earn
+    ajustada: sim              # `adjclose` vem no proprio pacote
+    papel: backfill            # complementa; nao substitui fechamento gravado
+    alcance:
+      diario: TUDO numa requisicao (period1=0; anterior a 2016)
+      1m: janela de 8 dias por requisicao, deslizante
+      5m_a_30m: janela de 60 dias por requisicao
+      1h: janela de 720 dias por requisicao
+    ohlcv: true
+    adjclose: true             # a serie CERTA para calcular retorno
+    proventos: true            # events=div|split -> tabela `proventos`
+    descoberta: false
+    bid_ask: false
+    nota: >
+      Mesma casa do `yahoo` abaixo, ENDPOINT DIFERENTE: aquele e o atalho de 2
+      anos que a rotina usa; este e o backfill. Tres coisas que nenhuma outra
+      fonte do projeto dava: `adjclose` (ajuste por proventos como DADO, nao
+      como inferencia de "nao houve salto > 35%"), as DATAS de dividendo e
+      desdobramento (que permitem conferir ajuste de qualquer serie, inclusive
+      a da UOL) e o nome do papel junto do preco. Deslizar janela nao e o
+      mesmo que ter historico: o teto diz quanto CABE numa resposta, nao
+      quanto o Yahoo guarda. Por isso a coleta intradiaria para sozinha
+      quando a janela seca e RELATA o alcance medido.
+      Comportamento travado em scripts/test_yahoo.py (47 verificacoes).
   yahoo:
-    rotulo: Yahoo Finance
+    rotulo: Yahoo Finance (chart, janela curta)
     ativo: true
     ajustada: provavel        # medido: nenhum salto > 35% em 10 anos
     papel: canonica           # a serie longa do banco e para ser dela

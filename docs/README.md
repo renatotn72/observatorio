@@ -35,6 +35,9 @@ A documentação separa quatro estados:
   estatística nenhuma acharia.
 - [Fontes de preço](precos-fontes.md): o que já existe, diagnóstico do banco
   por papel e granularidade, e o alcance real da fonte atual.
+- [Universo de 89 papéis e histórico completo](precos-universo.md): o chart v8
+  do Yahoo com `period1=0`, janelas deslizantes no intradiário, `adjclose` e
+  proventos — e por que os 89 não entraram na watchlist.
 - [Fontes prospectivas](fontes-prospectivas.md): avaliação do radar judicial,
   legislativo e do calendário contábil — recomendação, nada implementado.
 - [Psicologia e propagação](psicologia.md): hipóteses do TCC de 2013 convertidas em features testáveis.
