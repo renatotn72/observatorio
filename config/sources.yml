@@ -100,13 +100,20 @@ precos:
     rotulo: Yahoo Finance
     ativo: true
     ajustada: provavel        # medido: nenhum salto > 35% em 10 anos
+    papel: canonica           # a serie longa do banco e para ser dela
     alcance:
       diario: 10 anos
       1h: 2 anos
       15m: 1 mes
       5m: 1 mes
       1m: 5 dias
-    ohlcv: false              # so fechamento
+    # CORRIGIDO em 2026-10-04: estava 'false' com a nota "so fechamento", e
+    # estava ERRADO. O endpoint v8/finance/chart devolve
+    # indicators.quote[0].open/high/low/volume junto do fechamento, e
+    # obs/prices.py:fetch_yahoo le os quatro. O erro inflava o valor da UOL.
+    ohlcv: true
+    descoberta: false         # nao tem endpoint de listagem: exige saber o ticker
+    bid_ask: false
   brapi:
     rotulo: brapi.dev
     ativo: true
@@ -119,12 +126,20 @@ precos:
     rotulo: UOL Economia
     ativo: true
     ajustada: desconhecida    # ver obs/uol.py:conferir_ajuste
+    papel: complemento        # entra SEM apagar: obs/prices.py:grava_diario
     alcance:
-      diario: 5 anos (teto fixo)
+      diario: 5 anos (teto fixo, sem paginacao para tras)
       1m: so a ultima sessao
-    ohlcv: true               # com VOLUME -- o filtro de liquidez que falta
+    ohlcv: true               # por barra no interday; no intraday a API nao da
+    descoberta: true          # catalogo paginado com id interno -- o diferencial
+    bid_ask: nao_verificado   # vem na resposta; se e por barra ou da sessao,
+                              # obs/uol.py:constantes responde na 1a coleta real
     universo: ~1800 tickers catalogados
     nota: >
-      NAO e fonte de backfill: e mais curta que o Yahoo em toda granularidade.
-      Vale por LARGURA e por VOLUME. Tres armadilhas de mapeamento travadas em
+      NAO e fonte de backfill: e mais curta que o Yahoo em toda granularidade,
+      e nem acrescenta OHLCV (o Yahoo ja da). O que ela acrescenta e
+      DESCOBERTA -- catalogo de ~1.800 tickers com id, que e o insumo para sair
+      dos 10 papeis da watchlist -- mais BID/ASK e uma segunda opiniao na mesma
+      barra. Por isso grava com complementar=True: nao troca fechamento nem
+      origem ja gravados. Tres armadilhas de mapeamento travadas em
       scripts/test_uol.py -- ver o docstring de obs/uol.py.

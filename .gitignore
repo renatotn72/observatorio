@@ -1,0 +1,6 @@
+# Bytecode gerado localmente. Nao destrava os .pyc que o repositorio JA
+# rastreia (ha um virtualenv versionado em .venvobs/ e pyc de python3.12 em
+# obs/__pycache__/): .gitignore nao afeta arquivo rastreado, so impede que
+# os novos entrem.
+__pycache__/
+*.pyc

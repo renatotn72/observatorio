@@ -127,6 +127,51 @@ def cmd_score_estado(a):
 
 
 def cmd_prices(a):
+    """Sincroniza o diario. --complementar faz a fonte ENTRAR SEM APAGAR.
+
+    Por que isso tem flag: as 24.920 barras que o banco ja tinha foram
+    gravadas antes de haver coluna de OHLCV, entao estao com
+    open/high/low/volume VAZIOS (origem='legado'). Dar `--fonte yahoo
+    --complementar` preenche esses campos sem trocar um unico fechamento --
+    e sem fechamento trocado, nenhuma medicao ja aprovada muda de valor.
+    Sem a flag, o fechamento do Yahoo substitui o que esta la, e ai qualquer
+    medicao anterior passa a ser sobre outra serie.
+    """
+    if a.complementar:
+        # Duas falhas diferentes, duas mensagens diferentes. Misturar as duas
+        # e o defeito de diagnostico que este projeto ja pagou caro uma vez
+        # (o brapi responde 401 "token nao fornecido" quando o problema e
+        # cota estourada, e a mensagem mandou a investigacao para o lado
+        # errado). Aqui: flag no lugar errado nao se parece com rede caida.
+        if a.fonte not in prices.FONTES:
+            print(f"  [prices] --complementar exige uma fonte NOMEADA; "
+                  f"'{a.fonte}' nao e uma. Use brapi, yahoo ou uol.")
+            return
+        series = prices.FONTES[a.fonte]["diario"](list(tickers()), a.range)
+        if not series:
+            print(f"  [prices] '{a.fonte}' nao devolveu barra nenhuma. A fonte "
+                  f"existe e foi consultada, entao o problema esta FORA daqui: "
+                  f"rede bloqueada, cota, ou nenhum papel reconhecido.")
+            if a.fonte == "uol":
+                print("  [prices] para a UOL, confira tambem se "
+                      "`uol-descobrir` e `uol-sondar` ja rodaram -- sem "
+                      "data-id em `ativos` nao ha o que pedir.")
+            return
+        div = prices.divergencia(series, a.fonte)
+        n = prices.grava_diario(series, a.fonte, complementar=True)
+        print(f"-> {len(series)} papeis, {n} barras complementadas "
+              f"(fechamento e origem anteriores intactos)")
+        if div:
+            print(f"\n{len(div)} barra(s) em que {a.fonte} discorda do banco "
+                  f"(>=1%). NADA foi sobrescrito:")
+            for d in div[:10]:
+                print(f"   {d['ticker']:<8}{d['date']}  "
+                      f"{d['origem_antiga']} {d['close_antigo']:.2f}  vs  "
+                      f"{d['origem_nova']} {d['close_novo']:.2f}  "
+                      f"({100*d['diferenca']:.1f}%)")
+            if len(div) > 10:
+                print(f"   ... e {len(div)-10} outras")
+        return
     prices.sync(range_=a.range, fonte=a.fonte)
 
 
@@ -155,8 +200,10 @@ def cmd_uol_coletar(a):
             return
         print(f"-> {uol.coletar_intraday(tk)} barras de 1 min gravadas")
         return
-    r = uol.coletar(tickers=tk, periodo=a.periodo, limite=a.limite)
-    print(f"-> {r['papeis']} papeis, {r['barras']} barras gravadas")
+    r = uol.coletar(tickers=tk, periodo=a.periodo, limite=a.limite,
+                    complementar=not a.substituir)
+    modo = "substituindo" if a.substituir else "complementando"
+    print(f"-> {r['papeis']} papeis, {r['barras']} barras gravadas ({modo})")
 
 
 def cmd_uol_estado(a):
@@ -511,9 +558,15 @@ def main(argv=None):
     s.add_argument("--scorer", default=None, choices=SCORERS_CLI, help=AJUDA_SCORER)
     s = add("prices", cmd_prices, help="sincroniza cotacoes")
     s.add_argument("--range", default="1mo")
-    s.add_argument("--fonte", default="auto", choices=["auto", "brapi", "yahoo"])
-    # --- UOL: largura (~1.800 tickers) e OHLCV com volume. NAO e backfill:
-    # o teto dela e 5 anos de diario e o banco ja tem 10 (docs/precos-fontes.md).
+    s.add_argument("--fonte", default="auto",
+                   choices=["auto", "brapi", "yahoo", "uol"])
+    s.add_argument("--complementar", action="store_true",
+                   help="preenche o que esta vazio sem trocar fechamento nem "
+                        "origem ja gravados (exige --fonte nomeada)")
+    # --- UOL: DESCOBERTA (~1.800 tickers com id, que o Yahoo nao lista) e
+    # BID/ASK. NAO e backfill -- o teto dela e 5 anos de diario e o banco ja
+    # tem 10 -- e NAO e OHLCV, que o Yahoo ja da (docs/precos-fontes.md).
+    # Entra como COMPLEMENTO: `uol-coletar` nao apaga fechamento ja gravado.
     s = add("uol-descobrir", cmd_uol_descobrir,
             help="catalogo de tickers da UOL (passo 1)")
     s.add_argument("--paginas", type=int, default=60,
@@ -532,6 +585,9 @@ def main(argv=None):
     s.add_argument("--limite", type=int, default=None)
     s.add_argument("--intraday", action="store_true",
                    help="serie de 1 min da ultima sessao; exige --ticker")
+    s.add_argument("--substituir", action="store_true",
+                   help="faz a UOL MANDAR na barra (padrao e complementar: "
+                        "ela nao apaga fechamento nem origem ja gravados)")
     add("uol-estado", cmd_uol_estado,
         help="contagem por categoria e status, e a lista de SEM_DADO")
     s = add("signals", cmd_signals, help="calcula sinal e probabilidades")

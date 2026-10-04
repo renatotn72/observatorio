@@ -112,6 +112,52 @@ Pelo mesmo motivo, havia `"lexicon"` escrito no código em quatro pontos
 o que a rodada rápida de RSS gravava. Agora o leitor vem de um lugar só.
 
 
+### Registrada em 2026-10-04: "o Yahoo não dá OHLCV" — afirmação minha, errada
+Publiquei em `docs/precos-fontes.md`, em `config/sources.yml`
+(`yahoo: ohlcv: false`, com a nota "só fechamento") e no docstring de
+`obs/uol.py` que a UOL **acrescentava OHLCV** porque a fonte atual só dava
+fechamento. **Falso.** O endpoint `v8/finance/chart` devolve
+`indicators.quote[0].open/high/low/volume` no mesmo pacote, e
+`obs/prices.py:fetch_yahoo` lê os quatro.
+
+Por que o erro passou: o que é verdade é que **o banco** não tem OHLCV — 24.920
+barras diárias com `open` e `volume` nulos em todas, medido. Eu li a ausência
+no banco como ausência na fonte. São coisas diferentes: a causa é que as barras
+foram coletadas antes de o código ler esses campos.
+
+O erro **inflava o valor da fonte nova**, que é o tipo de erro que mais importa
+corrigir aqui, porque justifica trabalho pela razão errada. O que a UOL de fato
+acrescenta é **descoberta** (catálogo de ~1.800 tickers com id; o Yahoo não tem
+endpoint de listagem, e é por isso que a watchlist travou em 10) e **bid/ask**.
+Corrigido nos quatro lugares, com retratação explícita na página.
+
+### Registrada em 2026-10-04: complemento exige código, senão é substituição
+O requisito era "não exclui a forma antiga, é complemento". A chave de `prices`
+é `(ticker, date)` e a gravação era `INSERT OR REPLACE`: ligar a UOL assim
+**reescreveria** cada barra que a fonte antiga já tinha — 10 anos de série
+ajustada trocados por 5 anos de série de ajuste desconhecido, sem erro e sem
+aviso. Era defeito já escrito e testado, pego ao reler o próprio diff.
+
+`grava_diario` passou a ter `complementar=True`, em que o fechamento e a origem
+de quem chegou primeiro ficam e só as colunas vazias são preenchidas; a
+procedência virou dois campos (`origem` do fechamento, `origem_ohlc` do OHLCV),
+porque uma barra pode ter o fechamento de uma fonte e o volume de outra. As
+24.920 barras anteriores ficaram `origem='legado'` — não dá para saber se
+vieram do brapi ou do Yahoo, porque `sync()` tentava um e caía para o outro sem
+registrar qual atendeu, e 'legado' afirma só o que é verificável.
+
+Efeito colateral útil: duas fontes na mesma barra permitem conferir ajuste por
+proventos **sem** depender de desdobramento conhecido (`prices.divergencia`),
+que era o buraco da armadilha 3.
+
+### Registrada em 2026-10-04: `bid`/`ask` são hipótese, não medição
+Entram no banco porque nenhuma outra fonte do projeto dá spread, e
+`docs/canal-noticias.md` pede liquidez e spread como feature desde o início.
+Mas **não está verificado** se no intraday eles são por barra ou da sessão — e
+`high`/`low`/`open` do mesmo endpoint são da sessão, então a hipótese pessimista
+é plausível. `obs/uol.constantes` responde na primeira coleta real e avisa alto;
+até lá a coluna é "implementada não validada", não "medida".
+
 A configuração e a documentação podem divergir. Sempre declarar:
 1. o que o código está fazendo;
 2. o que a evidência validou;

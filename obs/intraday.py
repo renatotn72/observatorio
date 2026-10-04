@@ -37,7 +37,9 @@ CREATE TABLE IF NOT EXISTS intraday (
   close REAL NOT NULL,
   -- volume DA BARRA, ja diferenciado quando a fonte entrega acumulado do dia
   -- (e o caso da UOL; ver obs/uol.py). origem = procedencia do ponto.
-  volume REAL, origem TEXT,
+  -- bid/ask dao SPREAD, que e medida de liquidez -- docs/canal-noticias.md
+  -- pede isso como feature de contexto e nao havia de onde tirar.
+  volume REAL, origem TEXT, bid REAL, ask REAL,
   PRIMARY KEY (simbolo, intervalo, ts)
 );
 """

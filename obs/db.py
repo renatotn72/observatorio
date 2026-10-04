@@ -94,10 +94,16 @@ CREATE TABLE IF NOT EXISTS prices (
   -- insumo de LIQUIDEZ, que e o filtro que docs/universo.md pede desde o
   -- inicio para ampliar o universo de 10 para 150-300 papeis.
   open   REAL, high REAL, low REAL, volume REAL,
-  -- PROCEDENCIA POR BARRA. Sem isto, misturar fontes com regras de ajuste
-  -- diferentes produz salto onde nao houve evento, e ninguem consegue dizer
-  -- de onde veio o ponto torto.
-  origem TEXT,
+  -- PROCEDENCIA POR BARRA, em DOIS campos. Sem isto, misturar fontes com
+  -- regras de ajuste diferentes produz salto onde nao houve evento, e
+  -- ninguem consegue dizer de onde veio o ponto torto.
+  --   origem      = quem deu o FECHAMENTO (o numero que vira retorno)
+  --   origem_ohlc = quem deu abertura/maxima/minima/volume
+  -- Sao separados porque uma fonte pode COMPLEMENTAR a outra: a serie
+  -- ajustada vem de uma, o volume vem de outra, e cada metade continua
+  -- rastreavel. Um campo so obrigaria a escolher, e escolher aqui significa
+  -- jogar fora dado bom.
+  origem TEXT, origem_ohlc TEXT,
   PRIMARY KEY (ticker, date)
 );
 
@@ -210,15 +216,40 @@ def _migra(con) -> list[str]:
     # OHLCV e procedencia nos precos (obs/prices.py, provedores por fonte)
     cols = {r["name"] for r in con.execute("PRAGMA table_info(prices)")}
     for nome, tipo in (("open", "REAL"), ("high", "REAL"), ("low", "REAL"),
-                       ("volume", "REAL"), ("origem", "TEXT")):
+                       ("volume", "REAL"), ("origem", "TEXT"),
+                       ("origem_ohlc", "TEXT")):
         if nome not in cols:
             con.execute(f"ALTER TABLE prices ADD COLUMN {nome} {tipo}")
             feitas.append(f"prices.{nome}")
+            if nome == "origem":
+                # Barra gravada ANTES desta coluna existir nao tem como dizer
+                # de qual fonte veio: `prices.sync` tentava brapi e caia para
+                # Yahoo, e nada registrava qual atendeu cada papel. 'legado'
+                # afirma so o que e verificavel -- "coletada antes de haver
+                # registro de procedencia" -- e e melhor que NULL, que confunde
+                # "sem registro" com "nunca preenchido".
+                con.execute("UPDATE prices SET origem='legado' "
+                            "WHERE origem IS NULL AND close IS NOT NULL")
+            if nome == "origem_ohlc":
+                # Quem gravou OHLCV antes desta coluna existir tambem deu o
+                # fechamento -- a barra veio inteira de uma fonte so. Deixar
+                # NULL faria a proxima fonte complementar reivindicar OHLCV
+                # que nao e dela, e e exatamente a rastreabilidade que esta
+                # coluna existe para dar.
+                con.execute(
+                    "UPDATE prices SET origem_ohlc = origem WHERE "
+                    "origem IS NOT NULL AND origem_ohlc IS NULL AND ("
+                    "open IS NOT NULL OR high IS NOT NULL OR "
+                    "low IS NOT NULL OR volume IS NOT NULL)")
     # `intraday` e criada por obs/intraday.py, nao pelo SCHEMA daqui. Se ainda
     # nao existe, PRAGMA devolve vazio e o ALTER quebraria com "no such table".
     cols = {r["name"] for r in con.execute("PRAGMA table_info(intraday)")}
     if cols:
-        for nome, tipo in (("volume", "REAL"), ("origem", "TEXT")):
+        # bid/ask vem na resposta da UOL e dao SPREAD, que e medida de
+        # liquidez -- docs/canal-noticias.md pede "liquidez e spread estimado"
+        # como feature de contexto e ate agora nao havia de onde tirar.
+        for nome, tipo in (("volume", "REAL"), ("origem", "TEXT"),
+                           ("bid", "REAL"), ("ask", "REAL")):
             if nome not in cols:
                 con.execute(f"ALTER TABLE intraday ADD COLUMN {nome} {tipo}")
                 feitas.append(f"intraday.{nome}")

@@ -4,8 +4,21 @@
 POR QUE SEM REDE, E POR QUE ISSO E O CERTO
 Teste que depende da API estar de pe nao roda em CI e nao roda offline. Pior:
 quando falha, nao se sabe se o defeito e nosso ou da fonte. Aqui as respostas
-sao fixtures com os valores EXATOS medidos na sondagem de 04/10/2026, entao
-o teste responde uma pergunta so: "o nosso mapeamento ainda esta certo?".
+sao fixtures, e o teste responde uma pergunta so: "o nosso mapeamento ainda
+esta certo?".
+
+DE ONDE VEM CADA NUMERO DA FIXTURE -- importa nao confundir medicao com
+preenchimento. O COMPORTAMENTO travado aqui (close = fechamento da sessao
+anterior; high/low/open constantes no intraday; volume acumulado; ?p=32 vazia
+no meio da lista) e achado de sondagem de 04/10/2026, entregue como
+especificacao verificada. Os VALORES citados nessa especificacao -- 44.15 como
+close da barra 20261002, e 45.27 / 43.10 / 45.25 como high/low/open da sessao
+do ITUB4 -- sao exatos. Os demais numeros (44.80, 44.20, 45.00, os volumes)
+sao PREENCHIMENTO COERENTE escrito aqui para fechar a fixture: nenhuma
+resposta crua foi capturada neste ambiente, porque a rede nao alcanca
+api.cotacoes.uol.com. Isso nao enfraquece o teste -- ele afere o mapeamento,
+nao o valor do papel -- mas quem ler estes numeros nao deve cita-los como
+cotacao medida.
 
 As tres armadilhas que ele trava -- cada uma grava serie errada EM SILENCIO:
 
@@ -20,7 +33,6 @@ As tres armadilhas que ele trava -- cada uma grava serie errada EM SILENCIO:
   3. CATALOGO: pagina vazia nao e fim da lista (?p=32 veio vazia enquanto 34
      a 39 vieram cheias), e BDR nao e acao.
 """
-import json
 import os
 import sys
 
@@ -43,7 +55,7 @@ def ok(cond, desc, det=""):
 INTERDAY = {"prev": None, "next": None, "docs": [
     {"date": "20261002000000", "price": 44.80, "close": 44.15,
      "open": 44.20, "high": 45.00, "low": 44.10, "volume": 31_000_000,
-     "change": 0.65, "pctChange": 1.47},
+     "bid": 44.79, "ask": 44.81, "change": 0.65, "pctChange": 1.47},
     {"date": "20261001000000", "price": 44.15, "close": 43.90,
      "open": 43.95, "high": 44.30, "low": 43.80, "volume": 28_500_000,
      "change": 0.25, "pctChange": 0.57},
@@ -53,14 +65,27 @@ INTERDAY = {"prev": None, "next": None, "docs": [
 ]}
 
 # Na sessao, high/low/open sao CONSTANTES e volume e ACUMULADO.
+# bid/ask aqui VARIAM de barra para barra -- e o caso que queremos que o
+# codigo trate como spread por minuto. A fixture INTRADAY_BOOK_FIXO abaixo
+# cobre a hipotese contraria, em que eles sao da sessao.
 INTRADAY = {"prev": None, "next": None, "docs": [
     {"date": "20261002170000", "price": 44.80, "close": 44.15,
-     "open": 45.25, "high": 45.27, "low": 43.10, "volume": 31_000_000},
+     "open": 45.25, "high": 45.27, "low": 43.10, "volume": 31_000_000,
+     "bid": 44.79, "ask": 44.82},
     {"date": "20261002165900", "price": 44.75, "close": 44.15,
-     "open": 45.25, "high": 45.27, "low": 43.10, "volume": 30_800_000},
+     "open": 45.25, "high": 45.27, "low": 43.10, "volume": 30_800_000,
+     "bid": 44.74, "ask": 44.77},
     {"date": "20261002165800", "price": 44.70, "close": 44.15,
-     "open": 45.25, "high": 45.27, "low": 43.10, "volume": 30_500_000},
+     "open": 45.25, "high": 45.27, "low": 43.10, "volume": 30_500_000,
+     "bid": 44.69, "ask": 44.72},
 ]}
+
+# Mesma serie, mas com o book CONSTANTE -- a hipotese de que bid/ask sao da
+# SESSAO, como high/low/open. Nao sabemos qual das duas e a verdadeira; o
+# codigo tem de avisar neste caso em vez de vender valor de sessao como
+# spread por minuto.
+INTRADAY_BOOK_FIXO = {"prev": None, "next": None, "docs": [
+    dict(d, bid=44.79, ask=44.82) for d in INTRADAY["docs"]]}
 
 PAGINA_PAPEL = '''<html><body>
 <div class="financial-market-full stockAcao stockPage" data-mode="graphic"
@@ -242,7 +267,8 @@ def _falso_http(url, **kw):
         hoje = dtm.date.today()
         docs = [{"date": (hoje - dtm.timedelta(days=i)).strftime("%Y%m%d") + "000000",
                  "price": 44.80 - i * 0.01, "close": 44.80 - (i + 1) * 0.01,
-                 "open": 44.2, "high": 45.0, "low": 44.1, "volume": 1e6 + i}
+                 "open": 44.2, "high": 45.0, "low": 44.1, "volume": 1e6 + i,
+                 "bid": 44.79 - i * 0.01, "ask": 44.81 - i * 0.01}
                 for i in range(200)]
         return _Resp(dados={"prev": None, "next": None, "docs": docs})
     if "intraday/list" in url:
@@ -299,7 +325,7 @@ ok(n_origem == 400, "todas as barras com origem=uol", n_origem)
 ok(b["close"] == 44.80, "o close gravado e o `price` da API (armadilha 1)",
    b["close"])
 ok(b["volume"] is not None and b["high"] is not None,
-   "OHLCV gravado -- o que o Yahoo nao da",
+   "OHLCV gravado por barra (o Yahoo tambem da; aqui serve de complemento)",
    f"high={b['high']} volume={b['volume']}")
 
 # idempotencia: recoletar nao duplica
@@ -324,6 +350,123 @@ ok(e["com_barras"] == 2, "o relatorio de aceite conta os papeis com barra",
    e["com_barras"])
 ok(e["por_categoria"].get("bdr") == 2,
    "a categoria BDR ficou guardada, nao descartada", e["por_categoria"])
+
+# ------------------------------------------------- COMPLEMENTO x SOBRESCRITA
+# O requisito e explicito: a UOL entra "como complemento", "nao exclui a forma
+# antiga de obter precos". A chave de `prices` e (ticker,date) e a gravacao e
+# `INSERT OR REPLACE`, entao o comportamento INGENUO apaga a serie antiga em
+# silencio. Esta secao trava o contrario.
+print("\nCOMPLEMENTO: a UOL entra sem apagar o que ja existe")
+
+ok(_prices._marca_origem(None, "uol") == "uol",
+   "origem acumulada: vazia + uol = uol")
+ok(_prices._marca_origem("yahoo", "uol") == "yahoo+uol",
+   "origem acumulada: quem deu OHL e quem deu volume aparecem os dois",
+   _prices._marca_origem("yahoo", "uol"))
+ok(_prices._marca_origem("yahoo+uol", "uol") == "yahoo+uol",
+   "origem acumulada NAO cresce ao recoletar a mesma fonte",
+   _prices._marca_origem("yahoo+uol", "uol"))
+
+# caso 1: barra que o Yahoo gravou, com OHLCV vazio (o estado real do banco
+# do projeto: 24.920 barras com origem antiga e open/high/low/volume NULL)
+D = dtm.date.today().strftime("%Y-%m-%d")
+con = _connect()
+with con:
+    con.execute("INSERT OR REPLACE INTO prices"
+                "(ticker,date,close,open,high,low,volume,origem,origem_ohlc)"
+                " VALUES ('ITUB4',?,99.99,NULL,NULL,NULL,NULL,'yahoo',NULL)", (D,))
+con.close()
+
+r = _uol.coletar(tickers=["ITUB4"], verbose=False)
+con = _connect()
+b = dict(con.execute("SELECT * FROM prices WHERE ticker='ITUB4' AND date=?",
+                     (D,)).fetchone())
+con.close()
+ok(b["close"] == 99.99,
+   "o FECHAMENTO do Yahoo ficou -- a UOL nao sobrescreveu", b["close"])
+ok(b["origem"] == "yahoo",
+   "a ORIGEM do fechamento continua yahoo", b["origem"])
+ok(b["volume"] is not None and b["high"] is not None,
+   "mas o OHLCV que estava VAZIO foi preenchido pela UOL",
+   f"high={b['high']} volume={b['volume']}")
+ok(b["origem_ohlc"] == "uol",
+   "e origem_ohlc diz quem preencheu o OHLCV", b["origem_ohlc"])
+
+# caso 2: a discordancia de fechamento e RELATADA, nao escondida
+divs = [d for d in r["divergencias"] if d["date"] == D]
+ok(len(divs) == 1, "a discordancia entre as duas fontes foi relatada", len(divs))
+ok(divs and divs[0]["origem_antiga"] == "yahoo" and divs[0]["origem_nova"] == "uol",
+   "o relato nomeia as duas fontes e os dois valores",
+   divs[0] if divs else None)
+
+# caso 3: barra que NAO existia entra inteira, com as duas origens na UOL
+con = _connect()
+nova = dict(con.execute(
+    "SELECT * FROM prices WHERE ticker='ITUB4' AND origem='uol' "
+    "ORDER BY date LIMIT 1").fetchone())
+con.close()
+ok(nova["origem"] == "uol" and nova["origem_ohlc"] == "uol",
+   "barra inexistente entra INTEIRA, com fechamento e OHLCV da UOL",
+   f"{nova['date']} {nova['origem']}/{nova['origem_ohlc']}")
+
+# caso 4: idempotencia do modo complementar -- rodar de novo nao muda nada
+con = _connect()
+antes = con.execute("SELECT COUNT(*), SUM(close), COUNT(DISTINCT origem) "
+                    "FROM prices").fetchone()
+con.close()
+_uol.coletar(tickers=["ITUB4"], verbose=False)
+con = _connect()
+depois = con.execute("SELECT COUNT(*), SUM(close), COUNT(DISTINCT origem) "
+                     "FROM prices").fetchone()
+con.close()
+ok(tuple(antes) == tuple(depois),
+   "complementar duas vezes = complementar uma vez (idempotente)",
+   f"{tuple(antes)} -> {tuple(depois)}")
+
+# caso 5: --substituir existe e de fato substitui -- a saida explicita
+_uol.coletar(tickers=["ITUB4"], verbose=False, complementar=False)
+con = _connect()
+b2 = dict(con.execute("SELECT * FROM prices WHERE ticker='ITUB4' AND date=?",
+                      (D,)).fetchone())
+con.close()
+ok(b2["origem"] == "uol" and b2["close"] != 99.99,
+   "complementar=False (so com --substituir) AI SIM a UOL manda",
+   f"{b2['origem']} {b2['close']}")
+
+# ------------------------------------------------------------- BID/ASK ------
+# Nenhuma outra fonte do projeto da spread. Mas nao esta verificado se bid/ask
+# do intraday sao por barra ou da sessao, e a diferenca decide se a coluna e
+# dado ou enfeite. O codigo grava o que veio E responde a pergunta.
+print("\nBID/ASK: grava o spread, e diz se ele e por barra ou da sessao")
+
+bar = _uol.mapeia_intraday(INTRADAY["docs"])
+ok([b["bid"] for b in bar] == [44.69, 44.74, 44.79],
+   "bid vem por barra, em ordem crescente de ts", [b["bid"] for b in bar])
+c = _uol.constantes(bar)
+ok(c["bid"]["constante"] is False and c["ask"]["constante"] is False,
+   "book que VARIA e reconhecido como por barra", c["bid"])
+
+fixo = _uol.mapeia_intraday(INTRADAY_BOOK_FIXO["docs"])
+cf_ = _uol.constantes(fixo)
+ok(cf_["bid"]["constante"] is True and cf_["bid"]["valor"] == 44.79,
+   "book CONSTANTE e denunciado como valor de SESSAO, nao spread por minuto",
+   cf_["bid"])
+ok(_uol.constantes(bar[:1])["bid"]["constante"] is None,
+   "uma barra so nao responde a pergunta -- e dito, nao chutado")
+
+ok(_uol.mapeia_interday(INTERDAY["docs"])[-1]["bid"] == 44.79,
+   "o interday tambem carrega bid/ask (book no fechamento)")
+
+n_intra = _uol.coletar_intraday(["ITUB4"], verbose=False)
+con = _connect()
+bi2 = dict(con.execute("SELECT * FROM intraday WHERE simbolo='ITUB4' "
+                       "ORDER BY ts DESC LIMIT 1").fetchone())
+con.close()
+ok(bi2["bid"] == 44.79 and bi2["ask"] == 44.82,
+   "bid/ask chegaram ao banco (coluna nova em `intraday`)",
+   f"bid={bi2['bid']} ask={bi2['ask']}")
+ok(bi2["ask"] - bi2["bid"] > 0, "da para derivar spread da linha gravada",
+   f"{bi2['ask'] - bi2['bid']:.2f}")
 
 print()
 if FALHAS:

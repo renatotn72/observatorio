@@ -1,13 +1,32 @@
 """Fonte de precos UOL: catalogo de papeis, id interno e cotacoes.
 
 O QUE ESTA FONTE ACRESCENTA, e o que ela NAO acrescenta
-    Acrescenta LARGURA e OHLCV. Sao ~1.800 tickers catalogados contra os 10 da
-    watchlist, e o interday traz abertura, maxima, minima e VOLUME -- que e o
-    insumo de liquidez que docs/universo.md pede desde o inicio para ampliar o
-    universo para 150-300 papeis.
+    Acrescenta DESCOBERTA, BID/ASK e SEGUNDA OPINIAO.
+    1. DESCOBERTA e o que mais importa. O Yahoo nao tem endpoint de listagem:
+       para pedir um papel e preciso JA saber o ticker, e por isso a watchlist
+       travou em 10. A UOL tem catalogo paginado, ~1.800 tickers com id
+       interno, que e o insumo para chegar aos 150-300 papeis de
+       docs/universo.md.
+    2. BID/ASK -- spread cotado. Nem Yahoo nem brapi dao, e
+       docs/canal-noticias.md pede "liquidez e spread estimado" como feature
+       de contexto desde o inicio.
+    3. SEGUNDA OPINIAO na mesma (ticker, date), que e o que permite conferir
+       ajuste por proventos sem depender de desdobramento conhecido
+       (prices.divergencia).
+
+    NAO acrescenta OHLCV: o Yahoo ja traz open/high/low/volume no mesmo
+    endpoint do fechamento. Versao anterior deste modulo afirmava que nao --
+    estava ERRADO, e o erro inflava o valor desta fonte.
+
     NAO acrescenta historico: o teto da UOL e 5 anos de diario, e o banco ja
     tem 10 anos pela fonte atual (docs/precos-fontes.md). Quem vier aqui
     atras de backfill longo vai piorar a serie.
+
+    POR ISSO ELA ENTRA COMO COMPLEMENTO, NAO COMO SUBSTITUTA. `coletar()` grava
+    com `complementar=True`: barra que falta entra inteira, barra que existe
+    mantem fechamento e origem e so recebe as colunas vazias. Sem isso, a chave
+    (ticker, date) + `INSERT OR REPLACE` trocaria 10 anos de serie ajustada por
+    5 anos de serie de ajuste desconhecido, em silencio.
 
 TRES ARMADILHAS DE MAPEAMENTO. Errar qualquer uma grava serie errada EM
 SILENCIO -- por isso cada uma tem teste que trava o comportamento em
@@ -28,6 +47,11 @@ scripts/test_uol.py, e a ingestao quebra alto se a API mudar.
        serie de PRECO, e o volume da barra e a diferenca entre acumulados
        consecutivos. Candle de 5/15 min, se precisar, e agregado a partir
        daqui -- nunca lido como se a API desse.
+       `bid`/`ask`: HIPOTESE de que sao por barra. O esquema diz que vem
+       sempre, a sondagem nao disse se variam. Gravamos como vieram e
+       `constantes()` responde a pergunta na primeira coleta real: se bid/ask
+       sairem constantes nas ~399 barras, sao da SESSAO como high/low/open e
+       nao servem como spread intradiario.
 
     3. AJUSTE POR PROVENTOS: desconhecido. A serie atual do projeto PARECE
        ajustada (nenhum salto > 35% em 10 anos, incluindo papel com
@@ -259,6 +283,8 @@ def mapeia_interday(docs: list[dict]) -> list[dict]:
             "high": _num(d.get("high")),
             "low": _num(d.get("low")),
             "volume": _num(d.get("volume")),
+            "bid": _num(d.get("bid")),
+            "ask": _num(d.get("ask")),
             "fechamento_anterior": _num(d.get("close")),   # so para variacao
         })
     out.sort(key=lambda b: b["date"])             # docs vem DECRESCENTE
@@ -271,12 +297,19 @@ def mapeia_intraday(docs: list[dict]) -> list[dict]:
     ARMADILHA 2: so `price` e `date` sao por barra. `high`/`low`/`open` sao da
     SESSAO e vem constantes; `volume` e ACUMULADO no dia. Devolvemos preco e
     volume da barra, e NAO devolvemos OHLC -- porque a API nao da.
+
+    bid/ask passam como vieram, SEM afirmar que sao por barra: o esquema diz
+    que vem sempre, a sondagem nao disse se variam. `constantes()` decide isso
+    na primeira coleta real. Se forem constantes, sao da sessao -- e ai o
+    campo no banco e um valor de fim de sessao repetido, nao spread por
+    minuto.
     """
     brutas = []
     for d in docs or []:
         if not d.get("date") or d.get("price") is None:
             continue
         brutas.append({"ts": _ts(d["date"]), "close": _num(d["price"]),
+                       "bid": _num(d.get("bid")), "ask": _num(d.get("ask")),
                        "acumulado": _num(d.get("volume"))})
     brutas.sort(key=lambda b: b["ts"])
     out = []
@@ -289,7 +322,30 @@ def mapeia_intraday(docs: list[dict]) -> list[dict]:
             if vol < 0:
                 vol = b["acumulado"]
             anterior = b["acumulado"]
-        out.append({"ts": b["ts"], "close": b["close"], "volume": vol})
+        out.append({"ts": b["ts"], "close": b["close"], "volume": vol,
+                    "bid": b["bid"], "ask": b["ask"]})
+    return out
+
+
+def constantes(barras: list[dict], campos=("bid", "ask", "volume")) -> dict:
+    """Quais campos NAO variam na serie -- o teste da armadilha 2, generico.
+
+    high/low/open ja sabemos que sao da sessao porque a sondagem mediu. Para
+    bid/ask nao sabemos, e a diferenca importa: valor por barra e spread
+    intradiario (feature de liquidez), valor da sessao repetido 399 vezes e
+    uma coluna que parece dado e nao e.
+
+    Devolve {campo: {"constante": bool, "distintos": n, "valor": x|None}}.
+    Serie com menos de 2 barras nao responde nada, e e dito como tal
+    (constante=None), em vez de ser contada como constante.
+    """
+    out = {}
+    for c in campos:
+        vals = [b.get(c) for b in barras if b.get(c) is not None]
+        distintos = len(set(vals))
+        out[c] = {"constante": (distintos == 1) if len(vals) > 1 else None,
+                  "distintos": distintos, "amostras": len(vals),
+                  "valor": vals[0] if distintos == 1 and vals else None}
     return out
 
 
@@ -470,8 +526,21 @@ def sondar(categorias=(ACAO,), limite: int | None = None,
 
 
 def coletar(tickers: list[str] | None = None, periodo: str = "years",
-            limite: int | None = None, verbose: bool = True) -> dict:
-    """Passo 3: baixa as cotacoes dos papeis ATIVOS e grava com origem=uol."""
+            limite: int | None = None, verbose: bool = True,
+            complementar: bool = True) -> dict:
+    """Passo 3: baixa as cotacoes dos ATIVOS e grava com origem=uol.
+
+    complementar=True (PADRAO, e o que o projeto quer): a UOL ENTRA SEM APAGAR.
+    Barra que falta entra inteira; barra que o Yahoo ou o brapi ja gravaram
+    mantem o fechamento e a origem deles, e so recebe as colunas de OHLCV que
+    estavam vazias. Sem isto, (ticker,date) + `INSERT OR REPLACE` trocaria 10
+    anos de serie ajustada por 5 anos de serie de ajuste desconhecido, em
+    silencio -- o oposto de complementar.
+
+    complementar=False existe para quem quiser deliberadamente fazer da UOL a
+    fonte canonica de um papel. Nao e o default e nao deveria ser usado sem
+    antes olhar `prices.divergencia`.
+    """
     from . import prices
     con = connect()
     if tickers:
@@ -490,6 +559,7 @@ def coletar(tickers: list[str] | None = None, periodo: str = "years",
         print(f"{len(rows)} papel(is) a coletar ({periodo})")
     total = 0
     saltos = {}
+    divs = []
     for i, r in enumerate(rows, 1):
         barras = diario(r["id_externo"], periodo)
         time.sleep(PAUSA_S)
@@ -501,7 +571,14 @@ def coletar(tickers: list[str] | None = None, periodo: str = "years",
         s = conferir_ajuste(barras)
         if s:
             saltos[r["ticker"]] = s
-        total += prices.grava_diario({r["ticker"]: barras}, NOME)
+        # SEGUNDA OPINIAO: onde as duas fontes tem a mesma barra, comparar os
+        # fechamentos responde a armadilha 3 sem depender de desdobramento
+        # conhecido. Tem de rodar ANTES da gravacao, porque no modo
+        # complementar o fechamento antigo fica e a comparacao se perderia.
+        if complementar:
+            divs.extend(prices.divergencia({r["ticker"]: barras}, NOME))
+        total += prices.grava_diario({r["ticker"]: barras}, NOME,
+                                     complementar=complementar)
         if verbose and (i % 25 == 0 or i == len(rows)):
             print(f"  [uol] {i}/{len(rows)}  {total} barras gravadas")
     if verbose and saltos:
@@ -511,14 +588,31 @@ def coletar(tickers: list[str] | None = None, periodo: str = "years",
             for s in lst[:2]:
                 print(f"   {t:<8}{s['date']}  {s['de']:.2f} -> {s['para']:.2f}"
                       f"  ({100*s['variacao']:+.1f}%, razao {s['razao']:.2f}:1)")
-    return {"papeis": len(rows), "barras": total, "saltos": saltos}
+    if verbose and divs:
+        papeis = sorted({d["ticker"] for d in divs})
+        print(f"\nDISCORDANCIA COM O QUE JA ESTAVA NO BANCO: {len(divs)} "
+              f"barra(s) em {len(papeis)} papel(is), diferenca >= 1%.")
+        print("O que ja estava FICA -- nada foi sobrescrito. Discordancia que")
+        print("CRESCE para tras indica regra de ajuste por proventos diferente")
+        print("entre as fontes; nesse caso as duas series nao sao misturaveis.")
+        for d in divs[:10]:
+            print(f"   {d['ticker']:<8}{d['date']}  "
+                  f"{d['origem_antiga']} {d['close_antigo']:.2f}  vs  "
+                  f"{d['origem_nova']} {d['close_novo']:.2f}   "
+                  f"({100*d['diferenca']:.1f}%)")
+        if len(divs) > 10:
+            print(f"   ... e {len(divs)-10} outras")
+    return {"papeis": len(rows), "barras": total, "saltos": saltos,
+            "divergencias": divs, "complementar": complementar}
 
 
 def coletar_intraday(tickers: list[str], verbose: bool = True) -> int:
     """Serie de 1 min da ultima sessao, para os papeis pedidos.
 
     Grava em `intraday` com intervalo '1m' e origem 'uol'. Nao monta OHLC:
-    a API nao da (armadilha 2).
+    a API nao da (armadilha 2). Grava bid/ask, que nenhuma outra fonte do
+    projeto da, e avisa se eles sairem constantes -- porque ai sao da sessao
+    e nao servem como spread por minuto.
     """
     from . import intraday as intra
     con = connect()
@@ -535,12 +629,20 @@ def coletar_intraday(tickers: list[str], verbose: bool = True) -> int:
             for b in barras:
                 cur = con.execute(
                     "INSERT OR REPLACE INTO intraday"
-                    "(simbolo,intervalo,ts,close,volume,origem)"
-                    " VALUES (?,?,?,?,?,?)",
-                    (r["ticker"], "1m", b["ts"], b["close"], b["volume"], NOME))
+                    "(simbolo,intervalo,ts,close,volume,origem,bid,ask)"
+                    " VALUES (?,?,?,?,?,?,?,?)",
+                    (r["ticker"], "1m", b["ts"], b["close"], b["volume"],
+                     NOME, b.get("bid"), b.get("ask")))
                 n += cur.rowcount
         if verbose:
             print(f"  [uol] {r['ticker']}: {len(barras)} barras de 1 min")
+            # responde, na primeira coleta real, se bid/ask sao por barra ou
+            # da sessao -- a pergunta que a sondagem deixou aberta.
+            for campo, info in constantes(barras).items():
+                if info["constante"] is True:
+                    print(f"     AVISO {campo}: CONSTANTE em "
+                          f"{info['amostras']} barras (valor {info['valor']}). "
+                          f"E da SESSAO, nao da barra.")
     con.close()
     return n
 

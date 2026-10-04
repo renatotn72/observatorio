@@ -34,6 +34,7 @@ CONFIG_PADRAO = {
     "backfill_paginas": 150,      # profundidade do historico por RSS
     "intraday_intervalo": "1m",   # granularidade das barras coletadas
     "intraday_range": "5d",       # o Yahoo so retem 5 dias de 1m
+    "ohlcv_range": "10y",         # cobre toda a serie diaria que o banco tem
 }
 
 
@@ -118,9 +119,18 @@ JOBS={
  # Profundidade controlavel pelo painel: ops_config.backfill_paginas.
  "backfill_rss":{"label":"Carregar histórico de notícias (RSS)","schedule":False},
  "refresh_prices":{"label":"Atualizar preços","schedule":True},
- # UOL: largura e OHLCV. Os tres passos sao jobs separados de proposito --
- # descobrir e sondar sao caros e raros (catalogo nao muda todo dia), coletar
- # e a rotina. Juntar os tres faria a rotina pagar o scraping do catalogo.
+ # COMPLEMENTO, nao recoleta: preenche open/high/low/volume das barras que ja
+ # existem SEM trocar nenhum fechamento. Precisa ser job separado de
+ # `refresh_prices` justamente porque aquele SUBSTITUI a barra -- se o
+ # fechamento muda, toda medicao ja aprovada passa a ser sobre outra serie.
+ # Medido em 4/10/2026: 24.920 barras diarias com open e volume NULOS, porque
+ # foram coletadas antes de o codigo ler esses campos. Nao e falta da fonte.
+ "fill_ohlcv":{"label":"Completar OHLCV (sem trocar fechamento)","schedule":False},
+ # UOL: DESCOBERTA (~1.800 tickers com id) e BID/ASK. Nao OHLCV -- o Yahoo ja
+ # da, e dizer o contrario foi erro meu, corrigido em docs/precos-fontes.md.
+ # Os tres passos sao jobs separados de proposito: descobrir e sondar sao caros
+ # e raros (catalogo nao muda todo dia), coletar e a rotina. Juntar os tres
+ # faria a rotina pagar o scraping do catalogo.
  "uol_descobrir":{"label":"UOL: descobrir papéis (catálogo)","schedule":False},
  "uol_sondar":{"label":"UOL: sondar papéis (data-id + validação)","schedule":False},
  "uol_coletar":{"label":"UOL: coletar cotações","schedule":True},
@@ -214,6 +224,9 @@ def execute(job):
     if job=="backfill_rss":
         return _run_cli(["backfill-rss","--paginas",str(get_config("backfill_paginas", 150))])
     if job=="refresh_prices": return _run_cli(["prices","--range","2y"])
+    if job=="fill_ohlcv":
+        return _run_cli(["prices","--fonte","yahoo","--range",
+                         get_config("ohlcv_range", "10y"), "--complementar"])
     if job=="uol_descobrir": return _run_cli(["uol-descobrir"])
     if job=="uol_sondar": return _run_cli(["uol-sondar","--categorias","acao"])
     if job=="uol_coletar": return _run_cli(["uol-coletar","--periodo","months"])
@@ -253,6 +266,7 @@ GRUPOS = {
     "collect_intraday": "mercado",
     "backfill_rss": "rss",
     "refresh_prices": "mercado", "refresh_drivers": "mercado",
+    "fill_ohlcv": "mercado",
     # mesmo grupo: sondar depende do catalogo, coletar depende da sondagem.
     # O grupo e o que garante a ordem (ver o comentario de GRUPOS).
     "uol_descobrir": "uol", "uol_sondar": "uol", "uol_coletar": "uol",

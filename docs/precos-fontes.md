@@ -124,22 +124,52 @@ Você pediu para eu dizer isso antes de qualquer troca. Medido no banco:
 | 15 min | 1 mês | não oferece | atual |
 | 5 min | 1 mês | não oferece | atual |
 | 1 min | **5 dias** | **só a última sessão** | atual |
-| OHLCV | **não tem** (só close) | **tem**, no interday | **UOL** |
+| OHLCV | **tem** no endpoint; **vazio no banco** | **tem**, no interday | **empate** |
+| bid/ask (spread) | não oferece | **oferece** | **UOL** |
+| descoberta de tickers | **não oferece** endpoint de listagem | **catálogo de ~1.800 com id** | **UOL** |
 | universo | 10 papéis na watchlist | **~1.800 tickers** catalogados | **UOL** |
 
 **Conclusão que muda o plano:** a UOL **não é fonte de backfill** — ela é mais
 curta que o que você já tem em todas as granularidades. Ela vale por duas
 outras coisas:
 
-1. **Largura**: ~1.800 papéis contra os 10 de hoje. É o que destrava o universo
-   de 150–300 ações que `docs/universo.md` pede desde o início.
-2. **OHLCV**: o banco guarda só o fechamento. Máxima, mínima, abertura e volume
-   não existem hoje em granularidade nenhuma — e volume é insumo de liquidez,
-   que é o filtro que `docs/universo.md` diz faltar.
+1. **Descoberta**: ~1.800 papéis contra os 10 de hoje. O Yahoo **não tem
+   endpoint de listagem** — para pedir um papel é preciso já saber o ticker, e
+   é exatamente por isso que a watchlist travou em 10. A UOL tem catálogo
+   paginado com id interno. É o que destrava o universo de 150–300 ações que
+   `docs/universo.md` pede desde o início.
+2. **bid/ask**: spread cotado. Nem Yahoo nem brapi dão, e
+   `docs/canal-noticias.md` pede "liquidez e spread estimado" como feature de
+   contexto desde o começo. É a única coisa aqui que **só** a UOL dá.
+3. **Segunda opinião** na mesma `(ticker, date)`: é o que permite conferir
+   ajuste por proventos sem depender de desdobramento conhecido
+   (`obs/prices.py:divergencia`).
+
+### Correção de uma afirmação errada que eu publiquei antes
+
+A versão anterior desta página, de `config/sources.yml` (`yahoo: ohlcv: false`)
+e do docstring de `obs/uol.py` dizia que a UOL acrescentava **OHLCV** porque o
+Yahoo "só dá fechamento". **Está errado, e o erro inflava o valor desta
+fonte.** O endpoint `v8/finance/chart` do Yahoo devolve
+`indicators.quote[0].open/high/low/volume` no mesmo pacote do fechamento, e
+`obs/prices.py:fetch_yahoo` lê os quatro.
+
+O que é verdade — e é outra coisa — é que **o banco** não tem OHLCV: medido em
+4/10/2026, 24.920 barras diárias, **`open` e `volume` nulos em todas**. A causa
+não é a fonte, é que as barras foram coletadas antes de o código ler esses
+campos. Logo o OHLCV se resolve com a fonte que já existe:
+
+```bash
+python3 -m obs.cli prices --fonte yahoo --range 10y --complementar
+```
+
+`--complementar` preenche o que está vazio **sem trocar um único fechamento**,
+então nenhuma medição já aprovada muda de valor. Ver abaixo.
 
 Então a ordem que você propôs continua certa, mas o **objetivo** muda: não é
-"backfill além de 5 anos", é "largura e OHLCV". O backfill longo continua sendo
-o problema do pré-2016, e para isso o candidato é a B3, não a UOL.
+"backfill além de 5 anos" nem "OHLCV", é **descoberta de universo + spread**. O
+backfill longo continua sendo o problema do pré-2016, e para isso o candidato é
+a B3, não a UOL.
 
 ---
 
@@ -174,15 +204,64 @@ ficar garantida.
 | relatório por categoria e status, com a lista nominal dos SEM_DADO | `uol.estado` |
 | User-Agent de browser, requisições serializadas com pausa | `uol.CABECALHO`, `uol.PAUSA_S` |
 | OHLCV com volume | `prices(open, high, low, volume)` |
-| **origem por barra** | `prices.origem`, `intraday.origem` |
+| **bid/ask** (spread) — nenhuma outra fonte do projeto dá | `intraday(bid, ask)` |
+| **origem por barra**, separada em fechamento e OHLCV | `prices.origem`, `prices.origem_ohlc`, `intraday.origem` |
+| **entra como complemento: não apaga a fonte antiga** | `prices.grava_diario(..., complementar=True)` |
+| discordância entre fontes **relatada, não escondida** | `prices.divergencia` |
 | idempotência por (ticker, data) e (símbolo, intervalo, ts) | `INSERT OR REPLACE` com PK composta |
 | registro em `config/sources.yml` | seção `precos:` |
 
+### Complemento, não substituição — e por que isso precisou de código
+
+Seu requisito foi explícito duas vezes: *"não exclui a forma antiga de obter
+preços, é complemento"* e *"mantenha a do Yahoo também"*. O comportamento
+ingênuo faz o contrário, **em silêncio**: a chave de `prices` é
+`(ticker, date)` e a gravação é `INSERT OR REPLACE`, então coletar da UOL
+**reescreveria** cada barra que o Yahoo já tinha — trocando 10 anos de série
+ajustada por 5 anos de série de ajuste desconhecido, sem erro, sem aviso e sem
+como voltar atrás.
+
+`grava_diario` passou a ter dois modos:
+
+| | `complementar=False` (padrão das fontes canônicas) | `complementar=True` (UOL) |
+|---|---|---|
+| barra que **não existe** | entra inteira | entra inteira |
+| `close` de barra existente | **substituído** | **preservado** |
+| `origem` de barra existente | substituída | preservada |
+| OHLCV **vazio** de barra existente | substituído | **preenchido** |
+| OHLCV **já preenchido** | substituído | preservado |
+| quem preencheu o OHLCV | `origem_ohlc` | `origem_ohlc`, acumulando (`yahoo+uol`) |
+
+A procedência virou **dois campos** porque uma barra pode ter duas mães: o
+fechamento de uma fonte e o volume de outra. Um campo só obrigaria a escolher,
+e escolher aqui significa jogar fora dado bom.
+
+E onde as duas fontes **discordam** no mesmo `(ticker, date)`, nada é
+sobrescrito e nada é escondido: `prices.divergencia` relata o par e a diferença
+antes de gravar. Isso responde de graça a armadilha 3 (ajuste por proventos)
+sem depender de desdobramento conhecido — se uma fonte ajusta e a outra não, os
+fechamentos batem depois do último provento e **se afastam progressivamente
+para trás**.
+
+As 24.920 barras que já estavam no banco não tinham origem registrada (a coluna
+é nova). Ficaram marcadas `origem='legado'`, que afirma só o que é verificável:
+*coletada antes de haver registro de procedência*. Não dá para saber se vieram
+do brapi ou do Yahoo — `sync()` tentava um e caía para o outro sem registrar
+qual atendeu.
+
 ### As três armadilhas, travadas por teste
 
-`scripts/test_uol.py` — **48 verificações, sem rede**, com respostas gravadas
-que reproduzem os valores medidos na sondagem. Teste que depende da API estar
-de pé não roda em CI e, quando falha, não diz se o defeito é nosso ou da fonte.
+`scripts/test_uol.py` — **91 verificações, sem rede**, com respostas gravadas.
+Teste que depende da API estar de pé não roda em CI e, quando falha, não diz se
+o defeito é nosso ou da fonte.
+
+Sobre os números da fixture, para ninguém os citar como cotação: o
+**comportamento** travado ali é achado da sua sondagem de 4/10/2026, e os
+valores que a sua especificação citou (44.15 como `close` da barra 20261002;
+45.27 / 43.10 / 45.25 como high/low/open da sessão do ITUB4) são exatos. Os
+demais números são preenchimento coerente escrito para fechar a fixture —
+nenhuma resposta crua foi capturada aqui, porque a rede não alcança a API. Isso
+não enfraquece o teste, que afere o mapeamento e não o preço.
 
 1. **`price` é o fechamento da barra; `close` é o da sessão anterior.** O teste
    não confere só o mapeamento — ele **prova** o deslocamento: verifica que o
@@ -194,7 +273,16 @@ de pé não roda em CI e, quando falha, não diz se o defeito é nosso ou da fon
    diferença entre acumulados consecutivos.
 3. **Ajuste por proventos desconhecido.** `uol.conferir_ajuste` detecta salto
    acima de 35% num pregão e a coleta avisa, com a razão (4:1, 2:1…). Não
-   recusa: a origem por barra permite separar depois.
+   recusa: a origem por barra permite separar depois. Somado a isso,
+   `prices.divergencia` compara o fechamento da UOL com o que já está no banco
+   na **mesma** barra — teste mais forte, porque não depende de haver
+   desdobramento no período.
+4. **`bid`/`ask` podem ser da sessão, não da barra.** Não está verificado, e a
+   diferença decide se a coluna é spread ou enfeite. O código grava o que veio
+   **e responde a pergunta**: `uol.constantes` avisa se bid/ask saírem
+   constantes nas ~399 barras, como acontece com high/low/open. O teste cobre
+   as duas hipóteses, incluindo o caso de uma barra só, em que a resposta é
+   "não dá para saber" e não "é constante".
 
 ### Dois defeitos meus que o teste pegou antes de rodar
 
@@ -212,7 +300,15 @@ de pé não roda em CI e, quando falha, não diz se o defeito é nosso ou da fon
 A cadeia inteira — descobrir → sondar → coletar → intraday → relatório — roda
 contra um `http_get` falso e banco isolado, e o teste confere **as linhas
 gravadas**: origem carimbada, `close` vindo do `price`, OHLCV preenchido,
-volume de 1 min já diferenciado, e recoleta que não duplica.
+volume de 1 min já diferenciado, bid/ask no banco, e recoleta que não duplica.
+
+E o caso que mais importa para o seu requisito: o teste **semeia uma barra do
+Yahoo** (fechamento 99,99, OHLCV vazio), roda a coleta da UOL em cima e exige
+que o fechamento continue 99,99, que `origem` continue `yahoo`, que o OHLCV
+vazio tenha sido preenchido, que `origem_ohlc` diga `uol`, e que a discordância
+entre os dois fechamentos apareça no relatório. Depois roda duas vezes para
+provar que complementar é idempotente, e uma vez com `--substituir` para provar
+que o modo destrutivo existe mas **só quando pedido**.
 
 É o que separa "o código compila" de "a ingestão grava certo".
 
@@ -234,15 +330,52 @@ Consequências diretas:
 - **3.6** não dá para ler o `robots.txt` nem os termos de uso;
 - nenhuma coleta é possível daqui.
 
-O que **dá** para fazer sem rede, e que respeita sua ordem de execução:
+Feito sem rede, e já no repositório:
 
-1. escrever os **testes que travam as três armadilhas** do 3.2 contra respostas
-   gravadas — eles falham alto se a API mudar, e é assim que devem ser escritos
-   de qualquer forma, para rodarem em CI sem depender da UOL estar de pé;
-2. escrever o **provider do 3.5** com a interface única, a coluna de origem e a
-   migração de OHLCV, deixando a implementação da UOL pronta para ser ligada
-   quando houver rede;
-3. apagar as barras congeladas do SUZB3 e pôr a guarda contra série constante.
+1. os **testes que travam as três armadilhas** do 3.2 contra respostas
+   gravadas — falham alto se a API mudar, e é assim que devem ser escritos de
+   qualquer forma, para rodarem em CI sem depender da UOL estar de pé;
+2. o **provider do 3.5** com interface única, origem por barra e o modo
+   complementar, pronto para ser ligado quando houver rede;
+3. o registro em `config/sources.yml`, os jobs no painel e a migração de
+   esquema (`prices.origem_ohlc`, `intraday.bid/ask`).
 
-Diga qual desses você quer primeiro — ou libere a rede, e aí a ordem que você
-escreveu roda inteira.
+Falta, e só com rede: **a coleta em si**, a verificação do `price` ajustado
+(3.6/armadilha 3) e o `robots.txt`.
+
+---
+
+## Para rodar na sua máquina — a sequência exata
+
+O banco que acompanha este commit já tem o esquema novo e as notícias
+reclassificadas, mas **nenhuma barra da UOL**, porque daqui não há rede. Na sua
+máquina, em ordem:
+
+```bash
+# 0. preencher o OHLCV que falta, da fonte que já funciona, SEM trocar
+#    fechamento. Isto é seguro: nenhuma medição já aprovada muda de valor.
+python3 -m obs.cli prices --fonte yahoo --range 10y --complementar
+
+# 1-3. a UOL, nos três passos (ou pelos jobs do painel, grupo "uol")
+python3 -m obs.cli uol-descobrir                   # catálogo (~1.800 tickers)
+python3 -m obs.cli uol-sondar --categorias acao    # data-id + validação
+python3 -m obs.cli uol-estado                      # CONFIRA aqui antes de coletar
+python3 -m obs.cli uol-coletar --limite 20         # comece pequeno
+python3 -m obs.cli uol-coletar                     # depois o resto
+```
+
+Duas coisas para **olhar** na saída do `uol-coletar`, porque são as perguntas
+que ficaram abertas:
+
+- **"DISCORDÂNCIA COM O QUE JÁ ESTAVA NO BANCO"** — se a diferença **cresce
+  para trás** no tempo, as duas fontes usam regras de ajuste por proventos
+  diferentes e as séries **não são misturáveis**. Nada foi sobrescrito: o
+  relatório existe justamente para você decidir. Se a diferença é ruído de
+  centavo, estão compatíveis.
+- **"SALTOS > 35% EM UM PREGÃO"** — série provavelmente **não** ajustada.
+
+E no `uol-coletar --intraday --ticker ITUB4`, o aviso
+**"bid: CONSTANTE em N barras"**: se aparecer, bid/ask são da sessão e não
+servem como spread por minuto. Se não aparecer, são por barra e o spread é
+utilizável — é a pergunta que a sondagem deixou aberta e que a primeira coleta
+real responde sozinha.
