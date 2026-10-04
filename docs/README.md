@@ -29,6 +29,8 @@ A documentação separa quatro estados:
   as duas dimensões independentes que o gráfico desenha.
 - [Orientação x retorno](orientacao-medicao.md): a notícia de passado explica o
   passado? A de futuro prevê? Medido — nada passa.
+- [Fontes de preço](precos-fontes.md): o que já existe, diagnóstico do banco
+  por papel e granularidade, e o alcance real da fonte atual.
 - [Fontes prospectivas](fontes-prospectivas.md): avaliação do radar judicial,
   legislativo e do calendário contábil — recomendação, nada implementado.
 - [Psicologia e propagação](psicologia.md): hipóteses do TCC de 2013 convertidas em features testáveis.
