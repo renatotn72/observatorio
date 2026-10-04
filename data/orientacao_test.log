@@ -1,0 +1,1379 @@
+eventos (artigo, papel) com orientacao: 777
+papeis: ABEV3, B3SA3, BBAS3, BBDC4, ITUB4, MGLU3, PETR4, SUZB3, VALE3, WEGE3
+por orientacao (sobrepostas): {'passado': 297, 'presente': 301, 'futuro': 674}
+
+[1m] 10 papeis, 20155 barras
+
+[5m] 10 papeis, 17102 barras
+
+[15m] 10 papeis, 5670 barras
+
+[1h] 10 papeis, 29702 barras
+
+[diario] 10 papeis, 24910 barras
+
+========================================================================================================
+GRANULARIDADE 1M  ·  ALVO: DIRECAO
+========================================================================================================
+papel   orientacao janela       h     n       IC      p    AUC  acerto%  base%    IC95 do acerto  veredito
+B3SA3   futuro     passado    -60    10  +0.1875  0.609      —     60.0   50.2   [ 23.1 –  88.2]  descritivo
+B3SA3   futuro     passado    -15    14  +0.2277  0.440      —     57.1   51.1   [ 25.0 –  84.2]  descritivo
+B3SA3   futuro     passado     -5    15  +0.2221  0.409      —     50.0   51.7   [ 21.5 –  78.5]  descritivo
+B3SA3   futuro     futuro       5    16  +0.2978  0.270      —     55.6   50.9   [ 26.7 –  81.1]  descritivo
+B3SA3   futuro     futuro      15    15  +0.4894  0.059      —     75.0   50.1   [ 40.9 –  92.9]  descritivo
+B3SA3   futuro     futuro      60    11  +0.2765  0.405      —     50.0   50.8   [ 18.8 –  81.2]  descritivo
+B3SA3   presente   passado    -15     8  +0.1464  0.750      —     60.0   51.1   [ 23.1 –  88.2]  descritivo
+B3SA3   presente   passado     -5     9  -0.1526  0.687      —     33.3   51.7   [  9.7 –  70.0]  descritivo
+B3SA3   presente   futuro       5    10  +0.2638  0.453      —     57.1   50.9   [ 25.0 –  84.2]  descritivo
+B3SA3   presente   futuro      15     9  +0.3560  0.348      —     66.7   50.1   [ 30.0 –  90.3]  descritivo
+BBDC4   futuro     passado    -60    10  +0.3891  0.262      —     88.9   57.8   [ 56.5 –  98.0]  descritivo
+BBDC4   futuro     passado    -15    12  +0.4175  0.172      —     90.0   54.4   [ 59.6 –  98.2]  descritivo
+BBDC4   futuro     passado     -5    14  +0.4088  0.150      —     90.9   52.8   [ 62.3 –  98.4]  descritivo
+BBDC4   futuro     futuro       5    15  -0.2188  0.434      —     50.0   51.8   [ 25.4 –  74.6]  descritivo
+BBDC4   futuro     futuro      15    13  +0.0138  0.971      —     63.6   54.0   [ 35.4 –  84.8]  descritivo
+BBDC4   futuro     futuro      60    11  +0.0137  0.976      —     50.0   57.6   [ 23.7 –  76.3]  descritivo
+PETR4   futuro     passado    -60    12  -0.7688  0.004      —      0.0   51.1   [  0.0 –  32.4]  descritivo
+PETR4   futuro     passado    -15    19  -0.2169  0.378      —     50.0   50.3   [ 25.4 –  74.6]  descritivo
+PETR4   futuro     passado     -5    21  +0.0463  0.848      —     78.6   50.5   [ 52.4 –  92.4]  descritivo
+PETR4   futuro     futuro       5    22  +0.3312  0.141      —     73.3   50.4   [ 48.0 –  89.1]  descritivo
+PETR4   futuro     futuro      15    20  +0.3051  0.198      —     53.8   50.5   [ 29.1 –  76.8]  descritivo
+PETR4   futuro     futuro      60    12  +0.0704  0.838      —     55.6   51.3   [ 26.7 –  81.1]  descritivo
+PETR4   passado    passado    -15     9  +0.1356  0.741      —     33.3   50.3   [ 12.1 –  64.6]  descritivo
+PETR4   passado    passado     -5    10  -0.1534  0.677      —     55.6   50.5   [ 26.7 –  81.1]  descritivo
+PETR4   passado    futuro       5    11  -0.0459  0.902      —     70.0   50.4   [ 39.7 –  89.2]  descritivo
+PETR4   passado    futuro      15    10  -0.3252  0.357      —     60.0   50.5   [ 31.3 –  83.2]  descritivo
+PETR4   passado    futuro      60     8  -0.3234  0.433      —     75.0   51.3   [ 40.9 –  92.9]  descritivo
+PETR4   presente   passado    -60     9  -0.7628  0.022      —     16.7   51.1   [  3.0 –  56.4]  descritivo
+PETR4   presente   passado    -15    12  -0.1744  0.572      —     50.0   50.3   [ 21.5 –  78.5]  descritivo
+PETR4   presente   passado     -5    13  -0.2953  0.329      —     66.7   50.5   [ 35.4 –  87.9]  descritivo
+PETR4   presente   futuro       5    14  +0.4623  0.103      —     80.0   50.4   [ 49.0 –  94.3]  descritivo
+PETR4   presente   futuro      15    13  +0.3594  0.223      —     55.6   50.5   [ 26.7 –  81.1]  descritivo
+PETR4   presente   futuro      60    10  +0.0675  0.859      —     71.4   51.3   [ 35.9 –  91.8]  descritivo
+TODOS   futuro     passado    -60    59  -0.1868  0.168      —     39.5   51.7   [ 26.4 –  54.4]  descritivo
+TODOS   futuro     passado    -15    75  -0.0255  0.829      —     56.9   51.7   [ 43.3 –  69.5]  descritivo
+TODOS   futuro     passado     -5    82  +0.1287  0.278      —     60.7   50.8   [ 47.6 –  72.4]  descritivo
+TODOS   futuro     futuro       5    92  +0.0141  0.895      —     50.0   50.7   [ 38.3 –  61.7]  descritivo
+TODOS   futuro     futuro      15    85  +0.0629  0.554      —     50.8   51.8   [ 38.6 –  62.9]  descritivo
+TODOS   futuro     futuro      60    68  -0.0295  0.822      —     54.7   51.8   [ 41.5 –  67.3]  descritivo
+TODOS   passado    passado    -60    27  -0.2980  0.132      —     45.5   51.7   [ 26.9 –  65.3]  descritivo
+TODOS   passado    passado    -15    29  -0.0608  0.765      —     45.8   51.7   [ 27.9 –  64.9]  descritivo
+TODOS   passado    passado     -5    30  -0.0404  0.835      —     54.2   50.8   [ 35.1 –  72.1]  descritivo
+TODOS   passado    futuro       5    40  -0.2953  0.075      —     47.1   50.7   [ 31.5 –  63.3]  descritivo
+TODOS   passado    futuro      15    39  -0.3062  0.053      —     41.2   51.8   [ 26.4 –  57.8]  descritivo
+TODOS   passado    futuro      60    37  +0.1443  0.394      —     65.6   51.8   [ 48.3 –  79.6]  descritivo
+TODOS   presente   passado    -60    39  -0.2032  0.225      —     45.8   51.7   [ 27.9 –  64.9]  descritivo
+TODOS   presente   passado    -15    47  +0.0323  0.831      —     62.1   51.7   [ 44.0 –  77.3]  descritivo
+TODOS   presente   passado     -5    50  +0.0465  0.750      —     59.4   50.8   [ 42.3 –  74.5]  descritivo
+TODOS   presente   futuro       5    60  +0.0392  0.761      —     54.8   50.7   [ 39.9 –  68.8]  descritivo
+TODOS   presente   futuro      15    57  +0.0054  0.970      —     48.7   51.8   [ 33.9 –  63.8]  descritivo
+TODOS   presente   futuro      60    49  -0.0316  0.832      —     58.8   51.8   [ 42.2 –  73.6]  descritivo
+VALE3   futuro     futuro       5     8  -0.2156  0.616      —     16.7   52.3   [  3.0 –  56.4]  descritivo
+VALE3   presente   passado     -5     8  -0.1952  0.649      —     40.0   54.0   [ 11.8 –  76.9]  descritivo
+VALE3   presente   futuro       5     9  -0.3051  0.440      —     16.7   52.3   [  3.0 –  56.4]  descritivo
+VALE3   presente   futuro      15     8  -0.1708  0.695      —     40.0   55.3   [ 11.8 –  76.9]  descritivo
+
+========================================================================================================
+GRANULARIDADE 1M  ·  ALVO: VOLATILIDADE
+========================================================================================================
+papel   orientacao janela       h     n       IC      p    AUC  acerto%  base%    IC95 do acerto  veredito
+B3SA3   futuro     passado    -60    10  -0.1228  0.736  0.500      0.0   20.0   [  0.0 –  65.8]  descritivo
+B3SA3   futuro     passado    -15    14  +0.0587  0.861  0.576      0.0   21.4   [  0.0 –  65.8]  descritivo
+B3SA3   futuro     passado     -5    15  -0.1694  0.532  0.500      0.0   20.0   [  0.0 –  56.2]  descritivo
+B3SA3   futuro     futuro       5    16  +0.3654  0.166  0.792     33.3   25.0   [  6.1 –  79.2]  descritivo
+B3SA3   futuro     futuro      15    15  +0.1920  0.472  0.861     33.3   20.0   [  6.1 –  79.2]  descritivo
+B3SA3   futuro     futuro      60    11  -0.4577  0.161  0.292      0.0   27.3   [  0.0 –  65.8]  descritivo
+B3SA3   presente   passado    -15     8  +0.0976  0.836  0.667      0.0   25.0   [  0.0 –  79.3]  descritivo
+B3SA3   presente   passado     -5     9  -0.4238  0.262  0.357      0.0   22.2   [  0.0 –  79.3]  descritivo
+B3SA3   presente   futuro       5    10  +0.3865  0.259  0.938     50.0   20.0   [  9.5 –  90.5]  descritivo
+B3SA3   presente   futuro      15     9  -0.2034  0.616  0.643      0.0   22.2   [  0.0 –  79.3]  descritivo
+BBDC4   futuro     passado    -60    10  +0.2727  0.443  0.375      0.0   20.0   [  0.0 –  65.8]  descritivo
+BBDC4   futuro     passado    -15    12  -0.3713  0.241  0.241      0.0   25.0   [  0.0 –  65.8]  descritivo
+BBDC4   futuro     passado     -5    14  -0.2009  0.494  0.303      0.0   21.4   [  0.0 –  65.8]  descritivo
+BBDC4   futuro     futuro       5    15  +0.1362  0.644  0.389      0.0   20.0   [  0.0 –  56.2]  descritivo
+BBDC4   futuro     futuro      15    13  -0.0495  0.873  0.500      0.0   23.1   [  0.0 –  65.8]  descritivo
+BBDC4   futuro     futuro      60    11  -0.3364  0.290  0.333      0.0   27.3   [  0.0 –  65.8]  descritivo
+PETR4   futuro     passado    -60    12  +0.1637  0.625  0.574      0.0   25.0   [  0.0 –  65.8]  descritivo
+PETR4   futuro     passado    -15    19  -0.1349  0.589  0.650     33.3   21.1   [  6.1 –  79.2]  descritivo
+PETR4   futuro     passado     -5    21  +0.1932  0.398  0.688     25.0   23.8   [  4.6 –  69.9]  descritivo
+PETR4   futuro     futuro       5    22  +0.0212  0.925  0.565     25.0   22.7   [  4.6 –  69.9]  descritivo
+PETR4   futuro     futuro      15    20  +0.2889  0.215  0.672     50.0   20.0   [ 15.0 –  85.0]  descritivo
+PETR4   futuro     futuro      60    12  +0.0282  0.945  0.519      0.0   25.0   [  0.0 –  65.8]  descritivo
+PETR4   passado    passado    -15     9  +0.0333  0.956  0.857    100.0   22.2   [ 20.7 – 100.0]  descritivo
+PETR4   passado    passado     -5    10  -0.3212  0.368  0.000      0.0   20.0   [  0.0 –  65.8]  descritivo
+PETR4   passado    futuro       5    11  +0.0909  0.798  0.583      0.0   27.3   [  0.0 –  65.8]  descritivo
+PETR4   passado    futuro      15    10  -0.0182  0.975  0.625     50.0   20.0   [  9.5 –  90.5]  descritivo
+PETR4   passado    futuro      60     8  -0.2381  0.595  0.417      0.0   25.0   [  0.0 –  79.3]  descritivo
+PETR4   presente   passado    -60     9  -0.3051  0.421  0.286      0.0   22.2   [  0.0 –  79.3]  descritivo
+PETR4   presente   passado    -15    12  +0.0285  0.927  0.537     50.0   25.0   [  9.5 –  90.5]  descritivo
+PETR4   presente   passado     -5    13  -0.0223  0.950  0.650     50.0   23.1   [  9.5 –  90.5]  descritivo
+PETR4   presente   futuro       5    14  -0.1667  0.567  0.470      0.0   21.4   [  0.0 –  65.8]  descritivo
+PETR4   presente   futuro      15    13  -0.1504  0.609  0.383      0.0   23.1   [  0.0 –  65.8]  descritivo
+PETR4   presente   futuro      60    10  +0.2761  0.433  0.625      0.0   20.0   [  0.0 –  65.8]  descritivo
+TODOS   futuro     passado    -60    59  -0.0838  0.505  0.401      0.0   20.3   [  0.0 –  25.9]  descritivo
+TODOS   futuro     passado    -15    75  -0.0852  0.471  0.462     13.3   20.0   [  3.7 –  37.9]  descritivo
+TODOS   futuro     passado     -5    82  -0.1011  0.367  0.517     18.8   20.7   [  6.6 –  43.0]  descritivo
+TODOS   futuro     futuro       5    92  +0.0257  0.813  0.512     16.7   20.7   [  5.8 –  39.2]  descritivo
+TODOS   futuro     futuro      15    85  +0.0229  0.836  0.489     17.6   20.0   [  6.2 –  41.0]  descritivo
+TODOS   futuro     futuro      60    68  -0.1773  0.138  0.430     23.1   20.6   [  8.2 –  50.3]  descritivo
+TODOS   passado    passado    -60    27  -0.0331  0.868  0.563     20.0   22.2   [  3.6 –  62.4]  descritivo
+TODOS   passado    passado    -15    29  -0.0627  0.740  0.471     20.0   20.7   [  3.6 –  62.4]  descritivo
+TODOS   passado    passado     -5    30  -0.4080  0.024  0.382      0.0   20.0   [  0.0 –  39.0]  descritivo
+TODOS   passado    futuro       5    40  +0.1798  0.283  0.588     25.0   20.0   [  7.1 –  59.1]  descritivo
+TODOS   passado    futuro      15    39  +0.0509  0.739  0.552     14.3   20.5   [  2.6 –  51.3]  descritivo
+TODOS   passado    futuro      60    37  -0.4764  0.004  0.392      0.0   21.6   [  0.0 –  35.4]  descritivo
+TODOS   presente   passado    -60    39  +0.1035  0.530  0.486      0.0   20.5   [  0.0 –  35.4]  descritivo
+TODOS   presente   passado    -15    47  +0.2042  0.175  0.532     22.2   21.3   [  6.3 –  54.7]  descritivo
+TODOS   presente   passado     -5    50  -0.0266  0.859  0.524     40.0   20.0   [ 16.8 –  68.7]  descritivo
+TODOS   presente   futuro       5    60  -0.0705  0.590  0.486     25.0   20.0   [  8.9 –  53.2]  descritivo
+TODOS   presente   futuro      15    57  +0.0096  0.944  0.396      9.1   21.1   [  1.6 –  37.7]  descritivo
+TODOS   presente   futuro      60    49  -0.1683  0.232  0.442     11.1   20.4   [  2.0 –  43.5]  descritivo
+VALE3   futuro     futuro       5     8  -0.2515  0.562  0.208      0.0   25.0   [  0.0 –  79.3]  descritivo
+VALE3   presente   passado     -5     8  +0.1220  0.782  0.500      0.0   25.0   [  0.0 –  79.3]  descritivo
+VALE3   presente   futuro       5     9  -0.6442  0.067  0.214      0.0   22.2   [  0.0 –  79.3]  descritivo
+VALE3   presente   futuro      15     8  -0.0244  0.977  0.250      0.0   25.0   [  0.0 –  79.3]  descritivo
+
+========================================================================================================
+GRANULARIDADE 5M  ·  ALVO: DIRECAO
+========================================================================================================
+papel   orientacao janela       h     n       IC      p    AUC  acerto%  base%    IC95 do acerto  veredito
+B3SA3   futuro     passado    -24    30  -0.0163  0.927      —     50.0   57.8   [ 29.9 –  70.1]  descritivo
+B3SA3   futuro     passado     -6    43  +0.0617  0.707      —     50.0   53.1   [ 32.1 –  67.9]  descritivo
+B3SA3   futuro     passado     -3    47  +0.0149  0.920      —     41.4   51.9   [ 25.5 –  59.3]  descritivo
+B3SA3   futuro     futuro       3    48  +0.4569  0.001      —     73.3   50.9   [ 55.6 –  85.8]  descritivo
+B3SA3   futuro     futuro       6    44  +0.3428  0.026      —     77.8   53.6   [ 59.2 –  89.4]  descritivo
+B3SA3   futuro     futuro      24    31  +0.3318  0.072      —     71.4   57.0   [ 50.0 –  86.2]  descritivo
+B3SA3   passado    passado    -24    11  +0.3545  0.286      —     70.0   57.8   [ 39.7 –  89.2]  descritivo
+B3SA3   passado    passado     -6    12  +0.0210  0.956      —     54.5   53.1   [ 28.0 –  78.7]  descritivo
+B3SA3   passado    passado     -3    12  -0.0769  0.813      —     54.5   51.9   [ 28.0 –  78.7]  descritivo
+B3SA3   passado    futuro       3    13  +0.2033  0.491      —     66.7   50.9   [ 39.1 –  86.2]  descritivo
+B3SA3   passado    futuro       6    13  +0.1319  0.664      —     58.3   53.6   [ 32.0 –  80.7]  descritivo
+B3SA3   passado    futuro      24    12  +0.4615  0.148      —     63.6   57.0   [ 35.4 –  84.8]  descritivo
+B3SA3   presente   passado    -24    19  +0.1664  0.504      —     42.9   57.8   [ 21.4 –  67.4]  descritivo
+B3SA3   presente   passado     -6    25  -0.0282  0.890      —     41.2   53.1   [ 21.6 –  64.0]  descritivo
+B3SA3   presente   passado     -3    28  +0.0161  0.934      —     35.0   51.9   [ 18.1 –  56.7]  descritivo
+B3SA3   presente   futuro       3    29  +0.2733  0.152      —     66.7   50.9   [ 45.4 –  82.8]  descritivo
+B3SA3   presente   futuro       6    26  +0.1578  0.424      —     61.1   53.6   [ 38.6 –  79.7]  descritivo
+B3SA3   presente   futuro      24    20  +0.0333  0.885      —     66.7   57.0   [ 41.7 –  84.8]  descritivo
+BBAS3   futuro     passado    -24    12  -0.6807  0.015      —     50.0   51.7   [ 23.7 –  76.3]  descritivo
+BBAS3   futuro     passado     -6    15  -0.6063  0.028      —     41.7   50.5   [ 19.3 –  68.0]  descritivo
+BBAS3   futuro     passado     -3    16  -0.6079  0.015      —     41.7   51.3   [ 19.3 –  68.0]  descritivo
+BBAS3   futuro     futuro       3    17  -0.1888  0.470      —     23.1   51.4   [  8.2 –  50.3]  descritivo
+BBAS3   futuro     futuro       6    16  -0.0989  0.721      —     38.5   50.4   [ 17.7 –  64.5]  descritivo
+BBAS3   futuro     futuro      24    13  +0.1295  0.665      —     72.7   51.8   [ 43.4 –  90.3]  descritivo
+BBAS3   presente   passado    -24     8  +0.3551  0.371      —    100.0   51.7   [ 51.0 – 100.0]  descritivo
+BBAS3   presente   passado     -6     9  -0.0261  0.956      —     80.0   50.5   [ 37.6 –  96.4]  descritivo
+BBAS3   presente   passado     -3     9  -0.2350  0.522      —     60.0   51.3   [ 23.1 –  88.2]  descritivo
+BBAS3   presente   futuro       3    10  -0.8567  0.002      —     16.7   51.4   [  3.0 –  56.4]  descritivo
+BBAS3   presente   futuro       6    10  -0.1251  0.739      —     50.0   50.4   [ 18.8 –  81.2]  descritivo
+BBAS3   presente   futuro      24     9  -0.5658  0.107      —     40.0   51.8   [ 11.8 –  76.9]  descritivo
+BBDC4   futuro     passado    -24    23  -0.0218  0.901      —     57.9   51.6   [ 36.3 –  76.9]  descritivo
+BBDC4   futuro     passado     -6    32  -0.1616  0.370      —     60.0   53.6   [ 40.7 –  76.6]  descritivo
+BBDC4   futuro     passado     -3    33  +0.0362  0.840      —     56.0   52.6   [ 37.1 –  73.3]  descritivo
+BBDC4   futuro     futuro       3    34  -0.1249  0.475      —     46.2   52.4   [ 28.8 –  64.5]  descritivo
+BBDC4   futuro     futuro       6    33  -0.1308  0.483      —     42.3   53.3   [ 25.5 –  61.1]  descritivo
+BBDC4   futuro     futuro      24    24  -0.2048  0.320      —     50.0   51.7   [ 29.9 –  70.1]  descritivo
+BBDC4   passado    passado    -24    18  -0.1032  0.700      —     46.2   51.6   [ 23.2 –  70.9]  descritivo
+BBDC4   passado    passado     -6    20  -0.1956  0.424      —     53.3   53.6   [ 30.1 –  75.2]  descritivo
+BBDC4   passado    passado     -3    20  -0.0318  0.903      —     53.3   52.6   [ 30.1 –  75.2]  descritivo
+BBDC4   passado    futuro       3    21  -0.3623  0.107      —     43.8   52.4   [ 23.1 –  66.8]  descritivo
+BBDC4   passado    futuro       6    21  -0.1779  0.436      —     56.2   53.3   [ 33.2 –  76.9]  descritivo
+BBDC4   passado    futuro      24    19  -0.4000  0.087      —     28.6   51.7   [ 11.7 –  54.6]  descritivo
+BBDC4   presente   passado    -24    11  +0.8104  0.004      —    100.0   51.6   [ 61.0 – 100.0]  descritivo
+BBDC4   presente   passado     -6    13  +0.2769  0.365      —     87.5   53.6   [ 52.9 –  97.8]  descritivo
+BBDC4   presente   passado     -3    13  +0.3956  0.176      —     87.5   52.6   [ 52.9 –  97.8]  descritivo
+BBDC4   presente   futuro       3    14  -0.4023  0.150      —     44.4   52.4   [ 18.9 –  73.3]  descritivo
+BBDC4   presente   futuro       6    14  -0.2315  0.419      —     55.6   53.3   [ 26.7 –  81.1]  descritivo
+BBDC4   presente   futuro      24    12  -0.2030  0.534      —     42.9   51.7   [ 15.8 –  75.0]  descritivo
+ITUB4   futuro     passado    -24    13  -0.3388  0.264      —     45.5   57.1   [ 21.3 –  72.0]  descritivo
+ITUB4   futuro     passado     -6    16  -0.1402  0.596      —     46.2   51.9   [ 23.2 –  70.9]  descritivo
+ITUB4   futuro     passado     -3    18  -0.1151  0.629      —     53.3   52.1   [ 30.1 –  75.2]  descritivo
+ITUB4   futuro     futuro       3    19  -0.2457  0.307      —     43.8   51.9   [ 23.1 –  66.8]  descritivo
+ITUB4   futuro     futuro       6    17  -0.1991  0.432      —     57.1   52.2   [ 32.6 –  78.6]  descritivo
+ITUB4   futuro     futuro      24    14  -0.2930  0.306      —     50.0   57.2   [ 25.4 –  74.6]  descritivo
+ITUB4   passado    passado    -24     8  +0.2156  0.608      —     50.0   57.1   [ 15.0 –  85.0]  descritivo
+ITUB4   passado    passado     -6    11  -0.1628  0.636      —     42.9   51.9   [ 15.8 –  75.0]  descritivo
+ITUB4   passado    passado     -3    12  -0.2491  0.427      —     37.5   52.1   [ 13.7 –  69.4]  descritivo
+ITUB4   passado    futuro       3    13  -0.2006  0.494      —     33.3   51.9   [ 12.1 –  64.6]  descritivo
+ITUB4   passado    futuro       6    12  +0.5303  0.082      —     50.0   52.2   [ 21.5 –  78.5]  descritivo
+ITUB4   passado    futuro      24     9  +0.8095  0.009      —     60.0   57.2   [ 23.1 –  88.2]  descritivo
+ITUB4   presente   passado     -6    11  -0.4672  0.167      —      0.0   51.9   [  0.0 –  39.0]  descritivo
+ITUB4   presente   passado     -3    11  -0.1240  0.712      —     33.3   52.1   [  9.7 –  70.0]  descritivo
+ITUB4   presente   futuro       3    12  -0.1378  0.664      —     57.1   51.9   [ 25.0 –  84.2]  descritivo
+ITUB4   presente   futuro       6    12  +0.2248  0.481      —     85.7   52.2   [ 48.7 –  97.4]  descritivo
+ITUB4   presente   futuro      24     8  +0.4524  0.272      —     71.4   57.2   [ 35.9 –  91.8]  descritivo
+MGLU3   futuro     passado     -6     8  -0.4312  0.275      —     50.0   52.7   [ 15.0 –  85.0]  descritivo
+MGLU3   futuro     passado     -3     8  -0.5200  0.191      —      0.0   51.7   [  0.0 –  49.0]  descritivo
+MGLU3   futuro     futuro       3     9  +0.1741  0.665      —     40.0   53.0   [ 11.8 –  76.9]  descritivo
+MGLU3   futuro     futuro       6     9  +0.2350  0.528      —     80.0   51.2   [ 37.6 –  96.4]  descritivo
+MGLU3   futuro     futuro      24     8  -0.2928  0.483      —     80.0   56.8   [ 37.6 –  96.4]  descritivo
+PETR4   futuro     passado    -24    30  -0.0360  0.858      —     54.2   50.5   [ 35.1 –  72.1]  descritivo
+PETR4   futuro     passado     -6    46  +0.1033  0.486      —     59.4   50.4   [ 42.3 –  74.5]  descritivo
+PETR4   futuro     passado     -3    55  +0.2127  0.122      —     64.9   51.3   [ 48.8 –  78.2]  descritivo
+PETR4   futuro     futuro       3    56  +0.0856  0.520      —     57.9   50.0   [ 42.2 –  72.1]  descritivo
+PETR4   futuro     futuro       6    47  +0.0572  0.716      —     54.5   50.9   [ 38.0 –  70.2]  descritivo
+PETR4   futuro     futuro      24    30  -0.0428  0.820      —     52.0   51.3   [ 33.5 –  70.0]  descritivo
+PETR4   passado    passado    -24    20  -0.1130  0.626      —     58.8   50.5   [ 36.0 –  78.4]  descritivo
+PETR4   passado    passado     -6    25  +0.1867  0.383      —     66.7   50.4   [ 45.4 –  82.8]  descritivo
+PETR4   passado    passado     -3    26  +0.3423  0.086      —     81.0   51.3   [ 60.0 –  92.3]  descritivo
+PETR4   passado    futuro       3    27  +0.0999  0.623      —     68.2   50.0   [ 47.3 –  83.6]  descritivo
+PETR4   passado    futuro       6    26  +0.0685  0.729      —     40.9   50.9   [ 23.3 –  61.3]  descritivo
+PETR4   passado    futuro      24    20  -0.0218  0.922      —     58.8   51.3   [ 36.0 –  78.4]  descritivo
+PETR4   presente   passado    -24    23  -0.3042  0.157      —     37.5   50.5   [ 18.5 –  61.4]  descritivo
+PETR4   presente   passado     -6    31  -0.2318  0.192      —     36.8   50.4   [ 19.1 –  59.0]  descritivo
+PETR4   presente   passado     -3    35  -0.0633  0.714      —     47.8   51.3   [ 29.2 –  67.0]  descritivo
+PETR4   presente   futuro       3    36  +0.0013  0.995      —     54.2   50.0   [ 35.1 –  72.1]  descritivo
+PETR4   presente   futuro       6    32  -0.0802  0.658      —     45.0   50.9   [ 25.8 –  65.8]  descritivo
+PETR4   presente   futuro      24    23  -0.1790  0.400      —     52.9   51.3   [ 31.0 –  73.8]  descritivo
+SUZB3   futuro     passado    -24    13  -0.2340  0.442      —     44.4   58.2   [ 18.9 –  73.3]  descritivo
+SUZB3   futuro     passado     -6    16  -0.1616  0.545      —     30.0   54.6   [ 10.8 –  60.3]  descritivo
+SUZB3   futuro     passado     -3    16  -0.4258  0.120      —     40.0   53.4   [ 16.8 –  68.7]  descritivo
+SUZB3   futuro     futuro       3    17  -0.0889  0.733      —     54.5   52.8   [ 28.0 –  78.7]  descritivo
+SUZB3   futuro     futuro       6    17  -0.2042  0.427      —     36.4   54.0   [ 15.2 –  64.6]  descritivo
+SUZB3   futuro     futuro      24    14  -0.5023  0.069      —     10.0   58.4   [  1.8 –  40.4]  descritivo
+TODOS   futuro     passado    -24   160  -0.1524  0.051      —     51.6   50.9   [ 42.9 –  60.2]  nulo
+TODOS   futuro     passado     -6   216  -0.0341  0.625      —     51.6   50.8   [ 43.8 –  59.4]  nulo
+TODOS   futuro     passado     -3   234  -0.0429  0.504      —     48.5   50.6   [ 40.9 –  56.1]  nulo
+TODOS   futuro     futuro       3   244  +0.0397  0.529      —     49.7   50.8   [ 42.3 –  57.1]  nulo
+TODOS   futuro     futuro       6   226  +0.0801  0.228      —     56.4   50.7   [ 48.8 –  63.8]  nulo
+TODOS   futuro     futuro      24   168  +0.0100  0.896      —     54.9   50.9   [ 46.4 –  63.1]  nulo
+TODOS   passado    passado    -24    83  -0.0920  0.400      —     55.2   50.9   [ 43.4 –  66.5]  descritivo
+TODOS   passado    passado     -6    99  -0.0929  0.370      —     55.6   50.8   [ 44.7 –  65.9]  descritivo
+TODOS   passado    passado     -3   101  -0.0973  0.340      —     52.4   50.6   [ 41.8 –  62.9]  descritivo
+TODOS   passado    futuro       3   111  -0.0971  0.315      —     51.1   50.8   [ 41.0 –  61.1]  descritivo
+TODOS   passado    futuro       6   109  +0.0630  0.520      —     50.5   50.7   [ 40.5 –  60.6]  descritivo
+TODOS   passado    futuro      24    92  -0.0144  0.897      —     51.3   50.9   [ 40.3 –  62.2]  descritivo
+TODOS   presente   passado    -24   104  +0.0073  0.939      —     56.2   50.9   [ 44.1 –  67.7]  descritivo
+TODOS   presente   passado     -6   129  -0.1029  0.249      —     42.9   50.8   [ 32.4 –  54.0]  nulo
+TODOS   presente   passado     -3   137  -0.0899  0.297      —     42.9   50.6   [ 32.8 –  53.5]  nulo
+TODOS   presente   futuro       3   147  -0.0232  0.779      —     53.2   50.8   [ 43.2 –  63.0]  nulo
+TODOS   presente   futuro       6   139  +0.0382  0.670      —     55.2   50.7   [ 44.7 –  65.2]  nulo
+TODOS   presente   futuro      24   112  +0.0162  0.858      —     56.2   50.9   [ 44.8 –  67.0]  descritivo
+VALE3   futuro     passado    -24    19  +0.0860  0.733      —     64.7   61.1   [ 41.3 –  82.7]  descritivo
+VALE3   futuro     passado     -6    25  +0.1753  0.422      —     60.0   57.2   [ 38.7 –  78.1]  descritivo
+VALE3   futuro     passado     -3    26  +0.0334  0.865      —     45.0   55.2   [ 25.8 –  65.8]  descritivo
+VALE3   futuro     futuro       3    27  +0.0037  0.987      —     28.6   55.5   [ 13.8 –  50.0]  descritivo
+VALE3   futuro     futuro       6    26  +0.3022  0.137      —     66.7   56.7   [ 45.4 –  82.8]  descritivo
+VALE3   futuro     futuro      24    20  +0.3791  0.098      —     61.1   61.0   [ 38.6 –  79.7]  descritivo
+VALE3   passado    passado    -24    12  -0.2797  0.369      —     58.3   61.1   [ 32.0 –  80.7]  descritivo
+VALE3   passado    passado     -6    14  -0.0549  0.859      —     61.5   57.2   [ 35.5 –  82.3]  descritivo
+VALE3   passado    passado     -3    14  -0.1165  0.687      —     46.2   55.2   [ 23.2 –  70.9]  descritivo
+VALE3   passado    futuro       3    15  +0.0036  0.994      —     35.7   55.5   [ 16.3 –  61.2]  descritivo
+VALE3   passado    futuro       6    15  +0.3607  0.189      —     64.3   56.7   [ 38.8 –  83.7]  descritivo
+VALE3   passado    futuro      24    13  +0.3571  0.233      —     69.2   61.0   [ 42.4 –  87.3]  descritivo
+VALE3   presente   passado    -24    16  +0.0811  0.758      —     66.7   61.1   [ 30.0 –  90.3]  descritivo
+VALE3   presente   passado     -6    19  -0.1024  0.675      —     55.6   57.2   [ 26.7 –  81.1]  descritivo
+VALE3   presente   passado     -3    20  +0.1399  0.559      —     44.4   55.2   [ 18.9 –  73.3]  descritivo
+VALE3   presente   futuro       3    21  +0.0323  0.886      —     50.0   55.5   [ 23.7 –  76.3]  descritivo
+VALE3   presente   futuro       6    20  +0.2466  0.292      —     70.0   56.7   [ 39.7 –  89.2]  descritivo
+VALE3   presente   futuro      24    17  +0.1015  0.693      —     71.4   61.0   [ 35.9 –  91.8]  descritivo
+WEGE3   futuro     passado    -24    10  +0.1945  0.577      —     50.0   56.9   [ 21.5 –  78.5]  descritivo
+WEGE3   futuro     passado     -6    12  +0.6056  0.042      —     44.4   54.5   [ 18.9 –  73.3]  descritivo
+WEGE3   futuro     passado     -3    12  -0.0563  0.861      —     33.3   53.3   [ 12.1 –  64.6]  descritivo
+WEGE3   futuro     futuro       3    13  +0.3812  0.190      —     30.0   52.7   [ 10.8 –  60.3]  descritivo
+WEGE3   futuro     futuro       6    13  +0.3591  0.231      —     50.0   53.1   [ 23.7 –  76.3]  descritivo
+WEGE3   futuro     futuro      24    10  +0.2188  0.552      —     37.5   55.9   [ 13.7 –  69.4]  descritivo
+WEGE3   presente   futuro       3     8  -0.0714  0.872      —     28.6   52.7   [  8.2 –  64.1]  descritivo
+WEGE3   presente   futuro       6     8  -0.1429  0.753      —     57.1   53.1   [ 25.0 –  84.2]  descritivo
+
+========================================================================================================
+GRANULARIDADE 5M  ·  ALVO: VOLATILIDADE
+========================================================================================================
+papel   orientacao janela       h     n       IC      p    AUC  acerto%  base%    IC95 do acerto  veredito
+B3SA3   futuro     passado    -24    30  -0.1013  0.583  0.417      0.0   20.0   [  0.0 –  39.0]  descritivo
+B3SA3   futuro     passado     -6    43  -0.1096  0.465  0.477     37.5   20.9   [ 13.7 –  69.4]  descritivo
+B3SA3   futuro     passado     -3    47  +0.0799  0.583  0.453     22.2   21.3   [  6.3 –  54.7]  descritivo
+B3SA3   futuro     futuro       3    48  +0.0880  0.529  0.497     22.2   20.8   [  6.3 –  54.7]  descritivo
+B3SA3   futuro     futuro       6    44  +0.0798  0.605  0.527     37.5   20.5   [ 13.7 –  69.4]  descritivo
+B3SA3   futuro     futuro      24    31  -0.0119  0.950  0.482     16.7   22.6   [  3.0 –  56.4]  descritivo
+B3SA3   passado    passado    -24    11  -0.0182  0.965  0.333     50.0   27.3   [  9.5 –  90.5]  descritivo
+B3SA3   passado    passado     -6    12  +0.1399  0.670  0.667     50.0   25.0   [  9.5 –  90.5]  descritivo
+B3SA3   passado    passado     -3    12  -0.0559  0.863  0.481     50.0   25.0   [  9.5 –  90.5]  descritivo
+B3SA3   passado    futuro       3    13  -0.1648  0.588  0.333      0.0   23.1   [  0.0 –  65.8]  descritivo
+B3SA3   passado    futuro       6    13  -0.1154  0.711  0.400      0.0   23.1   [  0.0 –  65.8]  descritivo
+B3SA3   passado    futuro      24    12  +0.0979  0.757  0.741     50.0   25.0   [  9.5 –  90.5]  descritivo
+B3SA3   presente   passado    -24    19  +0.1239  0.632  0.583     33.3   21.1   [  6.1 –  79.2]  descritivo
+B3SA3   presente   passado     -6    25  +0.1662  0.429  0.755     60.0   20.0   [ 23.1 –  88.2]  descritivo
+B3SA3   presente   passado     -3    28  +0.0905  0.651  0.686     40.0   21.4   [ 11.8 –  76.9]  descritivo
+B3SA3   presente   futuro       3    29  -0.0035  0.989  0.518     20.0   20.7   [  3.6 –  62.4]  descritivo
+B3SA3   presente   futuro       6    26  +0.1898  0.352  0.654     40.0   23.1   [ 11.8 –  76.9]  descritivo
+B3SA3   presente   futuro      24    20  -0.0545  0.809  0.469     25.0   20.0   [  4.6 –  69.9]  descritivo
+BBAS3   futuro     passado    -24    12  -0.4281  0.177  0.278      0.0   25.0   [  0.0 –  65.8]  descritivo
+BBAS3   futuro     passado     -6    15  -0.1865  0.504  0.417      0.0   20.0   [  0.0 –  56.2]  descritivo
+BBAS3   futuro     passado     -3    16  -0.3692  0.151  0.229      0.0   25.0   [  0.0 –  56.2]  descritivo
+BBAS3   futuro     futuro       3    17  +0.3603  0.159  0.942    100.0   23.5   [ 43.8 – 100.0]  descritivo
+BBAS3   futuro     futuro       6    16  +0.0694  0.799  0.635     33.3   25.0   [  6.1 –  79.2]  descritivo
+BBAS3   futuro     futuro      24    13  -0.1763  0.567  0.533      0.0   23.1   [  0.0 –  65.8]  descritivo
+BBAS3   presente   passado    -24     8  +0.0761  0.850  0.458      0.0   25.0   [  0.0 –  79.3]  descritivo
+BBAS3   presente   passado     -6     9  -0.8008  0.021  0.143      0.0   22.2   [  0.0 –  79.3]  descritivo
+BBAS3   presente   passado     -3     9  -0.3743  0.304  0.321      0.0   22.2   [  0.0 –  79.3]  descritivo
+BBAS3   presente   futuro       3    10  +0.2189  0.520  0.594     50.0   20.0   [  9.5 –  90.5]  descritivo
+BBAS3   presente   futuro       6    10  -0.1501  0.660  0.406      0.0   20.0   [  0.0 –  65.8]  descritivo
+BBAS3   presente   futuro      24     9  +0.4178  0.252  0.714      0.0   22.2   [  0.0 –  79.3]  descritivo
+BBDC4   futuro     passado    -24    23  +0.1402  0.511  0.494      0.0   21.7   [  0.0 –  49.0]  descritivo
+BBDC4   futuro     passado     -6    32  -0.2369  0.195  0.326      0.0   21.9   [  0.0 –  39.0]  descritivo
+BBDC4   futuro     passado     -3    33  -0.3100  0.084  0.360     16.7   21.2   [  3.0 –  56.4]  descritivo
+BBDC4   futuro     futuro       3    34  -0.0797  0.638  0.545     16.7   20.6   [  3.0 –  56.4]  descritivo
+BBDC4   futuro     futuro       6    33  -0.2032  0.274  0.555     33.3   21.2   [  9.7 –  70.0]  descritivo
+BBDC4   futuro     futuro      24    24  -0.1355  0.541  0.405      0.0   20.8   [  0.0 –  49.0]  descritivo
+BBDC4   passado    passado    -24    18  +0.0219  0.926  0.375      0.0   22.2   [  0.0 –  56.2]  descritivo
+BBDC4   passado    passado     -6    20  -0.5758  0.011  0.141      0.0   20.0   [  0.0 –  49.0]  descritivo
+BBDC4   passado    passado     -3    20  -0.4106  0.071  0.359     25.0   20.0   [  4.6 –  69.9]  descritivo
+BBDC4   passado    futuro       3    21  -0.2078  0.372  0.463     25.0   23.8   [  4.6 –  69.9]  descritivo
+BBDC4   passado    futuro       6    21  -0.2196  0.344  0.487     50.0   23.8   [ 15.0 –  85.0]  descritivo
+BBDC4   passado    futuro      24    19  -0.1363  0.572  0.317      0.0   21.1   [  0.0 –  56.2]  descritivo
+BBDC4   presente   passado    -24    11  +0.4767  0.140  0.583     50.0   27.3   [  9.5 –  90.5]  descritivo
+BBDC4   presente   passado     -6    13  -0.2713  0.385  0.200      0.0   23.1   [  0.0 –  65.8]  descritivo
+BBDC4   presente   passado     -3    13  -0.0113  0.980  0.267      0.0   23.1   [  0.0 –  65.8]  descritivo
+BBDC4   presente   futuro       3    14  -0.1596  0.591  0.455      0.0   21.4   [  0.0 –  65.8]  descritivo
+BBDC4   presente   futuro       6    14  -0.2630  0.365  0.455      0.0   21.4   [  0.0 –  65.8]  descritivo
+BBDC4   presente   futuro      24    12  -0.1378  0.676  0.481      0.0   25.0   [  0.0 –  65.8]  descritivo
+ITUB4   futuro     passado    -24    13  +0.0523  0.865  0.267      0.0   23.1   [  0.0 –  65.8]  descritivo
+ITUB4   futuro     passado     -6    16  +0.0914  0.733  0.354     33.3   25.0   [  6.1 –  79.2]  descritivo
+ITUB4   futuro     passado     -3    18  +0.0569  0.834  0.625     33.3   22.2   [  6.1 –  79.2]  descritivo
+ITUB4   futuro     futuro       3    19  -0.0413  0.868  0.267      0.0   21.1   [  0.0 –  56.2]  descritivo
+ITUB4   futuro     futuro       6    17  -0.0983  0.692  0.346      0.0   23.5   [  0.0 –  56.2]  descritivo
+ITUB4   futuro     futuro      24    14  -0.3322  0.247  0.409      0.0   21.4   [  0.0 –  65.8]  descritivo
+ITUB4   passado    passado    -24     8  -0.2283  0.580  0.167      0.0   25.0   [  0.0 –  79.3]  descritivo
+ITUB4   passado    passado     -6    11  +0.3350  0.322  0.562      0.0   27.3   [  0.0 –  65.8]  descritivo
+ITUB4   passado    passado     -3    12  +0.4129  0.178  0.889     50.0   25.0   [  9.5 –  90.5]  descritivo
+ITUB4   passado    futuro       3    13  +0.4234  0.150  0.667      0.0   23.1   [  0.0 –  65.8]  descritivo
+ITUB4   passado    futuro       6    12  -0.0320  0.927  0.537      0.0   25.0   [  0.0 –  65.8]  descritivo
+ITUB4   passado    futuro      24     9  -0.6963  0.045  0.143      0.0   22.2   [  0.0 –  79.3]  descritivo
+ITUB4   presente   passado     -6    11  -0.0572  0.877  0.750    100.0   27.3   [ 34.2 – 100.0]  descritivo
+ITUB4   presente   passado     -3    11  -0.2574  0.441  0.417     50.0   27.3   [  9.5 –  90.5]  descritivo
+ITUB4   presente   futuro       3    12  -0.1378  0.668  0.407     50.0   25.0   [  9.5 –  90.5]  descritivo
+ITUB4   presente   futuro       6    12  -0.3843  0.215  0.407     50.0   25.0   [  9.5 –  90.5]  descritivo
+ITUB4   presente   futuro      24     8  -0.5000  0.221  0.167      0.0   25.0   [  0.0 –  79.3]  descritivo
+MGLU3   futuro     passado     -6     8  +0.4947  0.206  0.625    100.0   25.0   [ 20.7 – 100.0]  descritivo
+MGLU3   futuro     passado     -3     8  -0.0127  0.983  0.625    100.0   25.0   [ 20.7 – 100.0]  descritivo
+MGLU3   futuro     futuro       3     9  -0.1132  0.765  0.607    100.0   22.2   [ 20.7 – 100.0]  descritivo
+MGLU3   futuro     futuro       6     9  +0.1480  0.697  0.607    100.0   22.2   [ 20.7 – 100.0]  descritivo
+MGLU3   futuro     futuro      24     8  -0.3172  0.460  0.333      0.0   25.0   [  0.0 –  79.3]  descritivo
+PETR4   futuro     passado    -24    30  -0.1064  0.563  0.427     16.7   20.0   [  3.0 –  56.4]  descritivo
+PETR4   futuro     passado     -6    46  -0.0079  0.956  0.553     22.2   21.7   [  6.3 –  54.7]  descritivo
+PETR4   futuro     passado     -3    55  +0.0196  0.878  0.472      9.1   20.0   [  1.6 –  37.7]  descritivo
+PETR4   futuro     futuro       3    56  +0.1875  0.161  0.586      9.1   21.4   [  1.6 –  37.7]  descritivo
+PETR4   futuro     futuro       6    47  +0.0465  0.749  0.482     11.1   21.3   [  2.0 –  43.5]  descritivo
+PETR4   futuro     futuro      24    30  +0.1539  0.411  0.674     16.7   20.0   [  3.0 –  56.4]  descritivo
+PETR4   passado    passado    -24    20  -0.4081  0.076  0.281      0.0   20.0   [  0.0 –  49.0]  descritivo
+PETR4   passado    passado     -6    25  +0.0004  1.000  0.395      0.0   20.0   [  0.0 –  43.4]  descritivo
+PETR4   passado    passado     -3    26  -0.0257  0.889  0.425      0.0   23.1   [  0.0 –  43.4]  descritivo
+PETR4   passado    futuro       3    27  +0.1072  0.588  0.548      0.0   22.2   [  0.0 –  43.4]  descritivo
+PETR4   passado    futuro       6    26  +0.0202  0.928  0.454      0.0   23.1   [  0.0 –  43.4]  descritivo
+PETR4   passado    futuro      24    20  -0.0527  0.816  0.516      0.0   20.0   [  0.0 –  49.0]  descritivo
+PETR4   presente   passado    -24    23  -0.2436  0.258  0.489     25.0   21.7   [  4.6 –  69.9]  descritivo
+PETR4   presente   passado     -6    31  -0.1782  0.322  0.485     16.7   22.6   [  3.0 –  56.4]  descritivo
+PETR4   presente   passado     -3    35  -0.1094  0.528  0.431      0.0   20.0   [  0.0 –  35.4]  descritivo
+PETR4   presente   futuro       3    36  -0.0355  0.831  0.435      0.0   22.2   [  0.0 –  35.4]  descritivo
+PETR4   presente   futuro       6    32  +0.0482  0.787  0.517     16.7   21.9   [  3.0 –  56.4]  descritivo
+PETR4   presente   futuro      24    23  -0.1177  0.611  0.506      0.0   21.7   [  0.0 –  49.0]  descritivo
+SUZB3   futuro     passado    -24    13  -0.2479  0.420  0.383      0.0   23.1   [  0.0 –  65.8]  descritivo
+SUZB3   futuro     passado     -6    16  +0.3413  0.177  0.719     66.7   25.0   [ 20.8 –  93.9]  descritivo
+SUZB3   futuro     passado     -3    16  +0.5995  0.019  0.698     66.7   25.0   [ 20.8 –  93.9]  descritivo
+SUZB3   futuro     futuro       3    17  -0.1653  0.520  0.538      0.0   23.5   [  0.0 –  56.2]  descritivo
+SUZB3   futuro     futuro       6    17  +0.2017  0.430  0.538      0.0   23.5   [  0.0 –  56.2]  descritivo
+SUZB3   futuro     futuro      24    14  +0.1378  0.629  0.409      0.0   21.4   [  0.0 –  65.8]  descritivo
+TODOS   futuro     passado    -24   160  -0.0707  0.391  0.482     15.6   20.0   [  6.9 –  31.8]  nulo
+TODOS   futuro     passado     -6   216  -0.1121  0.108  0.500     16.3   20.4   [  8.1 –  30.0]  nulo
+TODOS   futuro     passado     -3   234  -0.0652  0.318  0.461     17.4   20.1   [  9.1 –  30.7]  nulo
+TODOS   futuro     futuro       3   244  -0.0137  0.832  0.510     18.8   20.1   [ 10.2 –  31.9]  nulo
+TODOS   futuro     futuro       6   226  -0.0734  0.254  0.492     13.3   20.4   [  6.3 –  26.2]  nulo
+TODOS   futuro     futuro      24   168  -0.1037  0.178  0.466     12.1   20.2   [  4.8 –  27.3]  nulo
+TODOS   passado    passado    -24    83  -0.0985  0.382  0.459      6.2   20.5   [  1.1 –  28.3]  descritivo
+TODOS   passado    passado     -6    99  -0.1223  0.242  0.477     15.8   20.2   [  5.5 –  37.6]  descritivo
+TODOS   passado    passado     -3   101  -0.0092  0.926  0.445     15.0   20.8   [  5.2 –  36.0]  descritivo
+TODOS   passado    futuro       3   111  -0.0461  0.633  0.459     13.6   20.7   [  4.7 –  33.3]  descritivo
+TODOS   passado    futuro       6   109  -0.1451  0.127  0.344      0.0   20.2   [  0.0 –  15.5]  descritivo
+TODOS   passado    futuro      24    92  -0.2157  0.039  0.413     11.1   20.7   [  3.1 –  32.8]  descritivo
+TODOS   presente   passado    -24   104  -0.0396  0.690  0.372     10.0   20.2   [  2.8 –  30.1]  descritivo
+TODOS   presente   passado     -6   129  -0.2034  0.018  0.459     16.0   20.2   [  6.4 –  34.7]  p<0,05 mas cai no FDR
+TODOS   presente   passado     -3   137  -0.0730  0.406  0.512     18.5   20.4   [  8.2 –  36.7]  nulo
+TODOS   presente   futuro       3   147  -0.1036  0.225  0.432     10.3   20.4   [  3.6 –  26.4]  nulo
+TODOS   presente   futuro       6   139  -0.1479  0.073  0.447      7.4   20.1   [  2.1 –  23.4]  nulo
+TODOS   presente   futuro      24   112  -0.1665  0.086  0.373      9.1   20.5   [  2.5 –  27.8]  descritivo
+VALE3   futuro     passado    -24    19  +0.2211  0.374  0.608     33.3   21.1   [  6.1 –  79.2]  descritivo
+VALE3   futuro     passado     -6    25  +0.0317  0.882  0.380     20.0   20.0   [  3.6 –  62.4]  descritivo
+VALE3   futuro     passado     -3    26  +0.0784  0.688  0.475     40.0   23.1   [ 11.8 –  76.9]  descritivo
+VALE3   futuro     futuro       3    27  -0.0749  0.704  0.468     40.0   22.2   [ 11.8 –  76.9]  descritivo
+VALE3   futuro     futuro       6    26  -0.0292  0.891  0.642     60.0   23.1   [ 23.1 –  88.2]  descritivo
+VALE3   futuro     futuro      24    20  -0.3400  0.131  0.359     25.0   20.0   [  4.6 –  69.9]  descritivo
+VALE3   passado    passado    -24    12  +0.3706  0.230  0.889    100.0   25.0   [ 34.2 – 100.0]  descritivo
+VALE3   passado    passado     -6    14  -0.3011  0.294  0.242      0.0   21.4   [  0.0 –  65.8]  descritivo
+VALE3   passado    passado     -3    14  +0.1736  0.553  0.455      0.0   21.4   [  0.0 –  65.8]  descritivo
+VALE3   passado    futuro       3    15  -0.0500  0.870  0.667     33.3   20.0   [  6.1 –  79.2]  descritivo
+VALE3   passado    futuro       6    15  -0.0821  0.775  0.278      0.0   20.0   [  0.0 –  56.2]  descritivo
+VALE3   passado    futuro      24    13  -0.3132  0.318  0.467      0.0   23.1   [  0.0 –  65.8]  descritivo
+VALE3   presente   passado    -24    16  +0.1183  0.659  0.385      0.0   25.0   [  0.0 –  56.2]  descritivo
+VALE3   presente   passado     -6    19  +0.0104  0.964  0.392     33.3   21.1   [  6.1 –  79.2]  descritivo
+VALE3   presente   passado     -3    20  +0.2700  0.259  0.516      0.0   20.0   [  0.0 –  49.0]  descritivo
+VALE3   presente   futuro       3    21  -0.1599  0.469  0.525     50.0   23.8   [ 15.0 –  85.0]  descritivo
+VALE3   presente   futuro       6    20  -0.0964  0.667  0.289      0.0   20.0   [  0.0 –  49.0]  descritivo
+VALE3   presente   futuro      24    17  -0.1523  0.564  0.356      0.0   23.5   [  0.0 –  56.2]  descritivo
+WEGE3   futuro     passado    -24    10  +0.1945  0.609  0.500      0.0   20.0   [  0.0 –  65.8]  descritivo
+WEGE3   futuro     passado     -6    12  -0.3732  0.248  0.444      0.0   25.0   [  0.0 –  65.8]  descritivo
+WEGE3   futuro     passado     -3    12  +0.0704  0.825  0.444      0.0   25.0   [  0.0 –  65.8]  descritivo
+WEGE3   futuro     futuro       3    13  -0.3425  0.253  0.400     50.0   23.1   [  9.5 –  90.5]  descritivo
+WEGE3   futuro     futuro       6    13  -0.3315  0.260  0.367      0.0   23.1   [  0.0 –  65.8]  descritivo
+WEGE3   futuro     futuro      24    10  +0.3040  0.403  0.469     50.0   20.0   [  9.5 –  90.5]  descritivo
+WEGE3   presente   futuro       3     8  +0.0476  0.927  0.500      0.0   25.0   [  0.0 –  79.3]  descritivo
+WEGE3   presente   futuro       6     8  -0.2857  0.491  0.500      0.0   25.0   [  0.0 –  79.3]  descritivo
+
+========================================================================================================
+GRANULARIDADE 15M  ·  ALVO: DIRECAO
+========================================================================================================
+papel   orientacao janela       h     n       IC      p    AUC  acerto%  base%    IC95 do acerto  veredito
+B3SA3   futuro     passado    -16    21  +0.0730  0.765      —     58.3   62.4   [ 32.0 –  80.7]  descritivo
+B3SA3   futuro     passado     -4    40  +0.1632  0.321      —     56.0   54.7   [ 37.1 –  73.3]  descritivo
+B3SA3   futuro     passado     -2    46  +0.2512  0.091      —     63.0   54.5   [ 44.2 –  78.5]  descritivo
+B3SA3   futuro     futuro       2    46  -0.0749  0.622      —     46.4   54.5   [ 29.5 –  64.2]  descritivo
+B3SA3   futuro     futuro       4    40  +0.0522  0.764      —     61.5   54.5   [ 42.5 –  77.6]  descritivo
+B3SA3   futuro     futuro      16    21  +0.1772  0.451      —     66.7   61.5   [ 39.1 –  86.2]  descritivo
+B3SA3   passado    passado    -16    11  -0.0091  0.993      —     60.0   62.4   [ 31.3 –  83.2]  descritivo
+B3SA3   passado    passado     -4    12  -0.3706  0.227      —     36.4   54.7   [ 15.2 –  64.6]  descritivo
+B3SA3   passado    passado     -2    12  -0.0769  0.812      —     54.5   54.5   [ 28.0 –  78.7]  descritivo
+B3SA3   passado    futuro       2    13  -0.1813  0.545      —     33.3   54.5   [ 13.8 –  60.9]  descritivo
+B3SA3   passado    futuro       4    13  +0.1154  0.706      —     58.3   54.5   [ 32.0 –  80.7]  descritivo
+B3SA3   passado    futuro      16    12  +0.4126  0.178      —     81.8   61.5   [ 52.3 –  94.9]  descritivo
+B3SA3   presente   passado    -16    16  +0.4538  0.073      —     63.6   62.4   [ 35.4 –  84.8]  descritivo
+B3SA3   presente   passado     -4    25  +0.1083  0.604      —     64.7   54.7   [ 41.3 –  82.7]  descritivo
+B3SA3   presente   passado     -2    25  +0.1376  0.506      —     58.8   54.5   [ 36.0 –  78.4]  descritivo
+B3SA3   presente   futuro       2    26  -0.1620  0.431      —     38.9   54.5   [ 20.3 –  61.4]  descritivo
+B3SA3   presente   futuro       4    26  -0.1963  0.333      —     50.0   54.5   [ 29.0 –  71.0]  descritivo
+B3SA3   presente   futuro      16    17  -0.0869  0.759      —     58.3   61.5   [ 32.0 –  80.7]  descritivo
+BBAS3   futuro     passado    -16    12  -0.0947  0.773      —     40.0   51.5   [ 16.8 –  68.7]  descritivo
+BBAS3   futuro     passado     -4    16  -0.4118  0.119      —     23.1   50.1   [  8.2 –  50.3]  descritivo
+BBAS3   futuro     passado     -2    16  -0.4089  0.110      —     30.8   51.2   [ 12.7 –  57.6]  descritivo
+BBAS3   futuro     futuro       2    17  +0.2127  0.422      —     50.0   51.7   [ 26.8 –  73.2]  descritivo
+BBAS3   futuro     futuro       4    17  +0.5224  0.032      —     64.3   51.7   [ 38.8 –  83.7]  descritivo
+BBAS3   futuro     futuro      16    12  +0.3228  0.310      —     50.0   52.8   [ 23.7 –  76.3]  descritivo
+BBAS3   passado    futuro       2     8  +0.0714  0.886      —     57.1   51.7   [ 25.0 –  84.2]  descritivo
+BBAS3   passado    futuro       4     8  +0.2857  0.502      —     57.1   51.7   [ 25.0 –  84.2]  descritivo
+BBAS3   presente   passado     -4     9  -0.2872  0.440      —     40.0   50.1   [ 11.8 –  76.9]  descritivo
+BBAS3   presente   passado     -2     9  -0.4439  0.212      —     40.0   51.2   [ 11.8 –  76.9]  descritivo
+BBAS3   presente   futuro       2    10  +0.4315  0.231      —     66.7   51.7   [ 30.0 –  90.3]  descritivo
+BBAS3   presente   futuro       4    10  +0.1813  0.592      —     50.0   51.7   [ 18.8 –  81.2]  descritivo
+BBAS3   presente   futuro      16     8  -0.6099  0.113      —     20.0   52.8   [  3.6 –  62.4]  descritivo
+BBDC4   futuro     passado    -16    16  -0.3046  0.251      —     28.6   50.3   [ 11.7 –  54.6]  descritivo
+BBDC4   futuro     passado     -4    31  -0.0329  0.857      —     58.3   53.3   [ 38.8 –  75.5]  descritivo
+BBDC4   futuro     passado     -2    32  -0.1434  0.422      —     40.0   55.2   [ 23.4 –  59.3]  descritivo
+BBDC4   futuro     futuro       2    33  +0.0591  0.757      —     46.2   52.6   [ 28.8 –  64.5]  descritivo
+BBDC4   futuro     futuro       4    32  +0.1282  0.469      —     52.0   53.5   [ 33.5 –  70.0]  descritivo
+BBDC4   futuro     futuro      16    17  -0.0319  0.918      —     66.7   51.5   [ 41.7 –  84.8]  descritivo
+BBDC4   passado    passado    -16    14  -0.1567  0.592      —     54.5   50.3   [ 28.0 –  78.7]  descritivo
+BBDC4   passado    passado     -4    20  -0.3131  0.162      —     60.0   53.3   [ 35.7 –  80.2]  descritivo
+BBDC4   passado    passado     -2    20  -0.3093  0.191      —     40.0   55.2   [ 19.8 –  64.3]  descritivo
+BBDC4   passado    futuro       2    21  +0.2407  0.287      —     50.0   52.6   [ 28.0 –  72.0]  descritivo
+BBDC4   passado    futuro       4    21  +0.1890  0.400      —     50.0   53.5   [ 28.0 –  72.0]  descritivo
+BBDC4   passado    futuro      16    15  -0.2581  0.363      —     41.7   51.5   [ 19.3 –  68.0]  descritivo
+BBDC4   presente   passado    -16     9  +0.2034  0.595      —     83.3   50.3   [ 43.6 –  97.0]  descritivo
+BBDC4   presente   passado     -4    13  +0.1639  0.592      —    100.0   53.3   [ 67.6 – 100.0]  descritivo
+BBDC4   presente   passado     -2    13  +0.0848  0.785      —     87.5   55.2   [ 52.9 –  97.8]  descritivo
+BBDC4   presente   futuro       2    14  +0.1191  0.682      —     55.6   52.6   [ 26.7 –  81.1]  descritivo
+BBDC4   presente   futuro       4    14  -0.2765  0.340      —     44.4   53.5   [ 18.9 –  73.3]  descritivo
+BBDC4   presente   futuro      16    10  +0.0061  1.000      —     57.1   51.5   [ 25.0 –  84.2]  descritivo
+ITUB4   futuro     passado    -16    11  -0.4510  0.157      —     44.4   60.1   [ 18.9 –  73.3]  descritivo
+ITUB4   futuro     passado     -4    15  -0.4741  0.077      —     53.8   52.2   [ 29.1 –  76.8]  descritivo
+ITUB4   futuro     passado     -2    16  -0.2052  0.439      —     38.5   52.4   [ 17.7 –  64.5]  descritivo
+ITUB4   futuro     futuro       2    17  +0.0590  0.812      —     64.3   50.3   [ 38.8 –  83.7]  descritivo
+ITUB4   futuro     futuro       4    16  -0.0177  0.955      —     64.3   52.9   [ 38.8 –  83.7]  descritivo
+ITUB4   futuro     futuro      16    12  +0.1891  0.574      —     50.0   58.1   [ 23.7 –  76.3]  descritivo
+ITUB4   passado    passado    -16     8  +0.1649  0.692      —     50.0   60.1   [ 15.0 –  85.0]  descritivo
+ITUB4   passado    passado     -4    11  -0.2187  0.513      —     42.9   52.2   [ 15.8 –  75.0]  descritivo
+ITUB4   passado    passado     -2    11  -0.0558  0.878      —     42.9   52.4   [ 15.8 –  75.0]  descritivo
+ITUB4   passado    futuro       2    12  +0.5197  0.076      —     50.0   50.3   [ 21.5 –  78.5]  descritivo
+ITUB4   passado    futuro       4    12  +0.6336  0.030      —     62.5   52.9   [ 30.6 –  86.3]  descritivo
+ITUB4   passado    futuro      16     9  +0.9226  0.001      —     60.0   58.1   [ 23.1 –  88.2]  descritivo
+ITUB4   presente   passado     -4    10  -0.3252  0.366      —     66.7   52.2   [ 30.0 –  90.3]  descritivo
+ITUB4   presente   passado     -2    11  +0.0191  0.964      —     33.3   52.4   [  9.7 –  70.0]  descritivo
+ITUB4   presente   futuro       2    12  +0.6236  0.040      —     85.7   50.3   [ 48.7 –  97.4]  descritivo
+ITUB4   presente   futuro       4    11  +0.5397  0.095      —    100.0   52.9   [ 64.6 – 100.0]  descritivo
+MGLU3   futuro     passado     -4     8  -0.0761  0.847      —     50.0   57.2   [ 15.0 –  85.0]  descritivo
+MGLU3   futuro     passado     -2     8  +0.0381  0.929      —     50.0   54.5   [ 15.0 –  85.0]  descritivo
+MGLU3   futuro     futuro       2     9  +0.0522  0.905      —     40.0   51.5   [ 11.8 –  76.9]  descritivo
+MGLU3   futuro     futuro       4     9  -0.1654  0.676      —     60.0   57.7   [ 23.1 –  88.2]  descritivo
+PETR4   futuro     passado    -16    19  +0.0439  0.862      —     56.2   50.8   [ 33.2 –  76.9]  descritivo
+PETR4   futuro     passado     -4    40  +0.1197  0.458      —     53.6   51.2   [ 35.8 –  70.5]  descritivo
+PETR4   futuro     passado     -2    50  +0.2556  0.067      —     59.4   50.6   [ 42.3 –  74.5]  descritivo
+PETR4   futuro     futuro       2    50  -0.0129  0.929      —     57.6   50.1   [ 40.8 –  72.8]  descritivo
+PETR4   futuro     futuro       4    40  +0.0301  0.857      —     58.6   53.1   [ 40.7 –  74.5]  descritivo
+PETR4   futuro     futuro      16    19  +0.1975  0.410      —     64.7   51.5   [ 41.3 –  82.7]  descritivo
+PETR4   passado    passado    -16    15  +0.1607  0.559      —     50.0   50.8   [ 26.8 –  73.2]  descritivo
+PETR4   passado    passado     -4    22  +0.3647  0.098      —     73.7   51.2   [ 51.2 –  88.2]  descritivo
+PETR4   passado    passado     -2    25  +0.3571  0.079      —     61.9   50.6   [ 40.9 –  79.2]  descritivo
+PETR4   passado    futuro       2    26  +0.0936  0.660      —     59.1   50.1   [ 38.7 –  76.7]  descritivo
+PETR4   passado    futuro       4    23  +0.1781  0.416      —     70.0   53.1   [ 48.1 –  85.5]  descritivo
+PETR4   passado    futuro      16    16  +0.1500  0.585      —     60.0   51.5   [ 35.7 –  80.2]  descritivo
+PETR4   presente   passado    -16    15  -0.4255  0.117      —     20.0   50.8   [  5.7 –  51.0]  descritivo
+PETR4   presente   passado     -4    28  -0.2908  0.122      —     36.8   51.2   [ 19.1 –  59.0]  descritivo
+PETR4   presente   passado     -2    31  -0.0580  0.759      —     47.6   50.6   [ 28.3 –  67.6]  descritivo
+PETR4   presente   futuro       2    32  -0.1195  0.512      —     59.1   50.1   [ 38.7 –  76.7]  descritivo
+PETR4   presente   futuro       4    29  -0.0205  0.915      —     65.0   53.1   [ 43.3 –  81.9]  descritivo
+PETR4   presente   futuro      16    16  -0.2239  0.380      —     54.5   51.5   [ 28.0 –  78.7]  descritivo
+SUZB3   futuro     passado    -16     9  -0.3431  0.355      —     28.6   57.0   [  8.2 –  64.1]  descritivo
+SUZB3   futuro     passado     -4    16  -0.3307  0.204      —     40.0   56.8   [ 16.8 –  68.7]  descritivo
+SUZB3   futuro     passado     -2    16  -0.3307  0.234      —     30.0   54.9   [ 10.8 –  60.3]  descritivo
+SUZB3   futuro     futuro       2    17  -0.4760  0.053      —     27.3   53.8   [  9.7 –  56.6]  descritivo
+SUZB3   futuro     futuro       4    17  -0.2280  0.384      —     36.4   55.4   [ 15.2 –  64.6]  descritivo
+SUZB3   futuro     futuro      16    10  -0.0365  0.922      —     50.0   57.5   [ 21.5 –  78.5]  descritivo
+TODOS   futuro     passado    -16   121  -0.1010  0.266      —     44.1   51.3   [ 34.4 –  54.2]  nulo
+TODOS   futuro     passado     -4   203  -0.0397  0.555      —     49.7   51.1   [ 41.7 –  57.6]  nulo
+TODOS   futuro     passado     -2   223  +0.0181  0.789      —     47.7   50.6   [ 40.0 –  55.6]  nulo
+TODOS   futuro     futuro       2   231  +0.0468  0.481      —     51.5   51.1   [ 43.9 –  59.0]  nulo
+TODOS   futuro     futuro       4   211  +0.1086  0.121      —     58.6   50.7   [ 50.8 –  66.0]  nulo
+TODOS   futuro     futuro      16   127  +0.1186  0.189      —     56.0   51.7   [ 46.2 –  65.3]  nulo
+TODOS   passado    passado    -16    74  +0.0305  0.792      —     51.6   51.3   [ 39.4 –  63.6]  descritivo
+TODOS   passado    passado     -4    95  -0.1501  0.153      —     51.9   51.1   [ 41.1 –  62.6]  descritivo
+TODOS   passado    passado     -2   100  -0.0687  0.508      —     48.8   50.6   [ 38.3 –  59.4]  descritivo
+TODOS   passado    futuro       2   110  +0.1511  0.115      —     51.1   51.1   [ 41.0 –  61.1]  descritivo
+TODOS   passado    futuro       4   105  +0.2222  0.022      —     59.6   50.7   [ 49.2 –  69.1]  descritivo
+TODOS   passado    futuro      16    83  +0.1191  0.277      —     57.7   51.7   [ 46.2 –  68.5]  descritivo
+TODOS   presente   passado    -16    84  +0.0339  0.763      —     57.7   51.3   [ 44.2 –  70.1]  descritivo
+TODOS   presente   passado     -4   123  -0.0514  0.575      —     53.3   51.1   [ 42.2 –  64.2]  nulo
+TODOS   presente   passado     -2   129  +0.0100  0.910      —     54.4   50.6   [ 43.5 –  65.0]  nulo
+TODOS   presente   futuro       2   139  +0.0318  0.721      —     53.9   51.1   [ 43.6 –  63.9]  nulo
+TODOS   presente   futuro       4   133  +0.0346  0.684      —     57.6   50.7   [ 47.0 –  67.6]  nulo
+TODOS   presente   futuro      16    93  +0.1060  0.299      —     55.7   51.7   [ 43.3 –  67.5]  descritivo
+VALE3   futuro     passado    -16    16  -0.2075  0.443      —     50.0   69.7   [ 26.8 –  73.2]  descritivo
+VALE3   futuro     passado     -4    23  -0.1414  0.515      —     45.0   60.0   [ 25.8 –  65.8]  descritivo
+VALE3   futuro     passado     -2    24  -0.0035  0.987      —     45.0   58.1   [ 25.8 –  65.8]  descritivo
+VALE3   futuro     futuro       2    25  +0.3171  0.124      —     61.9   57.0   [ 40.9 –  79.2]  descritivo
+VALE3   futuro     futuro       4    24  +0.2889  0.167      —     61.9   57.9   [ 40.9 –  79.2]  descritivo
+VALE3   futuro     futuro      16    17  +0.3102  0.234      —     46.7   67.5   [ 24.8 –  69.9]  descritivo
+VALE3   passado    passado    -16    11  -0.4182  0.199      —     45.5   69.7   [ 21.3 –  72.0]  descritivo
+VALE3   passado    passado     -4    13  -0.3242  0.300      —     38.5   60.0   [ 17.7 –  64.5]  descritivo
+VALE3   passado    passado     -2    14  -0.1692  0.564      —     53.8   58.1   [ 29.1 –  76.8]  descritivo
+VALE3   passado    futuro       2    15  +0.2607  0.351      —     50.0   57.0   [ 26.8 –  73.2]  descritivo
+VALE3   passado    futuro       4    14  +0.4022  0.158      —     57.1   57.9   [ 32.6 –  78.6]  descritivo
+VALE3   passado    futuro      16    12  +0.4056  0.181      —     58.3   67.5   [ 32.0 –  80.7]  descritivo
+VALE3   presente   passado    -16    14  -0.1339  0.635      —     66.7   69.7   [ 30.0 –  90.3]  descritivo
+VALE3   presente   passado     -4    18  -0.3048  0.213      —     37.5   60.0   [ 13.7 –  69.4]  descritivo
+VALE3   presente   passado     -2    19  +0.0000  1.000      —     55.6   58.1   [ 26.7 –  81.1]  descritivo
+VALE3   presente   futuro       2    20  -0.1550  0.512      —     50.0   57.0   [ 23.7 –  76.3]  descritivo
+VALE3   presente   futuro       4    19  -0.0512  0.834      —     55.6   57.9   [ 26.7 –  81.1]  descritivo
+VALE3   presente   futuro      16    15  +0.1433  0.604      —     57.1   67.5   [ 25.0 –  84.2]  descritivo
+WEGE3   futuro     passado    -16     8  +0.3713  0.360      —     50.0   57.2   [ 18.8 –  81.2]  descritivo
+WEGE3   futuro     passado     -4    11  +0.7798  0.005      —     50.0   54.9   [ 21.5 –  78.5]  descritivo
+WEGE3   futuro     passado     -2    12  +0.7817  0.004      —     44.4   54.3   [ 18.9 –  73.3]  descritivo
+WEGE3   futuro     futuro       2    13  -0.0221  0.948      —     40.0   55.2   [ 16.8 –  68.7]  descritivo
+WEGE3   futuro     futuro       4    12  +0.1268  0.692      —     55.6   53.6   [ 26.7 –  81.1]  descritivo
+WEGE3   futuro     futuro      16     8  +0.1557  0.730      —     50.0   57.7   [ 18.8 –  81.2]  descritivo
+WEGE3   presente   futuro       2     8  -0.1667  0.723      —     57.1   55.2   [ 25.0 –  84.2]  descritivo
+WEGE3   presente   futuro       4     8  +0.1905  0.677      —     71.4   53.6   [ 35.9 –  91.8]  descritivo
+
+========================================================================================================
+GRANULARIDADE 15M  ·  ALVO: VOLATILIDADE
+========================================================================================================
+papel   orientacao janela       h     n       IC      p    AUC  acerto%  base%    IC95 do acerto  veredito
+B3SA3   futuro     passado    -16    21  -0.3990  0.080  0.350      0.0   23.8   [  0.0 –  49.0]  descritivo
+B3SA3   futuro     passado     -4    40  +0.1727  0.281  0.617     25.0   20.0   [  7.1 –  59.1]  descritivo
+B3SA3   futuro     passado     -2    46  +0.1293  0.410  0.575     22.2   21.7   [  6.3 –  54.7]  descritivo
+B3SA3   futuro     futuro       2    46  -0.1829  0.210  0.424     11.1   21.7   [  2.0 –  43.5]  descritivo
+B3SA3   futuro     futuro       4    40  -0.1454  0.363  0.381     12.5   20.0   [  2.2 –  47.1]  descritivo
+B3SA3   futuro     futuro      16    21  -0.0771  0.733  0.512     25.0   23.8   [  4.6 –  69.9]  descritivo
+B3SA3   passado    passado    -16    11  -0.4636  0.147  0.250      0.0   27.3   [  0.0 –  65.8]  descritivo
+B3SA3   passado    passado     -4    12  +0.1608  0.610  0.370      0.0   25.0   [  0.0 –  65.8]  descritivo
+B3SA3   passado    passado     -2    12  +0.1119  0.747  0.593     50.0   25.0   [  9.5 –  90.5]  descritivo
+B3SA3   passado    futuro       2    13  -0.2527  0.384  0.500      0.0   23.1   [  0.0 –  65.8]  descritivo
+B3SA3   passado    futuro       4    13  -0.3242  0.267  0.233      0.0   23.1   [  0.0 –  65.8]  descritivo
+B3SA3   passado    futuro      16    12  -0.1888  0.544  0.444     50.0   25.0   [  9.5 –  90.5]  descritivo
+B3SA3   presente   passado    -16    16  -0.0597  0.822  0.604     33.3   25.0   [  6.1 –  79.2]  descritivo
+B3SA3   presente   passado     -4    25  +0.3030  0.143  0.690     40.0   20.0   [ 11.8 –  76.9]  descritivo
+B3SA3   presente   passado     -2    25  +0.2287  0.269  0.535     20.0   20.0   [  3.6 –  62.4]  descritivo
+B3SA3   presente   futuro       2    26  -0.0520  0.791  0.388     20.0   23.1   [  3.6 –  62.4]  descritivo
+B3SA3   presente   futuro       4    26  -0.1734  0.398  0.371      0.0   23.1   [  0.0 –  43.4]  descritivo
+B3SA3   presente   futuro      16    17  -0.0645  0.810  0.404     33.3   23.5   [  6.1 –  79.2]  descritivo
+BBAS3   futuro     passado    -16    12  -0.0702  0.824  0.537      0.0   25.0   [  0.0 –  65.8]  descritivo
+BBAS3   futuro     passado     -4    16  -0.3675  0.154  0.385     33.3   25.0   [  6.1 –  79.2]  descritivo
+BBAS3   futuro     passado     -2    16  -0.0502  0.854  0.438     33.3   25.0   [  6.1 –  79.2]  descritivo
+BBAS3   futuro     futuro       2    17  +0.0934  0.701  0.663     66.7   23.5   [ 20.8 –  93.9]  descritivo
+BBAS3   futuro     futuro       4    17  -0.0529  0.836  0.529     66.7   23.5   [ 20.8 –  93.9]  descritivo
+BBAS3   futuro     futuro      16    12  +0.2947  0.366  0.667      0.0   25.0   [  0.0 –  65.8]  descritivo
+BBAS3   passado    futuro       2     8  +0.1667  0.693  0.833      0.0   25.0   [  0.0 –  79.3]  descritivo
+BBAS3   passado    futuro       4     8  -0.1190  0.788  0.500      0.0   25.0   [  0.0 –  79.3]  descritivo
+BBAS3   presente   passado     -4     9  -0.8008  0.013  0.143      0.0   22.2   [  0.0 –  79.3]  descritivo
+BBAS3   presente   passado     -2     9  -0.5745  0.112  0.143      0.0   22.2   [  0.0 –  79.3]  descritivo
+BBAS3   presente   futuro       2    10  +0.3439  0.322  0.750     50.0   20.0   [  9.5 –  90.5]  descritivo
+BBAS3   presente   futuro       4    10  +0.5315  0.122  0.688      0.0   20.0   [  0.0 –  65.8]  descritivo
+BBAS3   presente   futuro      16     8  +0.7563  0.043  0.833      0.0   25.0   [  0.0 –  79.3]  descritivo
+BBDC4   futuro     passado    -16    16  -0.0221  0.915  0.625     33.3   25.0   [  6.1 –  79.2]  descritivo
+BBDC4   futuro     passado     -4    31  -0.2076  0.256  0.381     16.7   22.6   [  3.0 –  56.4]  descritivo
+BBDC4   futuro     passado     -2    32  -0.1374  0.442  0.366      0.0   21.9   [  0.0 –  39.0]  descritivo
+BBDC4   futuro     futuro       2    33  +0.2717  0.130  0.621     50.0   21.2   [ 18.8 –  81.2]  descritivo
+BBDC4   futuro     futuro       4    32  +0.2292  0.209  0.617     16.7   21.9   [  3.0 –  56.4]  descritivo
+BBDC4   futuro     futuro      16    17  +0.2649  0.299  0.750     66.7   23.5   [ 20.8 –  93.9]  descritivo
+BBDC4   passado    passado    -16    14  +0.2185  0.442  0.818     50.0   21.4   [  9.5 –  90.5]  descritivo
+BBDC4   passado    passado     -4    20  -0.5530  0.013  0.281      0.0   20.0   [  0.0 –  49.0]  descritivo
+BBDC4   passado    passado     -2    20  -0.3773  0.110  0.203      0.0   20.0   [  0.0 –  49.0]  descritivo
+BBDC4   passado    futuro       2    21  +0.3386  0.113  0.662     50.0   23.8   [ 15.0 –  85.0]  descritivo
+BBDC4   passado    futuro       4    21  +0.1699  0.467  0.512     25.0   23.8   [  4.6 –  69.9]  descritivo
+BBDC4   passado    futuro      16    15  -0.0860  0.759  0.583     33.3   20.0   [  6.1 –  79.2]  descritivo
+BBDC4   presente   passado    -16     9  -0.1695  0.682  0.357      0.0   22.2   [  0.0 –  79.3]  descritivo
+BBDC4   presente   passado     -4    13  +0.2091  0.497  0.667     50.0   23.1   [  9.5 –  90.5]  descritivo
+BBDC4   presente   passado     -2    13  -0.2826  0.373  0.233      0.0   23.1   [  0.0 –  65.8]  descritivo
+BBDC4   presente   futuro       2    14  +0.0877  0.779  0.303      0.0   21.4   [  0.0 –  65.8]  descritivo
+BBDC4   presente   futuro       4    14  +0.0292  0.914  0.697     50.0   21.4   [  9.5 –  90.5]  descritivo
+BBDC4   presente   futuro      16    10  +0.1779  0.613  0.750     50.0   20.0   [  9.5 –  90.5]  descritivo
+ITUB4   futuro     passado    -16    11  -0.2005  0.546  0.354      0.0   27.3   [  0.0 –  65.8]  descritivo
+ITUB4   futuro     passado     -4    15  -0.0804  0.764  0.431      0.0   20.0   [  0.0 –  56.2]  descritivo
+ITUB4   futuro     passado     -2    16  -0.1504  0.560  0.375     33.3   25.0   [  6.1 –  79.2]  descritivo
+ITUB4   futuro     futuro       2    17  +0.3317  0.206  0.673     33.3   23.5   [  6.1 –  79.2]  descritivo
+ITUB4   futuro     futuro       4    16  +0.3517  0.192  0.833     33.3   25.0   [  6.1 –  79.2]  descritivo
+ITUB4   futuro     futuro      16    12  -0.4308  0.169  0.093      0.0   25.0   [  0.0 –  65.8]  descritivo
+ITUB4   passado    passado    -16     8  +0.4186  0.288  0.375      0.0   25.0   [  0.0 –  79.3]  descritivo
+ITUB4   passado    passado     -4    11  +0.5304  0.091  0.604     50.0   27.3   [  9.5 –  90.5]  descritivo
+ITUB4   passado    passado     -2    11  +0.2885  0.359  0.562      0.0   27.3   [  0.0 –  65.8]  descritivo
+ITUB4   passado    futuro       2    12  +0.2669  0.385  0.574      0.0   25.0   [  0.0 –  65.8]  descritivo
+ITUB4   passado    futuro       4    12  -0.4627  0.136  0.056      0.0   25.0   [  0.0 –  65.8]  descritivo
+ITUB4   passado    futuro      16     9  -0.4874  0.179  0.143      0.0   22.2   [  0.0 –  79.3]  descritivo
+ITUB4   presente   passado     -4    10  -0.0813  0.834  0.125      0.0   20.0   [  0.0 –  65.8]  descritivo
+ITUB4   presente   passado     -2    11  -0.3146  0.338  0.417     50.0   27.3   [  9.5 –  90.5]  descritivo
+ITUB4   presente   futuro       2    12  +0.1305  0.706  0.815     50.0   25.0   [  9.5 –  90.5]  descritivo
+ITUB4   presente   futuro       4    11  -0.1768  0.600  0.375     50.0   27.3   [  9.5 –  90.5]  descritivo
+MGLU3   futuro     passado     -4     8  -0.5708  0.142  0.167      0.0   25.0   [  0.0 –  79.3]  descritivo
+MGLU3   futuro     passado     -2     8  -0.6849  0.079  0.167      0.0   25.0   [  0.0 –  79.3]  descritivo
+MGLU3   futuro     futuro       2     9  +0.6093  0.086  0.857    100.0   22.2   [ 20.7 – 100.0]  descritivo
+MGLU3   futuro     futuro       4     9  +0.2263  0.546  0.393      0.0   22.2   [  0.0 –  79.3]  descritivo
+PETR4   futuro     passado    -16    19  -0.2709  0.255  0.125      0.0   21.1   [  0.0 –  56.2]  descritivo
+PETR4   futuro     passado     -4    40  +0.0378  0.807  0.500     12.5   20.0   [  2.2 –  47.1]  descritivo
+PETR4   futuro     passado     -2    50  +0.0645  0.669  0.570     20.0   20.0   [  5.7 –  51.0]  descritivo
+PETR4   futuro     futuro       2    50  -0.0196  0.898  0.550     10.0   20.0   [  1.8 –  40.4]  descritivo
+PETR4   futuro     futuro       4    40  +0.0482  0.763  0.461     12.5   20.0   [  2.2 –  47.1]  descritivo
+PETR4   futuro     futuro      16    19  +0.1757  0.458  0.700     33.3   21.1   [  6.1 –  79.2]  descritivo
+PETR4   passado    passado    -16    15  +0.0964  0.719  0.611     33.3   20.0   [  6.1 –  79.2]  descritivo
+PETR4   passado    passado     -4    22  +0.0616  0.777  0.553      0.0   22.7   [  0.0 –  49.0]  descritivo
+PETR4   passado    passado     -2    25  -0.0697  0.722  0.525     20.0   20.0   [  3.6 –  62.4]  descritivo
+PETR4   passado    futuro       2    26  -0.1548  0.433  0.371      0.0   23.1   [  0.0 –  43.4]  descritivo
+PETR4   passado    futuro       4    23  -0.1414  0.525  0.344      0.0   21.7   [  0.0 –  49.0]  descritivo
+PETR4   passado    futuro      16    16  -0.2971  0.254  0.417     33.3   25.0   [  6.1 –  79.2]  descritivo
+PETR4   presente   passado    -16    15  +0.1564  0.574  0.667     66.7   20.0   [ 20.8 –  93.9]  descritivo
+PETR4   presente   passado     -4    28  -0.2895  0.130  0.371      0.0   21.4   [  0.0 –  43.4]  descritivo
+PETR4   presente   passado     -2    31  +0.1462  0.444  0.577     16.7   22.6   [  3.0 –  56.4]  descritivo
+PETR4   presente   futuro       2    32  +0.0346  0.841  0.626     16.7   21.9   [  3.0 –  56.4]  descritivo
+PETR4   presente   futuro       4    29  +0.1250  0.519  0.674     20.0   20.7   [  3.6 –  62.4]  descritivo
+PETR4   presente   futuro      16    16  +0.0388  0.884  0.479      0.0   25.0   [  0.0 –  56.2]  descritivo
+SUZB3   futuro     passado    -16     9  -0.1255  0.755  0.643      0.0   22.2   [  0.0 –  79.3]  descritivo
+SUZB3   futuro     passado     -4    16  +0.5270  0.040  0.896     66.7   25.0   [ 20.8 –  93.9]  descritivo
+SUZB3   futuro     passado     -2    16  +0.4167  0.122  0.708     33.3   25.0   [  6.1 –  79.2]  descritivo
+SUZB3   futuro     futuro       2    17  +0.3670  0.140  0.692     33.3   23.5   [  6.1 –  79.2]  descritivo
+SUZB3   futuro     futuro       4    17  -0.2230  0.385  0.452     33.3   23.5   [  6.1 –  79.2]  descritivo
+SUZB3   futuro     futuro      16    10  -0.2188  0.552  0.562      0.0   20.0   [  0.0 –  65.8]  descritivo
+TODOS   futuro     passado    -16   121  -0.0650  0.463  0.444     20.8   20.7   [  9.2 –  40.5]  nulo
+TODOS   futuro     passado     -4   203  -0.0608  0.391  0.452     17.5   20.2   [  8.7 –  32.0]  nulo
+TODOS   futuro     passado     -2   223  -0.0715  0.278  0.491     22.7   20.2   [ 12.8 –  37.0]  nulo
+TODOS   futuro     futuro       2   231  +0.0712  0.282  0.549     23.9   20.3   [ 13.9 –  37.9]  nulo
+TODOS   futuro     futuro       4   211  +0.0075  0.914  0.457     21.4   20.4   [ 11.7 –  35.9]  nulo
+TODOS   futuro     futuro      16   127  -0.0015  0.989  0.506     16.0   20.5   [  6.4 –  34.7]  nulo
+TODOS   passado    passado    -16    74  +0.0482  0.691  0.447     21.4   20.3   [  7.6 –  47.6]  descritivo
+TODOS   passado    passado     -4    95  -0.0633  0.538  0.388     10.5   20.0   [  2.9 –  31.4]  descritivo
+TODOS   passado    passado     -2   100  -0.0540  0.609  0.486     20.0   20.0   [  8.1 –  41.6]  descritivo
+TODOS   passado    futuro       2   110  +0.0004  0.994  0.462      9.1   20.0   [  2.5 –  27.8]  descritivo
+TODOS   passado    futuro       4   105  -0.1823  0.061  0.385     14.3   20.0   [  5.0 –  34.6]  descritivo
+TODOS   passado    futuro      16    83  -0.0242  0.827  0.494     25.0   20.5   [ 10.2 –  49.5]  descritivo
+TODOS   presente   passado    -16    84  +0.0180  0.882  0.472     18.8   20.2   [  6.6 –  43.0]  descritivo
+TODOS   presente   passado     -4   123  -0.0709  0.453  0.394     12.5   20.3   [  4.3 –  31.0]  nulo
+TODOS   presente   passado     -2   129  -0.0293  0.743  0.437     16.0   20.2   [  6.4 –  34.7]  nulo
+TODOS   presente   futuro       2   139  +0.0749  0.378  0.577     22.2   20.1   [ 10.6 –  40.8]  nulo
+TODOS   presente   futuro       4   133  +0.0123  0.883  0.522     15.4   20.3   [  6.1 –  33.5]  nulo
+TODOS   presente   futuro      16    93  -0.0153  0.878  0.528     11.1   20.4   [  3.1 –  32.8]  descritivo
+VALE3   futuro     passado    -16    16  +0.3929  0.134  0.667     66.7   25.0   [ 20.8 –  93.9]  descritivo
+VALE3   futuro     passado     -4    23  +0.2522  0.256  0.589     25.0   21.7   [  4.6 –  69.9]  descritivo
+VALE3   futuro     passado     -2    24  -0.0976  0.637  0.426      0.0   20.8   [  0.0 –  49.0]  descritivo
+VALE3   futuro     futuro       2    25  -0.1938  0.344  0.480      0.0   20.0   [  0.0 –  43.4]  descritivo
+VALE3   futuro     futuro       4    24  -0.1497  0.489  0.516     25.0   20.8   [  4.6 –  69.9]  descritivo
+VALE3   futuro     futuro      16    17  -0.1030  0.726  0.654      0.0   23.5   [  0.0 –  56.2]  descritivo
+VALE3   passado    passado    -16    11  +0.0636  0.863  0.667     50.0   27.3   [  9.5 –  90.5]  descritivo
+VALE3   passado    passado     -4    13  -0.1099  0.731  0.167      0.0   23.1   [  0.0 –  65.8]  descritivo
+VALE3   passado    passado     -2    14  -0.5473  0.051  0.121      0.0   21.4   [  0.0 –  65.8]  descritivo
+VALE3   passado    futuro       2    15  +0.1179  0.657  0.694     33.3   20.0   [  6.1 –  79.2]  descritivo
+VALE3   passado    futuro       4    14  +0.2088  0.469  0.667     50.0   21.4   [  9.5 –  90.5]  descritivo
+VALE3   passado    futuro      16    12  +0.2238  0.506  0.667      0.0   25.0   [  0.0 –  65.8]  descritivo
+VALE3   presente   passado    -16    14  +0.1801  0.539  0.515     50.0   21.4   [  9.5 –  90.5]  descritivo
+VALE3   presente   passado     -4    18  -0.1292  0.576  0.366      0.0   22.2   [  0.0 –  56.2]  descritivo
+VALE3   presente   passado     -2    19  -0.2921  0.233  0.358      0.0   21.1   [  0.0 –  56.2]  descritivo
+VALE3   presente   futuro       2    20  +0.0988  0.677  0.648     25.0   20.0   [  4.6 –  69.9]  descritivo
+VALE3   presente   futuro       4    19  +0.1148  0.635  0.658     33.3   21.1   [  6.1 –  79.2]  descritivo
+VALE3   presente   futuro      16    15  +0.2421  0.386  0.597     33.3   20.0   [  6.1 –  79.2]  descritivo
+WEGE3   futuro     passado    -16     8  +0.5629  0.156  0.667      0.0   25.0   [  0.0 –  79.3]  descritivo
+WEGE3   futuro     passado     -4    11  -0.2752  0.386  0.167      0.0   27.3   [  0.0 –  65.8]  descritivo
+WEGE3   futuro     passado     -2    12  -0.3169  0.314  0.593     50.0   25.0   [  9.5 –  90.5]  descritivo
+WEGE3   futuro     futuro       2    13  +0.3536  0.238  0.467     50.0   23.1   [  9.5 –  90.5]  descritivo
+WEGE3   futuro     futuro       4    12  +0.3451  0.291  0.815     50.0   25.0   [  9.5 –  90.5]  descritivo
+WEGE3   futuro     futuro      16     8  +0.3952  0.322  1.000    100.0   25.0   [ 20.7 – 100.0]  descritivo
+WEGE3   presente   futuro       2     8  +0.3810  0.372  0.417      0.0   25.0   [  0.0 –  79.3]  descritivo
+WEGE3   presente   futuro       4     8  +0.5952  0.128  0.917    100.0   25.0   [ 20.7 – 100.0]  descritivo
+
+========================================================================================================
+GRANULARIDADE 1H  ·  ALVO: DIRECAO
+========================================================================================================
+papel   orientacao janela       h     n       IC      p    AUC  acerto%  base%    IC95 do acerto  veredito
+ABEV3   futuro     passado    -20     8  +0.5200  0.195      —     50.0   52.3   [ 15.0 –  85.0]  descritivo
+ABEV3   futuro     passado     -5    11  +0.3719  0.253      —     50.0   51.1   [ 18.8 –  81.2]  descritivo
+ABEV3   futuro     passado     -1    12  +0.3771  0.246      —     57.1   50.1   [ 25.0 –  84.2]  descritivo
+ABEV3   futuro     futuro       1    12  +0.0218  0.963      —     57.1   50.4   [ 25.0 –  84.2]  descritivo
+ABEV3   futuro     futuro       5    10  -0.0970  0.797      —     60.0   50.2   [ 23.1 –  88.2]  descritivo
+ABEV3   futuro     futuro      20     8  +0.7610  0.032      —    100.0   52.7   [ 51.0 – 100.0]  descritivo
+B3SA3   futuro     passado    -20    21  +0.4915  0.036      —     81.2   56.7   [ 57.0 –  93.4]  descritivo
+B3SA3   futuro     passado     -5    56  +0.2965  0.032      —     73.2   54.2   [ 58.1 –  84.3]  descritivo
+B3SA3   futuro     passado     -1    88  +0.2144  0.049      —     60.7   52.3   [ 48.1 –  71.9]  descritivo
+B3SA3   futuro     futuro       1    88  +0.1286  0.238      —     57.4   50.5   [ 44.9 –  69.0]  descritivo
+B3SA3   futuro     futuro       5    55  -0.0301  0.810      —     50.0   54.1   [ 35.2 –  64.8]  descritivo
+B3SA3   futuro     futuro      20    20  +0.2682  0.262      —     73.3   57.2   [ 48.0 –  89.1]  descritivo
+B3SA3   passado    passado    -20    13  +0.6240  0.025      —     77.8   56.7   [ 45.3 –  93.7]  descritivo
+B3SA3   passado    passado     -5    30  +0.4171  0.021      —     70.8   54.2   [ 50.8 –  85.1]  descritivo
+B3SA3   passado    passado     -1    31  +0.2143  0.250      —     64.0   52.3   [ 44.5 –  79.8]  descritivo
+B3SA3   passado    futuro       1    31  -0.0797  0.683      —     56.0   50.5   [ 37.1 –  73.3]  descritivo
+B3SA3   passado    futuro       5    29  -0.1725  0.370      —     39.1   54.1   [ 22.2 –  59.2]  descritivo
+B3SA3   passado    futuro      20    13  +0.1309  0.680      —     33.3   57.2   [ 12.1 –  64.6]  descritivo
+B3SA3   presente   passado    -20    13  +0.0396  0.911      —     75.0   56.7   [ 40.9 –  92.9]  descritivo
+B3SA3   presente   passado     -5    30  +0.4889  0.005      —     76.2   54.2   [ 54.9 –  89.4]  descritivo
+B3SA3   presente   passado     -1    40  +0.1463  0.356      —     60.7   52.3   [ 42.4 –  76.4]  descritivo
+B3SA3   presente   futuro       1    40  +0.0608  0.720      —     60.7   50.5   [ 42.4 –  76.4]  descritivo
+B3SA3   presente   futuro       5    29  -0.0723  0.702      —     50.0   54.1   [ 29.9 –  70.1]  descritivo
+B3SA3   presente   futuro      20    12  +0.0145  0.973      —     57.1   57.2   [ 25.0 –  84.2]  descritivo
+BBAS3   futuro     passado    -20    13  -0.2283  0.455      —     57.1   52.5   [ 25.0 –  84.2]  descritivo
+BBAS3   futuro     passado     -5    26  -0.1180  0.547      —     56.2   50.5   [ 33.2 –  76.9]  descritivo
+BBAS3   futuro     passado     -1    38  -0.1833  0.282      —     30.4   51.4   [ 15.6 –  50.9]  descritivo
+BBAS3   futuro     futuro       1    38  +0.0568  0.738      —     34.8   51.0   [ 18.8 –  55.1]  descritivo
+BBAS3   futuro     futuro       5    25  +0.1440  0.492      —     40.0   50.3   [ 19.8 –  64.3]  descritivo
+BBAS3   futuro     futuro      20    12  +0.3994  0.188      —     50.0   52.0   [ 18.8 –  81.2]  descritivo
+BBAS3   passado    passado    -20     9  -0.2101  0.603      —     28.6   52.5   [  8.2 –  64.1]  descritivo
+BBAS3   passado    passado     -5    14  -0.2158  0.453      —     60.0   50.5   [ 31.3 –  83.2]  descritivo
+BBAS3   passado    passado     -1    16  -0.2224  0.426      —     25.0   51.4   [  8.9 –  53.2]  descritivo
+BBAS3   passado    futuro       1    16  -0.3455  0.186      —     16.7   51.0   [  4.7 –  44.8]  descritivo
+BBAS3   passado    futuro       5    14  -0.2247  0.438      —     40.0   50.3   [ 16.8 –  68.7]  descritivo
+BBAS3   passado    futuro      20     8  +0.2892  0.483      —     50.0   52.0   [ 18.8 –  81.2]  descritivo
+BBAS3   presente   passado     -5    12  -0.5961  0.049      —     44.4   50.5   [ 18.9 –  73.3]  descritivo
+BBAS3   presente   passado     -1    14  -0.0645  0.824      —     50.0   51.4   [ 23.7 –  76.3]  descritivo
+BBAS3   presente   futuro       1    14  -0.3693  0.203      —     20.0   51.0   [  5.7 –  51.0]  descritivo
+BBAS3   presente   futuro       5    11  -0.5564  0.072      —     12.5   50.3   [  2.2 –  47.1]  descritivo
+BBDC4   futuro     passado    -20    16  +0.3028  0.247      —     60.0   50.5   [ 31.3 –  83.2]  descritivo
+BBDC4   futuro     passado     -5    37  -0.0090  0.954      —     53.8   50.6   [ 35.5 –  71.2]  descritivo
+BBDC4   futuro     passado     -1    58  -0.0416  0.734      —     50.0   50.3   [ 35.5 –  64.5]  descritivo
+BBDC4   futuro     futuro       1    58  +0.0843  0.520      —     61.9   50.2   [ 46.8 –  75.0]  descritivo
+BBDC4   futuro     futuro       5    37  -0.0298  0.847      —     50.0   50.3   [ 32.1 –  67.9]  descritivo
+BBDC4   futuro     futuro      20    15  -0.2812  0.308      —     22.2   50.2   [  6.3 –  54.7]  descritivo
+BBDC4   passado    passado    -20    13  +0.1212  0.680      —     54.5   50.5   [ 28.0 –  78.7]  descritivo
+BBDC4   passado    passado     -5    27  +0.1081  0.575      —     45.5   50.6   [ 26.9 –  65.3]  descritivo
+BBDC4   passado    passado     -1    34  -0.0657  0.718      —     57.7   50.3   [ 38.9 –  74.5]  descritivo
+BBDC4   passado    futuro       1    34  +0.0415  0.826      —     53.8   50.2   [ 35.5 –  71.2]  descritivo
+BBDC4   passado    futuro       5    26  +0.0199  0.928      —     57.1   50.3   [ 36.5 –  75.5]  descritivo
+BBDC4   passado    futuro      20    12  -0.2035  0.533      —     40.0   50.2   [ 16.8 –  68.7]  descritivo
+BBDC4   presente   passado    -20    11  +0.0000  1.000      —     50.0   50.5   [ 21.5 –  78.5]  descritivo
+BBDC4   presente   passado     -5    18  +0.2023  0.427      —     66.7   50.6   [ 39.1 –  86.2]  descritivo
+BBDC4   presente   passado     -1    23  -0.0253  0.908      —     53.3   50.3   [ 30.1 –  75.2]  descritivo
+BBDC4   presente   futuro       1    23  +0.4139  0.054      —     73.3   50.2   [ 48.0 –  89.1]  descritivo
+BBDC4   presente   futuro       5    17  +0.2788  0.269      —     72.7   50.3   [ 43.4 –  90.3]  descritivo
+BBDC4   presente   futuro      20    10  +0.0932  0.811      —     42.9   50.2   [ 15.8 –  75.0]  descritivo
+ITUB4   futuro     passado    -20    12  -0.4183  0.167      —     70.0   51.1   [ 39.7 –  89.2]  descritivo
+ITUB4   futuro     passado     -5    21  -0.2318  0.297      —     37.5   50.5   [ 18.5 –  61.4]  descritivo
+ITUB4   futuro     passado     -1    32  +0.0784  0.669      —     50.0   50.3   [ 31.4 –  68.6]  descritivo
+ITUB4   futuro     futuro       1    32  -0.0475  0.791      —     33.3   50.7   [ 18.0 –  53.3]  descritivo
+ITUB4   futuro     futuro       5    21  +0.2226  0.318      —     62.5   50.7   [ 38.6 –  81.5]  descritivo
+ITUB4   futuro     futuro      20    11  -0.0458  0.896      —     33.3   51.5   [ 12.1 –  64.6]  descritivo
+ITUB4   passado    passado    -20     8  -0.3735  0.363      —     66.7   51.1   [ 30.0 –  90.3]  descritivo
+ITUB4   passado    passado     -5    14  +0.2855  0.337      —     33.3   50.5   [ 12.1 –  64.6]  descritivo
+ITUB4   passado    passado     -1    20  +0.2690  0.246      —     46.7   50.3   [ 24.8 –  69.9]  descritivo
+ITUB4   passado    futuro       1    20  -0.0318  0.897      —     46.7   50.7   [ 24.8 –  69.9]  descritivo
+ITUB4   passado    futuro       5    13  +0.3176  0.285      —     55.6   50.7   [ 26.7 –  81.1]  descritivo
+ITUB4   presente   passado     -5    12  -0.3387  0.277      —     40.0   50.5   [ 16.8 –  68.7]  descritivo
+ITUB4   presente   passado     -1    16  -0.3183  0.234      —     63.6   50.3   [ 35.4 –  84.8]  descritivo
+ITUB4   presente   futuro       1    16  -0.0910  0.727      —     36.4   50.7   [ 15.2 –  64.6]  descritivo
+ITUB4   presente   futuro       5    12  -0.0820  0.801      —     80.0   50.7   [ 49.0 –  94.3]  descritivo
+MGLU3   futuro     passado    -20     9  -0.1095  0.780      —     25.0   57.0   [  4.6 –  69.9]  descritivo
+MGLU3   futuro     passado     -5    13  -0.5375  0.060      —     28.6   55.6   [  8.2 –  64.1]  descritivo
+MGLU3   futuro     passado     -1    17  -0.0492  0.860      —     66.7   54.2   [ 35.4 –  87.9]  descritivo
+MGLU3   futuro     futuro       1    17  +0.2083  0.397      —     77.8   54.0   [ 45.3 –  93.7]  descritivo
+MGLU3   futuro     futuro       5    13  -0.1763  0.564      —     57.1   55.0   [ 25.0 –  84.2]  descritivo
+MGLU3   futuro     futuro      20     8  -0.2410  0.571      —     25.0   57.1   [  4.6 –  69.9]  descritivo
+MGLU3   passado    passado     -1     8  -0.4947  0.212      —     50.0   54.2   [ 15.0 –  85.0]  descritivo
+MGLU3   passado    futuro       1     8  -0.3044  0.492      —     50.0   54.0   [ 15.0 –  85.0]  descritivo
+MGLU3   presente   passado     -1     9  +0.0522  0.899      —     60.0   54.2   [ 23.1 –  88.2]  descritivo
+MGLU3   presente   futuro       1     9  +0.6963  0.040      —    100.0   54.0   [ 56.6 – 100.0]  descritivo
+PETR4   futuro     passado    -20    27  +0.0319  0.876      —     52.6   52.9   [ 31.7 –  72.7]  descritivo
+PETR4   futuro     passado     -5    65  -0.0487  0.700      —     53.1   50.1   [ 39.4 –  66.3]  descritivo
+PETR4   futuro     passado     -1   105  +0.0587  0.545      —     51.2   50.4   [ 40.5 –  61.9]  descritivo
+PETR4   futuro     futuro       1   104  -0.0551  0.579      —     49.4   50.0   [ 38.6 –  60.2]  descritivo
+PETR4   futuro     futuro       5    64  -0.0462  0.733      —     47.9   50.4   [ 34.5 –  61.7]  descritivo
+PETR4   futuro     futuro      20    26  +0.0052  0.978      —     55.6   52.7   [ 33.7 –  75.4]  descritivo
+PETR4   passado    passado    -20    19  +0.3063  0.190      —     57.9   52.9   [ 36.3 –  76.9]  descritivo
+PETR4   passado    passado     -5    47  -0.1172  0.420      —     48.8   50.1   [ 34.6 –  63.2]  descritivo
+PETR4   passado    passado     -1    62  +0.0366  0.775      —     54.5   50.4   [ 41.5 –  67.0]  descritivo
+PETR4   passado    futuro       1    61  -0.0637  0.622      —     55.6   50.0   [ 42.4 –  68.0]  descritivo
+PETR4   passado    futuro       5    46  +0.0807  0.602      —     57.1   50.4   [ 42.2 –  70.9]  descritivo
+PETR4   passado    futuro      20    18  +0.3191  0.190      —     72.2   52.7   [ 49.1 –  87.5]  descritivo
+PETR4   presente   passado    -20    19  +0.0071  0.982      —     60.0   52.9   [ 35.7 –  80.2]  descritivo
+PETR4   presente   passado     -5    43  -0.1107  0.474      —     42.4   50.1   [ 27.2 –  59.2]  descritivo
+PETR4   presente   passado     -1    59  +0.0120  0.941      —     53.3   50.4   [ 39.1 –  67.1]  descritivo
+PETR4   presente   futuro       1    58  -0.0352  0.791      —     50.0   50.0   [ 35.8 –  64.2]  descritivo
+PETR4   presente   futuro       5    42  -0.1310  0.409      —     43.8   50.4   [ 28.2 –  60.7]  descritivo
+PETR4   presente   futuro      20    18  -0.0550  0.840      —     50.0   52.7   [ 26.8 –  73.2]  descritivo
+SUZB3   futuro     passado    -20     9  -0.6103  0.088      —     33.3   54.4   [  9.7 –  70.0]  descritivo
+SUZB3   futuro     passado     -5    16  -0.1911  0.484      —     45.5   51.8   [ 21.3 –  72.0]  descritivo
+SUZB3   futuro     passado     -1    23  -0.1393  0.525      —     37.5   52.1   [ 18.5 –  61.4]  descritivo
+SUZB3   futuro     futuro       1    23  -0.1052  0.627      —     43.8   51.0   [ 23.1 –  66.8]  descritivo
+SUZB3   futuro     futuro       5    16  +0.0597  0.830      —     45.5   52.9   [ 21.3 –  72.0]  descritivo
+SUZB3   futuro     futuro      20     8  +0.2196  0.613      —     60.0   53.6   [ 23.1 –  88.2]  descritivo
+SUZB3   passado    passado     -1     9  -0.1000  0.805      —     37.5   52.1   [ 13.7 –  69.4]  descritivo
+SUZB3   passado    futuro       1     9  -0.4833  0.201      —     37.5   51.0   [ 13.7 –  69.4]  descritivo
+SUZB3   presente   passado     -1     8  +0.3904  0.351      —     40.0   52.1   [ 11.8 –  76.9]  descritivo
+SUZB3   presente   futuro       1     8  +0.1220  0.796      —     60.0   51.0   [ 23.1 –  88.2]  descritivo
+TODOS   futuro     passado    -20   140  +0.0881  0.302      —     57.7   50.5   [ 47.8 –  67.1]  nulo
+TODOS   futuro     passado     -5   302  +0.0041  0.950      —     55.3   50.2   [ 48.7 –  61.8]  nulo
+TODOS   futuro     passado     -1   450  +0.0238  0.639      —     51.5   50.1   [ 46.1 –  56.9]  nulo
+TODOS   futuro     futuro       1   448  +0.0243  0.591      —     50.3   50.2   [ 44.9 –  55.7]  nulo
+TODOS   futuro     futuro       5   297  +0.0113  0.847      —     49.5   50.1   [ 42.8 –  56.2]  nulo
+TODOS   futuro     futuro      20   131  +0.0434  0.633      —     49.4   50.4   [ 39.3 –  59.6]  nulo
+TODOS   passado    passado    -20    95  +0.1197  0.241      —     57.0   50.5   [ 46.0 –  67.3]  descritivo
+TODOS   passado    passado     -5   183  -0.0064  0.930      —     53.3   50.2   [ 45.4 –  61.0]  nulo
+TODOS   passado    passado     -1   224  -0.0368  0.581      —     53.8   50.1   [ 46.6 –  60.8]  nulo
+TODOS   passado    futuro       1   223  -0.0884  0.171      —     48.6   50.2   [ 41.5 –  55.8]  nulo
+TODOS   passado    futuro       5   179  +0.0006  0.994      —     52.3   50.1   [ 44.4 –  60.2]  nulo
+TODOS   passado    futuro      20    89  +0.1108  0.310      —     52.0   50.4   [ 40.9 –  62.9]  descritivo
+TODOS   presente   passado    -20    90  -0.1089  0.307      —     48.4   50.5   [ 36.4 –  60.6]  descritivo
+TODOS   presente   passado     -5   168  +0.0213  0.804      —     51.7   50.2   [ 42.8 –  60.5]  nulo
+TODOS   presente   passado     -1   215  +0.0150  0.826      —     53.0   50.1   [ 45.0 –  60.9]  nulo
+TODOS   presente   futuro       1   213  +0.0573  0.421      —     54.4   50.2   [ 46.4 –  62.3]  nulo
+TODOS   presente   futuro       5   160  -0.0048  0.951      —     54.1   50.1   [ 44.8 –  63.0]  nulo
+TODOS   presente   futuro      20    81  -0.0688  0.543      —     42.9   50.4   [ 30.8 –  55.9]  descritivo
+VALE3   futuro     passado    -20    16  +0.1221  0.646      —     57.1   52.8   [ 32.6 –  78.6]  descritivo
+VALE3   futuro     passado     -5    41  +0.1151  0.470      —     63.3   52.0   [ 45.5 –  78.1]  descritivo
+VALE3   futuro     passado     -1    56  +0.0280  0.835      —     61.4   50.5   [ 46.6 –  74.3]  descritivo
+VALE3   futuro     futuro       1    56  +0.0367  0.779      —     45.5   51.3   [ 31.7 –  59.9]  descritivo
+VALE3   futuro     futuro       5    41  +0.0769  0.631      —     43.3   51.2   [ 27.4 –  60.8]  descritivo
+VALE3   futuro     futuro      20    15  -0.0268  0.932      —     30.8   52.8   [ 12.7 –  57.6]  descritivo
+VALE3   passado    passado    -20    13  -0.0110  0.983      —     61.5   52.8   [ 35.5 –  82.3]  descritivo
+VALE3   passado    passado     -5    27  +0.0598  0.768      —     63.0   52.0   [ 44.2 –  78.5]  descritivo
+VALE3   passado    passado     -1    31  -0.0778  0.679      —     61.3   50.5   [ 43.8 –  76.3]  descritivo
+VALE3   passado    futuro       1    31  -0.0569  0.766      —     45.2   51.3   [ 29.2 –  62.2]  descritivo
+VALE3   passado    futuro       5    27  +0.1984  0.297      —     55.6   51.2   [ 37.3 –  72.4]  descritivo
+VALE3   passado    futuro      20    12  +0.1608  0.608      —     50.0   52.8   [ 25.4 –  74.6]  descritivo
+VALE3   presente   passado    -20    13  +0.3853  0.206      —     60.0   52.8   [ 23.1 –  88.2]  descritivo
+VALE3   presente   passado     -5    25  -0.0326  0.879      —     53.8   52.0   [ 29.1 –  76.8]  descritivo
+VALE3   presente   passado     -1    30  -0.1551  0.404      —     50.0   50.5   [ 28.0 –  72.0]  descritivo
+VALE3   presente   futuro       1    30  +0.0160  0.949      —     56.2   51.3   [ 33.2 –  76.9]  descritivo
+VALE3   presente   futuro       5    24  +0.0142  0.947      —     61.5   51.2   [ 35.5 –  82.3]  descritivo
+VALE3   presente   futuro      20    12  +0.0312  0.935      —     40.0   52.8   [ 11.8 –  76.9]  descritivo
+WEGE3   futuro     passado    -20     9  -0.1925  0.610      —     42.9   53.5   [ 15.8 –  75.0]  descritivo
+WEGE3   futuro     passado     -5    16  -0.1255  0.644      —     38.5   50.8   [ 17.7 –  64.5]  descritivo
+WEGE3   futuro     passado     -1    21  +0.2699  0.226      —     33.3   50.2   [ 16.3 –  56.3]  descritivo
+WEGE3   futuro     futuro       1    20  +0.1409  0.558      —     47.1   50.0   [ 26.2 –  69.0]  descritivo
+WEGE3   futuro     futuro       5    15  +0.2619  0.340      —     58.3   50.6   [ 32.0 –  80.7]  descritivo
+WEGE3   futuro     futuro      20     8  +0.2395  0.593      —     50.0   53.1   [ 18.8 –  81.2]  descritivo
+WEGE3   presente   passado     -5    10  +0.2000  0.577      —     33.3   50.8   [ 12.1 –  64.6]  descritivo
+WEGE3   presente   passado     -1    12  +0.3846  0.221      —     36.4   50.2   [ 15.2 –  64.6]  descritivo
+WEGE3   presente   futuro       1    11  +0.2364  0.497      —     50.0   50.0   [ 23.7 –  76.3]  descritivo
+WEGE3   presente   futuro       5     9  -0.1333  0.750      —     62.5   50.6   [ 30.6 –  86.3]  descritivo
+
+========================================================================================================
+GRANULARIDADE 1H  ·  ALVO: VOLATILIDADE
+========================================================================================================
+papel   orientacao janela       h     n       IC      p    AUC  acerto%  base%    IC95 do acerto  veredito
+ABEV3   futuro     passado    -20     8  -0.6469  0.100  0.458      0.0   25.0   [  0.0 –  79.3]  descritivo
+ABEV3   futuro     passado     -5    11  -0.1526  0.651  0.375      0.0   27.3   [  0.0 –  65.8]  descritivo
+ABEV3   futuro     passado     -1    12  +0.0653  0.837  0.407     50.0   25.0   [  9.5 –  90.5]  descritivo
+ABEV3   futuro     futuro       1    12  -0.2393  0.440  0.556     50.0   25.0   [  9.5 –  90.5]  descritivo
+ABEV3   futuro     futuro       5    10  +0.4849  0.145  0.562     50.0   20.0   [  9.5 –  90.5]  descritivo
+ABEV3   futuro     futuro      20     8  -0.3298  0.417  0.375      0.0   25.0   [  0.0 –  79.3]  descritivo
+B3SA3   futuro     passado    -20    21  +0.0340  0.888  0.562     50.0   23.8   [ 15.0 –  85.0]  descritivo
+B3SA3   futuro     passado     -5    56  +0.1122  0.406  0.617     36.4   21.4   [ 15.2 –  64.6]  descritivo
+B3SA3   futuro     passado     -1    88  +0.1391  0.194  0.638     35.3   20.5   [ 17.3 –  58.7]  descritivo
+B3SA3   futuro     futuro       1    88  +0.0036  0.981  0.648     35.3   20.5   [ 17.3 –  58.7]  descritivo
+B3SA3   futuro     futuro       5    55  -0.1999  0.140  0.386      9.1   20.0   [  1.6 –  37.7]  descritivo
+B3SA3   futuro     futuro      20    20  -0.0455  0.846  0.438     25.0   20.0   [  4.6 –  69.9]  descritivo
+B3SA3   passado    passado    -20    13  +0.4652  0.103  0.733      0.0   23.1   [  0.0 –  65.8]  descritivo
+B3SA3   passado    passado     -5    30  +0.0811  0.670  0.597     16.7   20.0   [  3.0 –  56.4]  descritivo
+B3SA3   passado    passado     -1    31  +0.0441  0.831  0.625     50.0   22.6   [ 18.8 –  81.2]  descritivo
+B3SA3   passado    futuro       1    31  +0.1081  0.559  0.804     33.3   22.6   [  9.7 –  70.0]  descritivo
+B3SA3   passado    futuro       5    29  -0.2222  0.239  0.453     20.0   20.7   [  3.6 –  62.4]  descritivo
+B3SA3   passado    futuro      20    13  +0.5572  0.046  0.717    100.0   23.1   [ 34.2 – 100.0]  descritivo
+B3SA3   presente   passado    -20    13  -0.0339  0.925  0.633     50.0   23.1   [  9.5 –  90.5]  descritivo
+B3SA3   presente   passado     -5    30  +0.0151  0.926  0.424     16.7   20.0   [  3.0 –  56.4]  descritivo
+B3SA3   presente   passado     -1    40  +0.1290  0.425  0.592     37.5   20.0   [ 13.7 –  69.4]  descritivo
+B3SA3   presente   futuro       1    40  -0.3704  0.018  0.457      0.0   20.0   [  0.0 –  32.4]  descritivo
+B3SA3   presente   futuro       5    29  -0.2163  0.265  0.373     20.0   20.7   [  3.6 –  62.4]  descritivo
+B3SA3   presente   futuro      20    12  +0.1233  0.710  0.444      0.0   25.0   [  0.0 –  65.8]  descritivo
+BBAS3   futuro     passado    -20    13  -0.4103  0.173  0.267      0.0   23.1   [  0.0 –  65.8]  descritivo
+BBAS3   futuro     passado     -5    26  +0.3932  0.052  0.621     20.0   23.1   [  3.6 –  62.4]  descritivo
+BBAS3   futuro     passado     -1    38  +0.0757  0.666  0.662     42.9   21.1   [ 15.8 –  75.0]  descritivo
+BBAS3   futuro     futuro       1    38  +0.1116  0.526  0.521     14.3   21.1   [  2.6 –  51.3]  descritivo
+BBAS3   futuro     futuro       5    25  -0.2846  0.171  0.260      0.0   20.0   [  0.0 –  43.4]  descritivo
+BBAS3   futuro     futuro      20    12  -0.5748  0.053  0.370      0.0   25.0   [  0.0 –  65.8]  descritivo
+BBAS3   passado    passado    -20     9  -0.2845  0.463  0.250      0.0   22.2   [  0.0 –  79.3]  descritivo
+BBAS3   passado    passado     -5    14  +0.1756  0.549  0.242      0.0   21.4   [  0.0 –  65.8]  descritivo
+BBAS3   passado    passado     -1    16  -0.0711  0.795  0.469      0.0   25.0   [  0.0 –  56.2]  descritivo
+BBAS3   passado    futuro       1    16  -0.0593  0.828  0.271      0.0   25.0   [  0.0 –  56.2]  descritivo
+BBAS3   passado    futuro       5    14  -0.0311  0.930  0.273      0.0   21.4   [  0.0 –  65.8]  descritivo
+BBAS3   passado    futuro      20     8  +0.5509  0.158  0.917    100.0   25.0   [ 20.7 – 100.0]  descritivo
+BBAS3   presente   passado     -5    12  +0.3662  0.229  0.481      0.0   25.0   [  0.0 –  65.8]  descritivo
+BBAS3   presente   passado     -1    14  -0.4756  0.093  0.530      0.0   21.4   [  0.0 –  65.8]  descritivo
+BBAS3   presente   futuro       1    14  +0.0156  0.958  0.242      0.0   21.4   [  0.0 –  65.8]  descritivo
+BBAS3   presente   futuro       5    11  -0.0550  0.874  0.208      0.0   27.3   [  0.0 –  65.8]  descritivo
+BBDC4   futuro     passado    -20    16  -0.0091  0.974  0.375      0.0   25.0   [  0.0 –  56.2]  descritivo
+BBDC4   futuro     passado     -5    37  -0.1547  0.355  0.556     28.6   21.6   [  8.2 –  64.1]  descritivo
+BBDC4   futuro     passado     -1    58  -0.1248  0.347  0.337      9.1   20.7   [  1.6 –  37.7]  descritivo
+BBDC4   futuro     futuro       1    58  +0.0145  0.911  0.398      0.0   20.7   [  0.0 –  25.9]  descritivo
+BBDC4   futuro     futuro       5    37  +0.2131  0.207  0.547     28.6   21.6   [  8.2 –  64.1]  descritivo
+BBDC4   futuro     futuro      20    15  -0.2769  0.327  0.375     33.3   20.0   [  6.1 –  79.2]  descritivo
+BBDC4   passado    passado    -20    13  -0.2531  0.398  0.350      0.0   23.1   [  0.0 –  65.8]  descritivo
+BBDC4   passado    passado     -5    27  -0.4483  0.018  0.302     20.0   22.2   [  3.6 –  62.4]  descritivo
+BBDC4   passado    passado     -1    34  -0.1909  0.301  0.257     16.7   20.6   [  3.0 –  56.4]  descritivo
+BBDC4   passado    futuro       1    34  +0.1097  0.544  0.466      0.0   20.6   [  0.0 –  39.0]  descritivo
+BBDC4   passado    futuro       5    26  +0.1609  0.439  0.392     20.0   23.1   [  3.6 –  62.4]  descritivo
+BBDC4   passado    futuro      20    12  -0.3853  0.220  0.333     50.0   25.0   [  9.5 –  90.5]  descritivo
+BBDC4   presente   passado    -20    11  +0.0874  0.792  0.771     50.0   27.3   [  9.5 –  90.5]  descritivo
+BBDC4   presente   passado     -5    18  +0.0883  0.729  0.625     66.7   22.2   [ 20.8 –  93.9]  descritivo
+BBDC4   presente   passado     -1    23  +0.4132  0.060  0.744     50.0   21.7   [ 15.0 –  85.0]  descritivo
+BBDC4   presente   futuro       1    23  -0.0844  0.701  0.417      0.0   21.7   [  0.0 –  49.0]  descritivo
+BBDC4   presente   futuro       5    17  -0.0602  0.825  0.471     33.3   23.5   [  6.1 –  79.2]  descritivo
+BBDC4   presente   futuro      20    10  -0.4000  0.261  0.312      0.0   20.0   [  0.0 –  65.8]  descritivo
+ITUB4   futuro     passado    -20    12  -0.4378  0.175  0.481      0.0   25.0   [  0.0 –  65.8]  descritivo
+ITUB4   futuro     passado     -5    21  -0.0242  0.918  0.425     25.0   23.8   [  4.6 –  69.9]  descritivo
+ITUB4   futuro     passado     -1    32  +0.0652  0.723  0.554     33.3   21.9   [  9.7 –  70.0]  descritivo
+ITUB4   futuro     futuro       1    32  -0.2773  0.117  0.323      0.0   21.9   [  0.0 –  39.0]  descritivo
+ITUB4   futuro     futuro       5    21  -0.2681  0.241  0.312      0.0   23.8   [  0.0 –  49.0]  descritivo
+ITUB4   futuro     futuro      20    11  -0.0866  0.804  0.396     50.0   27.3   [  9.5 –  90.5]  descritivo
+ITUB4   passado    passado    -20     8  -0.1557  0.713  0.208      0.0   25.0   [  0.0 –  79.3]  descritivo
+ITUB4   passado    passado     -5    14  +0.0427  0.887  0.364      0.0   21.4   [  0.0 –  65.8]  descritivo
+ITUB4   passado    passado     -1    20  -0.1182  0.611  0.688     50.0   20.0   [ 15.0 –  85.0]  descritivo
+ITUB4   passado    futuro       1    20  -0.2788  0.243  0.469      0.0   20.0   [  0.0 –  49.0]  descritivo
+ITUB4   passado    futuro       5    13  -0.2869  0.352  0.417      0.0   23.1   [  0.0 –  65.8]  descritivo
+ITUB4   presente   passado     -5    12  -0.2316  0.469  0.167      0.0   25.0   [  0.0 –  65.8]  descritivo
+ITUB4   presente   passado     -1    16  -0.4228  0.107  0.312      0.0   25.0   [  0.0 –  56.2]  descritivo
+ITUB4   presente   futuro       1    16  -0.0896  0.738  0.312      0.0   25.0   [  0.0 –  56.2]  descritivo
+ITUB4   presente   futuro       5    12  -0.7123  0.013  0.093      0.0   25.0   [  0.0 –  65.8]  descritivo
+MGLU3   futuro     passado    -20     9  -0.4199  0.266  0.214      0.0   22.2   [  0.0 –  79.3]  descritivo
+MGLU3   futuro     passado     -5    13  +0.5982  0.031  0.967    100.0   23.1   [ 34.2 – 100.0]  descritivo
+MGLU3   futuro     passado     -1    17  +0.5266  0.028  0.923     66.7   23.5   [ 20.8 –  93.9]  descritivo
+MGLU3   futuro     futuro       1    17  -0.1643  0.520  0.385      0.0   23.5   [  0.0 –  56.2]  descritivo
+MGLU3   futuro     futuro       5    13  +0.6097  0.030  0.750    100.0   23.1   [ 34.2 – 100.0]  descritivo
+MGLU3   futuro     futuro      20     8  -0.0381  0.940  0.625    100.0   25.0   [ 20.7 – 100.0]  descritivo
+MGLU3   passado    passado     -1     8  +0.7483  0.049  1.000    100.0   25.0   [ 20.7 – 100.0]  descritivo
+MGLU3   passado    futuro       1     8  +0.2790  0.489  0.625    100.0   25.0   [ 20.7 – 100.0]  descritivo
+MGLU3   presente   passado     -1     9  -0.1480  0.725  0.464      0.0   22.2   [  0.0 –  79.3]  descritivo
+MGLU3   presente   futuro       1     9  +0.0609  0.882  0.321      0.0   22.2   [  0.0 –  79.3]  descritivo
+PETR4   futuro     passado    -20    27  +0.2453  0.210  0.774     60.0   22.2   [ 23.1 –  88.2]  descritivo
+PETR4   futuro     passado     -5    65  -0.0932  0.453  0.411      7.7   20.0   [  1.4 –  33.3]  descritivo
+PETR4   futuro     passado     -1   105  -0.0816  0.401  0.491     14.3   20.0   [  5.0 –  34.6]  descritivo
+PETR4   futuro     futuro       1   104  -0.0953  0.325  0.347      5.0   20.2   [  0.9 –  23.6]  descritivo
+PETR4   futuro     futuro       5    64  -0.2444  0.053  0.349      8.3   20.3   [  1.5 –  35.4]  descritivo
+PETR4   futuro     futuro      20    26  +0.2953  0.141  0.613     20.0   23.1   [  3.6 –  62.4]  descritivo
+PETR4   passado    passado    -20    19  -0.1491  0.537  0.533     33.3   21.1   [  6.1 –  79.2]  descritivo
+PETR4   passado    passado     -5    47  -0.0919  0.542  0.408     22.2   21.3   [  6.3 –  54.7]  descritivo
+PETR4   passado    passado     -1    62  -0.1877  0.138  0.347      8.3   21.0   [  1.5 –  35.4]  descritivo
+PETR4   passado    futuro       1    61  -0.2004  0.128  0.391     25.0   21.3   [  8.9 –  53.2]  descritivo
+PETR4   passado    futuro       5    46  -0.1148  0.453  0.306     22.2   21.7   [  6.3 –  54.7]  descritivo
+PETR4   passado    futuro      20    18  +0.1207  0.622  0.571      0.0   22.2   [  0.0 –  56.2]  descritivo
+PETR4   presente   passado    -20    19  +0.3586  0.131  0.708     66.7   21.1   [ 20.8 –  93.9]  descritivo
+PETR4   presente   passado     -5    43  +0.1811  0.241  0.593     12.5   20.9   [  2.2 –  47.1]  descritivo
+PETR4   presente   passado     -1    59  -0.1030  0.450  0.464      9.1   20.3   [  1.6 –  37.7]  descritivo
+PETR4   presente   futuro       1    58  -0.0621  0.635  0.469      9.1   20.7   [  1.6 –  37.7]  descritivo
+PETR4   presente   futuro       5    42  +0.0299  0.861  0.631     25.0   21.4   [  7.1 –  59.1]  descritivo
+PETR4   presente   futuro      20    18  +0.3195  0.186  0.670     66.7   22.2   [ 20.8 –  93.9]  descritivo
+SUZB3   futuro     passado    -20     9  +0.2712  0.481  0.571      0.0   22.2   [  0.0 –  79.3]  descritivo
+SUZB3   futuro     passado     -5    16  -0.0776  0.788  0.646     33.3   25.0   [  6.1 –  79.2]  descritivo
+SUZB3   futuro     passado     -1    23  +0.3297  0.127  0.633     25.0   21.7   [  4.6 –  69.9]  descritivo
+SUZB3   futuro     futuro       1    23  -0.1112  0.624  0.533     25.0   21.7   [  4.6 –  69.9]  descritivo
+SUZB3   futuro     futuro       5    16  +0.3105  0.249  0.625     33.3   25.0   [  6.1 –  79.2]  descritivo
+SUZB3   futuro     futuro      20     8  +0.1464  0.731  0.500      0.0   25.0   [  0.0 –  79.3]  descritivo
+SUZB3   passado    passado     -1     9  -0.3333  0.371  0.214      0.0   22.2   [  0.0 –  79.3]  descritivo
+SUZB3   passado    futuro       1     9  -0.6500  0.063  0.286      0.0   22.2   [  0.0 –  79.3]  descritivo
+SUZB3   presente   passado     -1     8  +0.2440  0.572  0.667      0.0   25.0   [  0.0 –  79.3]  descritivo
+SUZB3   presente   futuro       1     8  -0.2928  0.487  0.500      0.0   25.0   [  0.0 –  79.3]  descritivo
+TODOS   futuro     passado    -20   140  -0.1728  0.038  0.485     14.3   20.0   [  5.7 –  31.5]  p<0,05 mas cai no FDR
+TODOS   futuro     passado     -5   302  -0.0332  0.578  0.464     11.7   20.2   [  5.8 –  22.2]  nulo
+TODOS   futuro     passado     -1   450  +0.0099  0.845  0.541     22.2   20.0   [ 14.9 –  31.8]  nulo
+TODOS   futuro     futuro       1   448  -0.0808  0.086  0.430     13.5   20.1   [  7.9 –  22.1]  nulo
+TODOS   futuro     futuro       5   297  -0.1163  0.046  0.412     16.9   20.2   [  9.5 –  28.5]  p<0,05 mas cai no FDR
+TODOS   futuro     futuro      20   131  -0.0573  0.516  0.486     15.4   20.6   [  6.1 –  33.5]  nulo
+TODOS   passado    passado    -20    95  -0.4015  0.000  0.330     10.5   20.0   [  2.9 –  31.4]  descritivo
+TODOS   passado    passado     -5   183  -0.0965  0.199  0.456     13.9   20.2   [  6.1 –  28.7]  nulo
+TODOS   passado    passado     -1   224  -0.1069  0.120  0.445     15.9   20.1   [  7.9 –  29.4]  nulo
+TODOS   passado    futuro       1   223  -0.1038  0.112  0.459     18.2   20.2   [  9.5 –  32.0]  nulo
+TODOS   passado    futuro       5   179  -0.0443  0.560  0.481     22.9   20.1   [ 12.1 –  39.0]  nulo
+TODOS   passado    futuro      20    89  -0.0048  0.963  0.511     17.6   20.2   [  6.2 –  41.0]  descritivo
+TODOS   presente   passado    -20    90  -0.0375  0.734  0.473     11.1   20.0   [  3.1 –  32.8]  descritivo
+TODOS   presente   passado     -5   168  -0.0661  0.387  0.474     18.2   20.2   [  8.6 –  34.4]  nulo
+TODOS   presente   passado     -1   215  -0.0455  0.511  0.484     18.6   20.0   [  9.7 –  32.6]  nulo
+TODOS   presente   futuro       1   213  -0.1059  0.127  0.437     11.9   20.2   [  5.2 –  25.0]  nulo
+TODOS   presente   futuro       5   160  -0.1392  0.082  0.431     12.5   20.0   [  5.0 –  28.1]  nulo
+TODOS   presente   futuro      20    81  -0.1170  0.273  0.455     12.5   21.0   [  3.5 –  36.0]  descritivo
+VALE3   futuro     passado    -20    16  +0.0530  0.842  0.542     33.3   25.0   [  6.1 –  79.2]  descritivo
+VALE3   futuro     passado     -5    41  -0.0102  0.953  0.524     12.5   22.0   [  2.2 –  47.1]  descritivo
+VALE3   futuro     passado     -1    56  -0.1167  0.390  0.484      0.0   21.4   [  0.0 –  25.9]  descritivo
+VALE3   futuro     futuro       1    56  -0.2468  0.068  0.456      9.1   21.4   [  1.6 –  37.7]  descritivo
+VALE3   futuro     futuro       5    41  -0.1877  0.236  0.399      0.0   22.0   [  0.0 –  32.4]  descritivo
+VALE3   futuro     futuro      20    15  +0.2145  0.435  0.542     33.3   20.0   [  6.1 –  79.2]  descritivo
+VALE3   passado    passado    -20    13  -0.3681  0.216  0.200      0.0   23.1   [  0.0 –  65.8]  descritivo
+VALE3   passado    passado     -5    27  +0.0598  0.763  0.500     20.0   22.2   [  3.6 –  62.4]  descritivo
+VALE3   passado    passado     -1    31  -0.4448  0.009  0.286      0.0   22.6   [  0.0 –  39.0]  descritivo
+VALE3   passado    futuro       1    31  -0.2476  0.179  0.339      0.0   22.6   [  0.0 –  39.0]  descritivo
+VALE3   passado    futuro       5    27  +0.0745  0.712  0.484      0.0   22.2   [  0.0 –  43.4]  descritivo
+VALE3   passado    futuro      20    12  -0.3357  0.294  0.444     50.0   25.0   [  9.5 –  90.5]  descritivo
+VALE3   presente   passado    -20    13  -0.3195  0.289  0.433      0.0   23.1   [  0.0 –  65.8]  descritivo
+VALE3   presente   passado     -5    25  -0.2581  0.207  0.375      0.0   20.0   [  0.0 –  43.4]  descritivo
+VALE3   presente   passado     -1    30  -0.1650  0.373  0.483     16.7   20.0   [  3.0 –  56.4]  descritivo
+VALE3   presente   futuro       1    30  -0.2825  0.121  0.483     16.7   20.0   [  3.0 –  56.4]  descritivo
+VALE3   presente   futuro       5    24  -0.4755  0.015  0.421      0.0   20.8   [  0.0 –  49.0]  descritivo
+VALE3   presente   futuro      20    12  -0.3119  0.338  0.519     50.0   25.0   [  9.5 –  90.5]  descritivo
+WEGE3   futuro     passado    -20     9  +0.0753  0.848  0.286      0.0   22.2   [  0.0 –  79.3]  descritivo
+WEGE3   futuro     passado     -5    16  +0.2566  0.344  0.562     33.3   25.0   [  6.1 –  79.2]  descritivo
+WEGE3   futuro     passado     -1    21  -0.0026  0.998  0.450     50.0   23.8   [ 15.0 –  85.0]  descritivo
+WEGE3   futuro     futuro       1    20  +0.5497  0.013  0.766     50.0   20.0   [ 15.0 –  85.0]  descritivo
+WEGE3   futuro     futuro       5    15  -0.2115  0.464  0.389      0.0   20.0   [  0.0 –  56.2]  descritivo
+WEGE3   futuro     futuro      20     8  +0.1198  0.793  0.667    100.0   25.0   [ 20.7 – 100.0]  descritivo
+WEGE3   presente   passado     -5    10  +0.1273  0.719  0.188      0.0   20.0   [  0.0 –  65.8]  descritivo
+WEGE3   presente   passado     -1    12  +0.4615  0.142  0.704    100.0   25.0   [ 34.2 – 100.0]  descritivo
+WEGE3   presente   futuro       1    11  +0.6455  0.042  0.833     50.0   27.3   [  9.5 –  90.5]  descritivo
+WEGE3   presente   futuro       5     9  +0.9000  0.003  0.857    100.0   22.2   [ 20.7 – 100.0]  descritivo
+
+========================================================================================================
+GRANULARIDADE DIARIO  ·  ALVO: DIRECAO
+========================================================================================================
+papel   orientacao janela       h     n       IC      p    AUC  acerto%  base%    IC95 do acerto  veredito
+ABEV3   futuro     passado     -1    11  +0.1812  0.588      —     50.0   54.5   [ 18.8 –  81.2]  descritivo
+ABEV3   futuro     futuro       1    10  -0.0065  1.000      —     60.0   52.9   [ 23.1 –  88.2]  descritivo
+B3SA3   futuro     passado     -5    17  -0.0270  0.912      —     50.0   50.2   [ 26.8 –  73.2]  descritivo
+B3SA3   futuro     passado     -1    58  +0.0438  0.749      —     53.2   50.8   [ 39.2 –  66.7]  descritivo
+B3SA3   futuro     futuro       1    57  +0.1611  0.228      —     60.9   50.6   [ 46.5 –  73.6]  descritivo
+B3SA3   futuro     futuro       5    16  -0.1445  0.583      —     30.8   50.2   [ 12.7 –  57.6]  descritivo
+B3SA3   passado    passado     -5    11  +0.2652  0.426      —     71.4   50.2   [ 35.9 –  91.8]  descritivo
+B3SA3   passado    passado     -1    31  +0.4652  0.006      —     72.0   50.8   [ 52.4 –  85.7]  descritivo
+B3SA3   passado    futuro       1    30  +0.0040  0.981      —     45.8   50.6   [ 27.9 –  64.9]  descritivo
+B3SA3   passado    futuro       5    10  +0.1288  0.736      —     28.6   50.2   [  8.2 –  64.1]  descritivo
+B3SA3   presente   passado     -5     9  -0.0848  0.842      —     33.3   50.2   [  9.7 –  70.0]  descritivo
+B3SA3   presente   passado     -1    29  -0.1811  0.324      —     40.9   50.8   [ 23.3 –  61.3]  descritivo
+B3SA3   presente   futuro       1    28  -0.0348  0.860      —     52.4   50.6   [ 32.4 –  71.7]  descritivo
+B3SA3   presente   futuro       5     8  +0.4148  0.348      —     80.0   50.2   [ 37.6 –  96.4]  descritivo
+BBAS3   futuro     passado     -5     9  -0.3376  0.344      —      0.0   50.9   [  0.0 –  35.4]  descritivo
+BBAS3   futuro     passado     -1    25  -0.1640  0.439      —     29.4   50.8   [ 13.3 –  53.1]  descritivo
+BBAS3   futuro     futuro       1    24  -0.1916  0.358      —     43.8   50.4   [ 23.1 –  66.8]  descritivo
+BBAS3   futuro     futuro       5     8  +0.4243  0.268      —     66.7   50.0   [ 30.0 –  90.3]  descritivo
+BBAS3   passado    passado     -5     8  -0.5868  0.137      —     14.3   50.9   [  2.6 –  51.3]  descritivo
+BBAS3   passado    passado     -1    14  -0.4354  0.120      —     18.2   50.8   [  5.1 –  47.7]  descritivo
+BBAS3   passado    futuro       1    14  -0.1414  0.617      —     54.5   50.4   [ 28.0 –  78.7]  descritivo
+BBAS3   presente   passado     -1    11  -0.1735  0.597      —     33.3   50.8   [ 12.1 –  64.6]  descritivo
+BBAS3   presente   futuro       1    10  -0.3110  0.393      —     37.5   50.4   [ 13.7 –  69.4]  descritivo
+BBDC4   futuro     passado     -5    13  +0.1933  0.534      —     50.0   52.0   [ 21.5 –  78.5]  descritivo
+BBDC4   futuro     passado     -1    36  +0.1411  0.410      —     51.9   51.8   [ 34.0 –  69.3]  descritivo
+BBDC4   futuro     futuro       1    35  +0.0708  0.694      —     46.2   51.8   [ 28.8 –  64.5]  descritivo
+BBDC4   futuro     futuro       5    12  -0.0073  0.989      —     28.6   52.1   [  8.2 –  64.1]  descritivo
+BBDC4   passado    passado     -5    12  +0.0629  0.845      —     54.5   52.0   [ 28.0 –  78.7]  descritivo
+BBDC4   passado    passado     -1    28  +0.0494  0.806      —     39.1   51.8   [ 22.2 –  59.2]  descritivo
+BBDC4   passado    futuro       1    27  +0.1054  0.589      —     50.0   51.8   [ 30.7 –  69.3]  descritivo
+BBDC4   passado    futuro       5    11  -0.5000  0.122      —     20.0   52.1   [  5.7 –  51.0]  descritivo
+BBDC4   presente   passado     -5    10  +0.1180  0.747      —     57.1   52.0   [ 25.0 –  84.2]  descritivo
+BBDC4   presente   passado     -1    19  +0.0764  0.757      —     61.5   51.8   [ 35.5 –  82.3]  descritivo
+BBDC4   presente   futuro       1    18  -0.1658  0.522      —     25.0   51.8   [  8.9 –  53.2]  descritivo
+BBDC4   presente   futuro       5     9  +0.0690  0.882      —     33.3   52.1   [  9.7 –  70.0]  descritivo
+ITUB4   futuro     passado     -5    10  -0.6074  0.076      —     28.6   51.0   [  8.2 –  64.1]  descritivo
+ITUB4   futuro     passado     -1    21  +0.2383  0.290      —     50.0   50.5   [ 29.0 –  71.0]  descritivo
+ITUB4   futuro     futuro       1    20  +0.0588  0.801      —     52.9   51.2   [ 31.0 –  73.8]  descritivo
+ITUB4   futuro     futuro       5     9  +0.0848  0.844      —     16.7   50.7   [  3.0 –  56.4]  descritivo
+ITUB4   passado    passado     -1    16  +0.4908  0.051      —     50.0   50.5   [ 25.4 –  74.6]  descritivo
+ITUB4   passado    futuro       1    15  +0.0484  0.849      —     58.3   51.2   [ 32.0 –  80.7]  descritivo
+ITUB4   presente   passado     -1    13  +0.0112  0.974      —     60.0   50.5   [ 31.3 –  83.2]  descritivo
+ITUB4   presente   futuro       1    12  +0.0998  0.740      —     30.0   51.2   [ 10.8 –  60.3]  descritivo
+MGLU3   futuro     passado     -5     9  +0.2002  0.615      —     80.0   50.7   [ 37.6 –  96.4]  descritivo
+MGLU3   futuro     passado     -1    13  +0.1356  0.660      —     37.5   50.9   [ 13.7 –  69.4]  descritivo
+MGLU3   futuro     futuro       1    12  +0.4858  0.117      —     85.7   51.8   [ 48.7 –  97.4]  descritivo
+MGLU3   futuro     futuro       5     8  +0.0488  0.927      —     60.0   50.5   [ 23.1 –  88.2]  descritivo
+PETR4   futuro     passado    -20     8  +0.1429  0.760      —     57.1   50.8   [ 25.0 –  84.2]  descritivo
+PETR4   futuro     passado     -5    21  +0.2163  0.352      —     64.7   51.6   [ 41.3 –  82.7]  descritivo
+PETR4   futuro     passado     -1    66  +0.1217  0.339      —     63.6   51.2   [ 50.4 –  75.1]  descritivo
+PETR4   futuro     futuro       1    65  +0.1365  0.263      —     59.3   51.0   [ 46.0 –  71.3]  descritivo
+PETR4   futuro     futuro       5    20  +0.2415  0.290      —     50.0   50.8   [ 28.0 –  72.0]  descritivo
+PETR4   passado    passado     -5    17  +0.0564  0.833      —     53.3   51.6   [ 30.1 –  75.2]  descritivo
+PETR4   passado    passado     -1    48  +0.2187  0.144      —     60.5   51.2   [ 45.6 –  73.6]  descritivo
+PETR4   passado    futuro       1    47  +0.1292  0.406      —     61.9   51.0   [ 46.8 –  75.0]  descritivo
+PETR4   passado    futuro       5    16  -0.4168  0.111      —     42.9   50.8   [ 21.4 –  67.4]  descritivo
+PETR4   presente   passado     -5    16  +0.1180  0.681      —     69.2   51.6   [ 42.4 –  87.3]  descritivo
+PETR4   presente   passado     -1    41  +0.1009  0.543      —     57.1   51.2   [ 40.9 –  72.0]  descritivo
+PETR4   presente   futuro       1    40  +0.0898  0.603      —     50.0   51.0   [ 34.1 –  65.9]  descritivo
+PETR4   presente   futuro       5    15  -0.0681  0.806      —     58.3   50.8   [ 32.0 –  80.7]  descritivo
+SUZB3   futuro     passado     -5     8  -0.1796  0.672      —     33.3   51.9   [  9.7 –  70.0]  descritivo
+SUZB3   futuro     passado     -1    15  +0.0681  0.804      —     41.7   52.4   [ 19.3 –  68.0]  descritivo
+SUZB3   futuro     futuro       1    14  +0.1038  0.720      —     63.6   52.4   [ 35.4 –  84.8]  descritivo
+TODOS   futuro     passado    -20    50  +0.0623  0.654      —     51.4   51.9   [ 35.6 –  67.0]  descritivo
+TODOS   futuro     passado     -5   116  +0.0373  0.682      —     47.6   50.6   [ 37.3 –  58.2]  descritivo
+TODOS   futuro     passado     -1   305  +0.0773  0.186      —     52.1   51.0   [ 45.8 –  58.3]  nulo
+TODOS   futuro     futuro       1   296  +0.0714  0.210      —     53.2   51.1   [ 46.8 –  59.6]  nulo
+TODOS   futuro     futuro       5   106  +0.0491  0.611      —     44.7   50.9   [ 34.1 –  55.9]  descritivo
+TODOS   futuro     futuro      20    40  -0.0650  0.696      —     46.4   52.0   [ 29.5 –  64.2]  descritivo
+TODOS   passado    passado    -20    40  +0.2680  0.092      —     54.5   51.9   [ 38.0 –  70.2]  descritivo
+TODOS   passado    passado     -5    82  -0.0310  0.776      —     47.8   50.6   [ 36.3 –  59.5]  descritivo
+TODOS   passado    passado     -1   188  +0.1072  0.149      —     50.6   51.0   [ 43.0 –  58.3]  nulo
+TODOS   passado    futuro       1   184  +0.0443  0.559      —     50.3   51.1   [ 42.6 –  58.0]  nulo
+TODOS   passado    futuro       5    75  +0.0015  0.988      —     43.5   50.9   [ 31.9 –  55.9]  descritivo
+TODOS   passado    futuro      20    31  -0.1410  0.447      —     41.7   52.0   [ 24.5 –  61.2]  descritivo
+TODOS   presente   passado    -20    38  +0.1223  0.453      —     54.5   51.9   [ 38.0 –  70.2]  descritivo
+TODOS   presente   passado     -5    73  -0.0221  0.874      —     48.2   50.6   [ 35.7 –  61.0]  descritivo
+TODOS   presente   passado     -1   161  +0.0926  0.234      —     52.9   51.0   [ 44.0 –  61.6]  nulo
+TODOS   presente   futuro       1   153  -0.0451  0.561      —     43.5   51.1   [ 34.8 –  52.6]  nulo
+TODOS   presente   futuro       5    63  +0.0878  0.486      —     54.2   50.9   [ 40.3 –  67.4]  descritivo
+TODOS   presente   futuro      20    28  +0.1558  0.406      —     65.2   52.0   [ 44.9 –  81.2]  descritivo
+VALE3   futuro     passado     -5    14  -0.2310  0.425      —     50.0   50.4   [ 25.4 –  74.6]  descritivo
+VALE3   futuro     passado     -1    45  +0.1013  0.519      —     50.0   50.1   [ 34.8 –  65.2]  descritivo
+VALE3   futuro     futuro       1    44  +0.0260  0.839      —     37.8   50.8   [ 24.1 –  53.9]  descritivo
+VALE3   futuro     futuro       5    13  -0.2558  0.401      —     36.4   50.7   [ 15.2 –  64.6]  descritivo
+VALE3   passado    passado     -5    10  -0.1394  0.719      —     40.0   50.4   [ 16.8 –  68.7]  descritivo
+VALE3   passado    passado     -1    29  +0.1803  0.344      —     51.7   50.1   [ 34.4 –  68.6]  descritivo
+VALE3   passado    futuro       1    29  +0.0673  0.735      —     41.4   50.8   [ 25.5 –  59.3]  descritivo
+VALE3   passado    futuro       5    10  +0.2485  0.501      —     70.0   50.7   [ 39.7 –  89.2]  descritivo
+VALE3   presente   passado     -5    10  +0.1043  0.783      —     71.4   50.4   [ 35.9 –  91.8]  descritivo
+VALE3   presente   passado     -1    24  +0.0551  0.801      —     42.9   50.1   [ 21.4 –  67.4]  descritivo
+VALE3   presente   futuro       1    23  +0.0428  0.842      —     35.7   50.8   [ 16.3 –  61.2]  descritivo
+VALE3   presente   futuro       5     9  +0.3899  0.311      —     66.7   50.7   [ 30.0 –  90.3]  descritivo
+WEGE3   futuro     passado     -5     8  +0.4392  0.297      —     60.0   52.0   [ 23.1 –  88.2]  descritivo
+WEGE3   futuro     passado     -1    15  +0.4161  0.137      —     58.3   50.8   [ 32.0 –  80.7]  descritivo
+WEGE3   futuro     futuro       1    15  +0.0933  0.737      —     41.7   50.1   [ 19.3 –  68.0]  descritivo
+
+========================================================================================================
+GRANULARIDADE DIARIO  ·  ALVO: VOLATILIDADE
+========================================================================================================
+papel   orientacao janela       h     n       IC      p    AUC  acerto%  base%    IC95 do acerto  veredito
+ABEV3   futuro     passado     -1    11  -0.1144  0.742  0.583      0.0   27.3   [  0.0 –  65.8]  descritivo
+ABEV3   futuro     futuro       1    10  +0.0840  0.820  0.562     50.0   20.0   [  9.5 –  90.5]  descritivo
+B3SA3   futuro     passado     -5    17  +0.1867  0.456  0.519     33.3   23.5   [  6.1 –  79.2]  descritivo
+B3SA3   futuro     passado     -1    58  +0.0277  0.839  0.529      9.1   20.7   [  1.6 –  37.7]  descritivo
+B3SA3   futuro     futuro       1    57  +0.1391  0.294  0.641     27.3   21.1   [  9.7 –  56.6]  descritivo
+B3SA3   futuro     futuro       5    16  -0.1003  0.713  0.292     33.3   25.0   [  6.1 –  79.2]  descritivo
+B3SA3   passado    passado     -5    11  -0.4048  0.213  0.396      0.0   27.3   [  0.0 –  65.8]  descritivo
+B3SA3   passado    passado     -1    31  -0.2116  0.238  0.440     33.3   22.6   [  9.7 –  70.0]  descritivo
+B3SA3   passado    futuro       1    30  +0.1872  0.333  0.674     33.3   20.0   [  9.7 –  70.0]  descritivo
+B3SA3   passado    futuro       5    10  +0.3865  0.251  0.750     50.0   20.0   [  9.5 –  90.5]  descritivo
+B3SA3   presente   passado     -5     9  -0.2712  0.469  0.429      0.0   22.2   [  0.0 –  79.3]  descritivo
+B3SA3   presente   passado     -1    29  -0.0575  0.763  0.420     20.0   20.7   [  3.6 –  62.4]  descritivo
+B3SA3   presente   futuro       1    28  +0.3525  0.068  0.727     40.0   21.4   [ 11.8 –  76.9]  descritivo
+B3SA3   presente   futuro       5     8  -0.2440  0.579  0.583    100.0   25.0   [ 20.7 – 100.0]  descritivo
+BBAS3   futuro     passado     -5     9  -0.3515  0.334  0.393      0.0   22.2   [  0.0 –  79.3]  descritivo
+BBAS3   futuro     passado     -1    25  +0.1674  0.417  0.625     20.0   20.0   [  3.6 –  62.4]  descritivo
+BBAS3   futuro     futuro       1    24  +0.3549  0.099  0.684     25.0   20.8   [  4.6 –  69.9]  descritivo
+BBAS3   futuro     futuro       5     8  +0.1317  0.772  0.417      0.0   25.0   [  0.0 –  79.3]  descritivo
+BBAS3   passado    passado     -5     8  +0.1429  0.755  0.500      0.0   25.0   [  0.0 –  79.3]  descritivo
+BBAS3   passado    passado     -1    14  +0.1965  0.500  0.667      0.0   21.4   [  0.0 –  65.8]  descritivo
+BBAS3   passado    futuro       1    14  +0.1302  0.654  0.515      0.0   21.4   [  0.0 –  65.8]  descritivo
+BBAS3   presente   passado     -1    11  +0.1777  0.597  0.354      0.0   27.3   [  0.0 –  65.8]  descritivo
+BBAS3   presente   futuro       1    10  -0.3040  0.387  0.281      0.0   20.0   [  0.0 –  65.8]  descritivo
+BBDC4   futuro     passado     -5    13  +0.1752  0.580  0.433      0.0   23.1   [  0.0 –  65.8]  descritivo
+BBDC4   futuro     passado     -1    36  -0.1829  0.299  0.431      0.0   22.2   [  0.0 –  35.4]  descritivo
+BBDC4   futuro     futuro       1    35  -0.1899  0.267  0.291      0.0   20.0   [  0.0 –  35.4]  descritivo
+BBDC4   futuro     futuro       5    12  -0.0363  0.926  0.370      0.0   25.0   [  0.0 –  65.8]  descritivo
+BBDC4   passado    passado     -5    12  +0.2587  0.418  0.481      0.0   25.0   [  0.0 –  65.8]  descritivo
+BBDC4   passado    passado     -1    28  -0.3406  0.071  0.443     20.0   21.4   [  3.6 –  62.4]  descritivo
+BBDC4   passado    futuro       1    27  -0.2993  0.129  0.278      0.0   22.2   [  0.0 –  43.4]  descritivo
+BBDC4   passado    futuro       5    11  -0.4818  0.130  0.292     50.0   27.3   [  9.5 –  90.5]  descritivo
+BBDC4   presente   passado     -5    10  +0.1354  0.723  0.312      0.0   20.0   [  0.0 –  65.8]  descritivo
+BBDC4   presente   passado     -1    19  +0.3079  0.204  0.517      0.0   21.1   [  0.0 –  56.2]  descritivo
+BBDC4   presente   futuro       1    18  -0.2505  0.306  0.482     33.3   22.2   [  6.1 –  79.2]  descritivo
+BBDC4   presente   futuro       5     9  +0.3916  0.287  0.571    100.0   22.2   [ 20.7 – 100.0]  descritivo
+ITUB4   futuro     passado     -5    10  +0.0061  1.000  0.500     50.0   20.0   [  9.5 –  90.5]  descritivo
+ITUB4   futuro     passado     -1    21  -0.2719  0.235  0.412     25.0   23.8   [  4.6 –  69.9]  descritivo
+ITUB4   futuro     futuro       1    20  +0.4392  0.051  0.672     50.0   20.0   [ 15.0 –  85.0]  descritivo
+ITUB4   futuro     futuro       5     9  -0.2543  0.520  0.500      0.0   22.2   [  0.0 –  79.3]  descritivo
+ITUB4   passado    passado     -1    16  -0.3422  0.189  0.510      0.0   25.0   [  0.0 –  56.2]  descritivo
+ITUB4   passado    futuro       1    15  +0.4409  0.104  0.778     66.7   20.0   [ 20.8 –  93.9]  descritivo
+ITUB4   presente   passado     -1    13  -0.2739  0.369  0.167      0.0   23.1   [  0.0 –  65.8]  descritivo
+ITUB4   presente   futuro       1    12  +0.0421  0.897  0.593     50.0   25.0   [  9.5 –  90.5]  descritivo
+MGLU3   futuro     passado     -5     9  -0.0348  0.939  0.393      0.0   22.2   [  0.0 –  79.3]  descritivo
+MGLU3   futuro     passado     -1    13  +0.3674  0.227  0.533      0.0   23.1   [  0.0 –  65.8]  descritivo
+MGLU3   futuro     futuro       1    12  +0.1305  0.694  0.407      0.0   25.0   [  0.0 –  65.8]  descritivo
+MGLU3   futuro     futuro       5     8  +0.6831  0.070  0.583      0.0   25.0   [  0.0 –  79.3]  descritivo
+PETR4   futuro     passado    -20     8  +0.3333  0.450  0.750    100.0   25.0   [ 20.7 – 100.0]  descritivo
+PETR4   futuro     passado     -5    21  +0.0697  0.755  0.531     25.0   23.8   [  4.6 –  69.9]  descritivo
+PETR4   futuro     passado     -1    66  -0.1641  0.196  0.473      0.0   21.2   [  0.0 –  22.8]  descritivo
+PETR4   futuro     futuro       1    65  -0.0685  0.593  0.513      7.7   20.0   [  1.4 –  33.3]  descritivo
+PETR4   futuro     futuro       5    20  -0.1457  0.539  0.281     25.0   20.0   [  4.6 –  69.9]  descritivo
+PETR4   passado    passado     -5    17  +0.3323  0.187  0.692     33.3   23.5   [  6.1 –  79.2]  descritivo
+PETR4   passado    passado     -1    48  -0.0793  0.591  0.416     11.1   20.8   [  2.0 –  43.5]  descritivo
+PETR4   passado    futuro       1    47  -0.1888  0.208  0.532     22.2   21.3   [  6.3 –  54.7]  descritivo
+PETR4   passado    futuro       5    16  -0.0265  0.925  0.302     33.3   25.0   [  6.1 –  79.2]  descritivo
+PETR4   presente   passado     -5    16  +0.2242  0.400  0.688     33.3   25.0   [  6.1 –  79.2]  descritivo
+PETR4   presente   passado     -1    41  +0.0289  0.867  0.516      0.0   22.0   [  0.0 –  32.4]  descritivo
+PETR4   presente   futuro       1    40  +0.1581  0.337  0.680     25.0   20.0   [  7.1 –  59.1]  descritivo
+PETR4   presente   futuro       5    15  -0.4516  0.087  0.139      0.0   20.0   [  0.0 –  56.2]  descritivo
+SUZB3   futuro     passado     -5     8  +0.5868  0.138  0.917    100.0   25.0   [ 20.7 – 100.0]  descritivo
+SUZB3   futuro     passado     -1    15  +0.5806  0.022  0.806     33.3   20.0   [  6.1 –  79.2]  descritivo
+SUZB3   futuro     futuro       1    14  +0.4967  0.074  0.818      0.0   21.4   [  0.0 –  65.8]  descritivo
+TODOS   futuro     passado    -20    50  +0.0065  0.960  0.517     20.0   20.0   [  5.7 –  51.0]  descritivo
+TODOS   futuro     passado     -5   116  +0.1206  0.205  0.541     17.4   20.7   [  7.0 –  37.1]  descritivo
+TODOS   futuro     passado     -1   305  -0.0750  0.197  0.482     11.5   20.0   [  5.7 –  21.8]  nulo
+TODOS   futuro     futuro       1   296  +0.0711  0.215  0.534     23.7   20.3   [ 14.7 –  36.0]  nulo
+TODOS   futuro     futuro       5   106  +0.0045  0.960  0.463     19.0   20.8   [  7.7 –  40.0]  descritivo
+TODOS   futuro     futuro      20    40  -0.2824  0.079  0.467     25.0   20.0   [  7.1 –  59.1]  descritivo
+TODOS   passado    passado    -20    40  -0.0103  0.943  0.625     25.0   20.0   [  7.1 –  59.1]  descritivo
+TODOS   passado    passado     -5    82  +0.0373  0.733  0.612     31.2   20.7   [ 14.2 –  55.6]  descritivo
+TODOS   passado    passado     -1   188  -0.1029  0.164  0.490     16.2   20.2   [  7.7 –  31.1]  nulo
+TODOS   passado    futuro       1   184  +0.0654  0.371  0.497     22.2   20.1   [ 11.7 –  38.1]  nulo
+TODOS   passado    futuro       5    75  +0.1825  0.110  0.625     26.7   20.0   [ 10.9 –  52.0]  descritivo
+TODOS   passado    futuro      20    31  -0.0604  0.733  0.679     50.0   22.6   [ 18.8 –  81.2]  descritivo
+TODOS   presente   passado    -20    38  +0.2481  0.133  0.492     14.3   21.1   [  2.6 –  51.3]  descritivo
+TODOS   presente   passado     -5    73  -0.0157  0.891  0.488     21.4   20.5   [  7.6 –  47.6]  descritivo
+TODOS   presente   passado     -1   161  +0.0315  0.696  0.476     12.5   20.5   [  5.0 –  28.1]  nulo
+TODOS   presente   futuro       1   153  +0.0725  0.365  0.538     16.7   20.3   [  7.3 –  33.6]  nulo
+TODOS   presente   futuro       5    63  -0.2739  0.032  0.302      8.3   20.6   [  1.5 –  35.4]  descritivo
+TODOS   presente   futuro      20    28  -0.2679  0.169  0.371     20.0   21.4   [  3.6 –  62.4]  descritivo
+VALE3   futuro     passado     -5    14  +0.0792  0.793  0.652     50.0   21.4   [  9.5 –  90.5]  descritivo
+VALE3   futuro     passado     -1    45  -0.0368  0.813  0.540     33.3   20.0   [ 12.1 –  64.6]  descritivo
+VALE3   futuro     futuro       1    44  +0.0727  0.625  0.575     25.0   20.5   [  7.1 –  59.1]  descritivo
+VALE3   futuro     futuro       5    13  -0.4264  0.148  0.150      0.0   23.1   [  0.0 –  65.8]  descritivo
+VALE3   passado    passado     -5    10  -0.1030  0.782  0.312      0.0   20.0   [  0.0 –  65.8]  descritivo
+VALE3   passado    passado     -1    29  -0.0704  0.707  0.601     40.0   20.7   [ 11.8 –  76.9]  descritivo
+VALE3   passado    futuro       1    29  +0.1557  0.429  0.601     40.0   20.7   [ 11.8 –  76.9]  descritivo
+VALE3   passado    futuro       5    10  +0.3576  0.321  0.500     50.0   20.0   [  9.5 –  90.5]  descritivo
+VALE3   presente   passado     -5    10  -0.1657  0.653  0.812     50.0   20.0   [  9.5 –  90.5]  descritivo
+VALE3   presente   passado     -1    24  +0.4165  0.041  0.732     50.0   20.8   [ 15.0 –  85.0]  descritivo
+VALE3   presente   futuro       1    23  -0.0795  0.715  0.456     25.0   21.7   [  4.6 –  69.9]  descritivo
+VALE3   presente   futuro       5     9  -0.3390  0.371  0.429      0.0   22.2   [  0.0 –  79.3]  descritivo
+WEGE3   futuro     passado     -5     8  +0.8783  0.010  1.000    100.0   25.0   [ 20.7 – 100.0]  descritivo
+WEGE3   futuro     passado     -1    15  -0.0538  0.846  0.528      0.0   20.0   [  0.0 –  56.2]  descritivo
+WEGE3   futuro     futuro       1    15  -0.0108  0.979  0.750     33.3   20.0   [  6.1 –  79.2]  descritivo
+
+========================================================================================================
+RESUMO
+========================================================================================================
+testes feitos          : 1166
+com n >= 120          : 80
+limiar FDR (q=0.1)    : p <= 0.0000  (nenhum sobrevive)
+sobrevivem ao FDR      : 0
+
+para contraste, p<0,05 SEM correcao: 3 de 80
+esperados por acaso a 5%: 4.0
+
+==============================================================================================================
+ACERTO POR ORIENTACAO  ·  GRANULARIDADE: 1 MINUTO
+==============================================================================================================
+celulas testadas: 110   |   com n >= 120: 0   <- NENHUMA tem poder; tudo abaixo e descritivo
+
+  ALVO: DIRECAO   (acerto = % de vezes que o lado bateu)
+  orientacao janela    celulas  n medio  acerto%   base%  vantagem       IC   min p  leitura
+  passado    passado         5       27     45.8    50.8      -5.0  -0.0608   0.132  descritivo (n < 120)
+  passado    futuro          6       24     62.8    51.0     +11.8  -0.3007   0.053  descritivo (n < 120)
+  presente   passado         9       12     50.0    51.1      -1.1  -0.1744   0.022  descritivo (n < 120)
+  presente   futuro         10       12     56.3    51.1      +5.3  +0.0533   0.103  descritivo (n < 120)
+  futuro     passado        12       14     58.6    51.4      +7.2  +0.1581   0.004  descritivo (n < 120)
+  futuro     futuro         13       15     53.8    51.3      +2.6  +0.0629   0.059  descritivo (n < 120)
+
+  ALVO: VOLATILIDADE   (acerto = % do topo 20% do sinal que virou movimento grande)
+  orientacao janela    celulas  n medio  acerto%   base%  vantagem       IC   min p  leitura
+  passado    passado         5       27     20.0    20.7      -0.7  -0.0627   0.024  descritivo (n < 120)
+  passado    futuro          6       24      7.1    21.1     -13.9  +0.0163   0.004  descritivo (n < 120)
+  presente   passado         9       12      0.0    22.2     -22.2  +0.0285   0.175  descritivo (n < 120)
+  presente   futuro         10       12      0.0    21.2     -21.2  -0.1105   0.067  descritivo (n < 120)
+  futuro     passado        12       14      0.0    20.9     -20.9  -0.0932   0.241  descritivo (n < 120)
+  futuro     futuro         13       15     16.7    22.7      -6.1  +0.0229   0.138  descritivo (n < 120)
+
+==============================================================================================================
+ACERTO POR ORIENTACAO  ·  GRANULARIDADE: 5 MINUTOS
+==============================================================================================================
+celulas testadas: 276   |   com n >= 120: 20
+
+  ALVO: DIRECAO   (acerto = % de vezes que o lado bateu)
+  orientacao janela    celulas  n medio  acerto%   base%  vantagem       IC   min p  leitura
+  passado    passado        18       16     54.5    52.0      +2.5  -0.0924   0.086  descritivo (n < 120)
+  passado    futuro         18       17     53.8    52.1      +1.7  +0.0658   0.009  descritivo (n < 120)
+  presente   passado        20       19     46.1    51.8      -5.6  -0.0271   0.004  cai no FDR
+  presente   futuro         23       17     55.2    51.9      +3.3  -0.0232   0.002  cai no FDR
+  futuro     passado        29       19     50.0    52.6      -2.6  -0.0429   0.015  cai no FDR
+  futuro     futuro         30       20     51.0    52.6      -1.6  +0.0249   0.001  cai no FDR
+
+  ALVO: VOLATILIDADE   (acerto = % do topo 20% do sinal que virou movimento grande)
+  orientacao janela    celulas  n medio  acerto%   base%  vantagem       IC   min p  leitura
+  passado    passado        18       16      3.1    21.8     -18.7  -0.0220   0.011  descritivo (n < 120)
+  passado    futuro         18       17      0.0    22.6     -22.6  -0.0988   0.039  descritivo (n < 120)
+  presente   passado        20       19     16.3    22.0      -5.6  -0.0484   0.018  cai no FDR
+  presente   futuro         23       17      0.0    21.9     -21.9  -0.1378   0.073  nulo
+  futuro     passado        29       19     16.7    21.7      -5.1  -0.0079   0.019  cai no FDR
+  futuro     futuro         30       20     16.7    21.4      -4.8  -0.0574   0.131  nulo
+
+  melhor celula com poder nesta granularidade: direcao/futuro/futuro h=6  n=226  acerto 56.4 vs base 50.7 (+5.7 p.p.)  p=0.228
+
+==============================================================================================================
+ACERTO POR ORIENTACAO  ·  GRANULARIDADE: 15 MINUTOS
+==============================================================================================================
+celulas testadas: 274   |   com n >= 120: 20
+
+  ALVO: DIRECAO   (acerto = % de vezes que o lado bateu)
+  orientacao janela    celulas  n medio  acerto%   base%  vantagem       IC   min p  leitura
+  passado    passado        18       14     50.8    52.8      -2.0  -0.1135   0.079  descritivo (n < 120)
+  passado    futuro         20       14     57.4    52.7      +4.7  +0.2056   0.001  descritivo (n < 120)
+  presente   passado        19       16     55.6    52.2      +3.3  +0.0000   0.073  nulo
+  presente   futuro         22       16     56.4    52.9      +3.6  -0.0072   0.040  cai no FDR
+  futuro     passado        29       16     47.7    54.5      -6.8  -0.0761   0.004  cai no FDR
+  futuro     futuro         29       17     55.6    53.5      +2.1  +0.0591   0.032  cai no FDR
+
+  ALVO: VOLATILIDADE   (acerto = % do topo 20% do sinal que virou movimento grande)
+  orientacao janela    celulas  n medio  acerto%   base%  vantagem       IC   min p  leitura
+  passado    passado        18       14      5.3    22.1     -16.8  +0.0549   0.013  descritivo (n < 120)
+  passado    futuro         20       14      4.5    23.1     -18.5  -0.1025   0.061  descritivo (n < 120)
+  presente   passado        19       16     16.0    21.4      -5.4  -0.0709   0.013  cai no FDR
+  presente   futuro         22       16     21.1    21.4      -0.3  +0.0932   0.043  cai no FDR
+  futuro     passado        29       16     17.5    23.8      -6.3  -0.0715   0.040  cai no FDR
+  futuro     futuro         29       17     25.0    22.2      +2.8  +0.0712   0.086  nulo
+
+  melhor celula com poder nesta granularidade: direcao/futuro/futuro h=4  n=211  acerto 58.6 vs base 50.7 (+7.9 p.p.)  p=0.121
+
+==============================================================================================================
+ACERTO POR ORIENTACAO  ·  GRANULARIDADE: 1 HORA
+==============================================================================================================
+celulas testadas: 314   |   com n >= 120: 28
+
+  ALVO: DIRECAO   (acerto = % de vezes que o lado bateu)
+  orientacao janela    celulas  n medio  acerto%   base%  vantagem       IC   min p  leitura
+  passado    passado        23       20     54.5    50.6      +4.0  -0.0064   0.021  cai no FDR
+  passado    futuro         22       23     50.0    50.7      -0.7  -0.0156   0.171  nulo
+  presente   passado        23       18     53.0    50.5      +2.5  +0.0120   0.005  cai no FDR
+  presente   futuro         23       17     54.1    50.6      +3.5  +0.0142   0.040  cai no FDR
+  futuro     passado        33       21     52.6    51.1      +1.5  +0.0041   0.032  cai no FDR
+  futuro     futuro         33       21     50.0    51.0      -1.0  +0.0367   0.032  cai no FDR
+
+  ALVO: VOLATILIDADE   (acerto = % do topo 20% do sinal que virou movimento grande)
+  orientacao janela    celulas  n medio  acerto%   base%  vantagem       IC   min p  leitura
+  passado    passado        23       20     10.5    22.2     -11.7  -0.1182   0.000  cai no FDR
+  passado    futuro         22       23     19.1    22.2      -3.1  -0.0518   0.046  cai no FDR
+  presente   passado        23       18     12.5    21.4      -8.9  -0.0339   0.060  nulo
+  presente   futuro         23       17      9.1    21.7     -12.6  -0.0896   0.003  cai no FDR
+  futuro     passado        33       21     22.2    22.2      +0.0  -0.0026   0.028  cai no FDR
+  futuro     futuro         33       21     15.4    21.4      -6.0  -0.0866   0.013  cai no FDR
+
+  melhor celula com poder nesta granularidade: direcao/futuro/passado h=-20  n=140  acerto 57.7 vs base 50.5 (+7.2 p.p.)  p=0.302
+
+==============================================================================================================
+ACERTO POR ORIENTACAO  ·  GRANULARIDADE: 1 DIA (pregao)
+==============================================================================================================
+celulas testadas: 192   |   com n >= 120: 12
+
+  ALVO: DIRECAO   (acerto = % de vezes que o lado bateu)
+  orientacao janela    celulas  n medio  acerto%   base%  vantagem       IC   min p  leitura
+  passado    passado        14       22     51.2    50.9      +0.3  +0.0851   0.006  cai no FDR
+  passado    futuro         13       27     45.8    50.9      -5.1  +0.0443   0.111  nulo
+  presente   passado        13       19     54.5    50.8      +3.7  +0.0764   0.234  nulo
+  presente   futuro         13       18     50.0    50.9      -0.9  +0.0690   0.311  nulo
+  futuro     passado        23       15     50.0    50.9      -0.9  +0.1013   0.076  nulo
+  futuro     futuro         20       18     48.2    50.9      -2.7  +0.0648   0.117  nulo
+
+  ALVO: VOLATILIDADE   (acerto = % do topo 20% do sinal que virou movimento grande)
+  orientacao janela    celulas  n medio  acerto%   base%  vantagem       IC   min p  leitura
+  passado    passado        14       22     13.7    21.4      -7.8  -0.0749   0.071  nulo
+  passado    futuro         13       27     33.3    20.7     +12.6  +0.1302   0.104  nulo
+  presente   passado        13       19     12.5    21.1      -8.6  +0.0315   0.041  cai no FDR
+  presente   futuro         13       18     25.0    21.4      +3.6  -0.2440   0.032  cai no FDR
+  futuro     passado        23       15     20.0    22.2      -2.2  +0.0277   0.010  cai no FDR
+  futuro     futuro         20       18     21.4    20.8      +0.6  +0.0378   0.051  nulo
+
+  melhor celula com poder nesta granularidade: volatilidade/futuro/futuro h=1  n=296  acerto 23.7 vs base 20.3 (+3.5 p.p.)  p=0.215
+
+==============================================================================================================
+COMO LER
+==============================================================================================================
+'vantagem' = pontos percentuais acima da taxa-base. Negativo
+significa que o sinal acerta MENOS que o chute informado.
+'base%' na direcao e a classe maior (chutar sempre o lado mais
+frequente); na volatilidade e 20%, por construcao do topo 20%.
+
+So linha com n >= 120 e com p abaixo do limiar de FDR conta
+como resultado. Todo o resto e descricao de amostra pequena.
+
+Por papel: nenhuma celula de papel individual alcancou n >= 120 em granularidade nenhuma. A unica leitura possivel com este
+acervo e a agregada (TODOS).
+
+-> data/orientacao_test.json

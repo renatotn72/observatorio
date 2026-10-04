@@ -72,6 +72,14 @@ from obs.assimetria import _spearman                         # noqa: E402
 from obs.db import connect                                   # noqa: E402
 
 ORIENTACOES = ("passado", "presente", "futuro")
+# Ordem de leitura pedida: do mais fino ao mais grosso.
+ORDEM_GRAN = ("1m", "5m", "15m", "1h", "diario")
+ROTULO_GRAN = {"1m": "1 MINUTO", "5m": "5 MINUTOS", "15m": "15 MINUTOS",
+               "1h": "1 HORA", "diario": "1 DIA (pregao)"}
+
+
+def rotulo_gran(g):
+    return ROTULO_GRAN.get(g, g)
 MIN_N = 120              # mesmo piso de scripts/evento_noticia.py
 N_PERM = 2000
 FDR_Q = 0.10             # taxa de falsa descoberta aceita
@@ -252,7 +260,46 @@ def celulas(evs, serie, h, passo_disjunto, diario=False):
     return [(f, inten, alvo) for _i, f, inten, alvo in linhas]
 
 
-def mede(linhas, alvo_vol, rnd):
+def base_direcional(series, papeis, h) -> float:
+    """Taxa da classe maior no horizonte h, sobre TODAS as barras.
+
+    POR QUE NAO SOBRE A PROPRIA CELULA -- o erro que isto conserta:
+    a versao anterior estimava a taxa-base como max(p, 1-p) DENTRO da amostra
+    da celula. Esse estimador e enviesado para cima, e muito: com moeda
+    honesta (p real = 50%), medido em 20.000 simulacoes,
+
+        n = 12  -> base aparente 61,2%   (+11,2)
+        n = 20  -> 58,8%                 (+8,8)
+        n = 120 -> 53,6%                 (+3,6)
+        n = 450 -> 51,9%                 (+1,9)
+
+    Com celulas de 12 a 27 observacoes, QUALQUER sinal apareceria perdendo da
+    "taxa-base" por 8 a 11 pontos, mesmo sendo perfeitamente informativo. A
+    leitura "o sinal acerta menos que o chute" seria artefato do comparador,
+    nao resultado.
+
+    Aqui a base sai das barras TODAS, nao so das que tem noticia: amostra
+    grande, estimador praticamente sem vies, e e a pergunta certa -- "chutar
+    sempre o lado mais frequente deste papel acerta quanto?".
+    """
+    pos = tot = 0
+    for p in papeis:
+        serie = series.get(p)
+        if not serie:
+            continue
+        for i in range(len(serie)):
+            v = acumula(serie, i, h)
+            if v is None:
+                continue
+            tot += 1
+            pos += v > 0
+    if tot == 0:
+        return 50.0
+    q = 100.0 * pos / tot
+    return max(q, 100.0 - q)
+
+
+def mede(linhas, alvo_vol, rnd, base_dir=None):
     """Metricas de um grupo. `alvo_vol` troca direcao por magnitude."""
     if len(linhas) < 8:
         return None
@@ -283,10 +330,14 @@ def mede(linhas, alvo_vol, rnd):
     if not par:
         return None
     ok = sum(1 for x, y in par if (x > 0) == (y > 0))
-    base = 100 * sum(1 for _x, y in par if y > 0) / len(par)
+    # base de FORA da celula (ver base_direcional). A taxa da propria amostra
+    # fica como diagnostico, nao como comparador.
+    na_amostra = 100 * sum(1 for _x, y in par if y > 0) / len(par)
     lo, hi = wilson(ok, len(par))
     return {"n": len(linhas), "ic": ic, "p": p, "auc": float("nan"),
-            "acerto": 100 * ok / len(par), "base": max(base, 100 - base),
+            "acerto": 100 * ok / len(par),
+            "base": 50.0 if base_dir is None else base_dir,
+            "base_na_amostra": max(na_amostra, 100 - na_amostra),
             "ic95": (lo, hi), "k": len(par)}
 
 
@@ -309,7 +360,9 @@ def roda(gran, papeis, evs, series, rnd, alvo_vol):
                     linhas += celulas(sel, series[p], h,
                                       abs(h) if abs(h) > 1 else 1,
                                       diario=(gran == "diario"))
-                m = mede(linhas, alvo_vol, rnd)
+                base_dir = (None if alvo_vol
+                            else base_direcional(series, alvo_papeis, h))
+                m = mede(linhas, alvo_vol, rnd, base_dir)
                 if m:
                     res.append({"gran": gran, "papel": papel, "orient": o,
                                 "h": h, "janela": "passado" if h < 0 else "futuro",
@@ -357,7 +410,8 @@ def main(grans=None, papeis_pedidos=None, como_json=False):
     print(f"por orientacao (sobrepostas): {por_o}")
 
     todas = []
-    for gran in (grans or list(HORIZONTES)):
+    ordem_grans = [g for g in ORDEM_GRAN if not grans or g in grans]
+    for gran in ordem_grans:
         series = (series_diaria(con) if gran == "diario"
                   else series_intra(con, gran))
         if not series:
@@ -377,7 +431,7 @@ def main(grans=None, papeis_pedidos=None, como_json=False):
     validos = [r for r in todas if r["n"] >= MIN_N]
     corte = bh([r["p"] for r in validos], FDR_Q)
 
-    for gran in (grans or list(HORIZONTES)):
+    for gran in ordem_grans:
         for alvo in ("direcao", "volatilidade"):
             sel = [r for r in todas if r["gran"] == gran and r["alvo"] == alvo]
             if sel:
@@ -403,35 +457,84 @@ def main(grans=None, papeis_pedidos=None, como_json=False):
     # FUTURO, explica o futuro?" Aqui a resposta agregada, sobre as celulas
     # com amostra suficiente. Mediana e nao media: uma celula extrema nao deve
     # decidir a leitura.
-    print(f"\n{'=' * 104}\nA PERGUNTA DIRETA, sobre as celulas com n >= "
-          f"{MIN_N}\n{'=' * 104}")
-    print("Hipotese: noticia de PASSADO explica movimento JA ocorrido;")
-    print("          noticia de PRESENTE e FUTURO explica movimento POR VIR.\n")
-    print(f"{'alvo':<14}{'orientacao':<11}{'janela':<9}{'celulas':>8}"
-          f"{'IC mediano':>12}{'acerto-base':>13}{'min p':>8}  leitura")
-    for alvo in ("direcao", "volatilidade"):
-        for o in ORIENTACOES:
-            for janela in ("passado", "futuro"):
-                sel = [r for r in validos
-                       if r["alvo"] == alvo and r["orient"] == o
-                       and r["janela"] == janela]
-                if not sel:
-                    print(f"{alvo:<14}{o:<11}{janela:<9}{'0':>8}"
-                          f"{'—':>12}{'—':>13}{'—':>8}  sem amostra")
-                    continue
-                ic = est.median(r["ic"] for r in sel)
-                vant = est.median(r["acerto"] - r["base"] for r in sel)
-                pmin = min(r["p"] for r in sel)
-                leitura = ("nada" if pmin > 0.05 else
-                           "nada apos FDR" if not (corte > 0 and pmin <= corte)
-                           else "ALGO -- investigar")
-                print(f"{alvo:<14}{o:<11}{janela:<9}{len(sel):>8}"
-                      f"{ic:>+12.4f}{vant:>+13.1f}{pmin:>8.3f}  {leitura}")
-    print("\n'acerto-base' = pontos percentuais ACIMA da taxa-base. Negativo")
+    # ------------------------------------------------- a pergunta direta ----
+    # UMA TABELA POR GRANULARIDADE, e nao uma agregada. Agregar granularidades
+    # esconde o que elas tem de diferente: o alvo de volatilidade troca de
+    # SINAL entre o intradiario e o diario, e numa tabela unica isso vira uma
+    # mediana morna que nao descreve nenhuma das duas.
+    #
+    # Aqui entram TODAS as celulas, nao so as com n >= MIN_N: para o minuto
+    # nenhuma alcanca o piso, e uma tabela vazia nao informa que a granularidade
+    # foi testada e nao tem amostra. A coluna `n medio` e o selo de poder dizem
+    # quais linhas podem ser lidas como resultado.
+    for gran in ordem_grans:
+        sel_g = [r for r in todas if r["gran"] == gran]
+        if not sel_g:
+            continue
+        com_poder = [r for r in sel_g if r["n"] >= MIN_N]
+        print(f"\n{'=' * 110}")
+        print(f"ACERTO POR ORIENTACAO  ·  GRANULARIDADE: {rotulo_gran(gran)}")
+        print(f"{'=' * 110}")
+        print(f"celulas testadas: {len(sel_g)}   |   com n >= {MIN_N}: "
+              f"{len(com_poder)}"
+              + ("   <- NENHUMA tem poder; tudo abaixo e descritivo"
+                 if not com_poder else ""))
+        for alvo in ("direcao", "volatilidade"):
+            linhas = [r for r in sel_g if r["alvo"] == alvo]
+            if not linhas:
+                continue
+            print(f"\n  ALVO: {alvo.upper()}"
+                  + ("   (acerto = % de vezes que o lado bateu)" if alvo == "direcao"
+                     else "   (acerto = % do topo 20% do sinal que virou "
+                          "movimento grande)"))
+            print(f"  {'orientacao':<11}{'janela':<9}{'celulas':>8}{'n medio':>9}"
+                  f"{'acerto%':>9}{'base%':>8}{'vantagem':>10}{'IC':>9}"
+                  f"{'min p':>8}  leitura")
+            for o in ORIENTACOES:
+                for janela in ("passado", "futuro"):
+                    s = [r for r in linhas if r["orient"] == o
+                         and r["janela"] == janela]
+                    if not s:
+                        print(f"  {o:<11}{janela:<9}{'0':>8}{'—':>9}{'—':>9}"
+                              f"{'—':>8}{'—':>10}{'—':>9}{'—':>8}  sem amostra")
+                        continue
+                    n_med = est.median(r["n"] for r in s)
+                    ac = est.median(r["acerto"] for r in s)
+                    ba = est.median(r["base"] for r in s)
+                    ic = est.median(r["ic"] for r in s)
+                    pmin = min(r["p"] for r in s)
+                    tem_poder = any(r["n"] >= MIN_N for r in s)
+                    if not tem_poder:
+                        leitura = f"descritivo (n < {MIN_N})"
+                    elif corte > 0 and pmin <= corte:
+                        leitura = "ALGO -- investigar"
+                    elif pmin < 0.05:
+                        leitura = "cai no FDR"
+                    else:
+                        leitura = "nulo"
+                    print(f"  {o:<11}{janela:<9}{len(s):>8}{n_med:>9.0f}"
+                          f"{ac:>9.1f}{ba:>8.1f}{ac - ba:>+10.1f}{ic:>+9.4f}"
+                          f"{pmin:>8.3f}  {leitura}")
+        if com_poder:
+            melhor = max(com_poder, key=lambda r: r["acerto"] - r["base"])
+            print(f"\n  melhor celula com poder nesta granularidade: "
+                  f"{melhor['alvo']}/{melhor['orient']}/{melhor['janela']} "
+                  f"h={melhor['h']}  n={melhor['n']}  "
+                  f"acerto {melhor['acerto']:.1f} vs base {melhor['base']:.1f} "
+                  f"({melhor['acerto'] - melhor['base']:+.1f} p.p.)  p={melhor['p']:.3f}")
+
+    print(f"\n{'=' * 110}")
+    print("COMO LER")
+    print(f"{'=' * 110}")
+    print("'vantagem' = pontos percentuais acima da taxa-base. Negativo")
     print("significa que o sinal acerta MENOS que o chute informado.")
-    print("\nPor papel: nenhuma celula de papel individual alcancou n >= "
-          f"{MIN_N}.")
-    print("A unica leitura possivel com este acervo e a agregada (TODOS).")
+    print("'base%' na direcao e a classe maior (chutar sempre o lado mais")
+    print("frequente); na volatilidade e 20%, por construcao do topo 20%.")
+    print(f"\nSo linha com n >= {MIN_N} e com p abaixo do limiar de FDR conta")
+    print("como resultado. Todo o resto e descricao de amostra pequena.")
+    print(f"\nPor papel: nenhuma celula de papel individual alcancou n >= "
+          f"{MIN_N} em granularidade nenhuma. A unica leitura possivel com este")
+    print("acervo e a agregada (TODOS).")
     if como_json:
         p = "data/orientacao_test.json"
         with open(p, "w", encoding="utf-8") as fh:

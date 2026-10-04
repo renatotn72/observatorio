@@ -197,31 +197,49 @@ cluster — **em janela posterior ao cutoff do modelo**. Até lá o estado é
 
 ## Orientação temporal x retorno — medido em 2026-10-04
 
-`scripts/orientacao_test.py`. **1.166 testes, 80 com n >= 120, zero sobrevive
-ao FDR** (q = 0,10). Sem correção, 3 de 80 com p < 0,05 contra **4,0 esperados
-por acaso** — o número bruto está abaixo do que o acaso produz.
+`scripts/orientacao_test.py`, por granularidade: **1 min, 5 min, 15 min, 1 hora
+e 1 dia**, em separado para direção e para volatilidade.
 
-A hipótese de que notícia de PASSADO explica o movimento já ocorrido **não se
-confirma, e falha na direção contrária**: nas três orientações o IC da janela
-futuro é maior que o da janela passado.
+**1.166 testes, 80 com n >= 120, zero sobrevive ao FDR** (q = 0,10). Sem
+correção, 3 de 80 com p < 0,05 contra **4,0 esperadas por acaso**.
 
-| orientação | IC janela passado | IC janela futuro |
-|---|---|---|
-| passado | −0,0064 | +0,0006 |
-| presente | +0,0100 | +0,0318 |
-| futuro | −0,0150 | +0,0451 |
+### Vantagem sobre a taxa-base, em pontos percentuais
 
-Melhor célula direcional: IC +0,0451, que pela conversão do projeto vale
-**51,4 acertos em 100** — 1,4 ponto acima do cara ou coroa, e não passa.
+Direção — janela passado / janela futuro:
 
-**Por papel não é mensurável**: nenhum papel individual alcança n >= 120. Os
-IC95 do acerto por papel têm 25 a 30 pontos de largura e todos contêm a
-taxa-base.
+| granularidade | células com poder | passado | presente | futuro |
+|---|---|---|---|---|
+| 1 minuto | **0** | −5,0 / +11,8 | −1,1 / +5,3 | +7,2 / +2,6 |
+| 5 minutos | 20 | +2,5 / +1,7 | −5,6 / +3,3 | −2,6 / −1,6 |
+| 15 minutos | 20 | −2,0 / +4,7 | +3,3 / +3,6 | −6,8 / +2,1 |
+| 1 hora | 28 | **+4,0** / −0,7 | +2,5 / +3,5 | +1,5 / −1,0 |
+| 1 dia | 12 | +0,3 / −5,1 | +3,7 / −0,9 | −0,9 / −2,7 |
 
-Volatilidade: o sinal **depende da granularidade** — positivo no diário
-(+0,0711, as três orientações), negativo no intradiário. Nenhum passa. Detalhe,
-tabelas por granularidade e as proteções do desenho em
-`docs/orientacao-medicao.md`.
+Volatilidade — a janela futuro troca de sinal com a granularidade: negativa no
+intradiário curto (até −22,6 em 5 min) e **positiva no diário** (+12,6 / +3,6 /
++0,6), que é o sentido da cabeça de agitação, a única aprovada do projeto.
+
+### O que isso responde
+
+A hipótese de que notícia de PASSADO explica o movimento já ocorrido **só
+aparece em 1 hora** (+4,0 na janela passado contra −0,7 na futura). Em 5 e 15
+minutos acontece o contrário; no diário a vantagem some. Nenhuma passa.
+
+Melhor célula **com poder** de toda a medição: IC +0,1013, que vale **53,2
+acertos em 100**. O minuto não é mensurável: as barras de 1m cobrem 5 dias.
+
+**Por papel não é mensurável em granularidade nenhuma**: nenhum papel
+individual alcança n >= 120.
+
+### Um erro de comparador, encontrado e corrigido
+
+A primeira rodada estimava a taxa-base como `max(p, 1-p)` **dentro da própria
+célula**. Esse estimador é enviesado: com moeda honesta, aparece 61,2% em
+célula de n=12 e 53,6% em n=120. Com células de 12 a 27 observações, qualquer
+sinal apareceria perdendo por 8 a 11 pontos. A base passou a ser estimada sobre
+todas as barras; ela é ~51%, não os 55–65% que o estimador enviesado produzia.
+
+Tabelas completas, por granularidade, em `docs/orientacao-medicao.md`.
 
 ## Métricas de notícia
 
