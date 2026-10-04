@@ -4,3 +4,9 @@
 # os novos entrem.
 __pycache__/
 *.pyc
+
+# Relatorio gerado por coleta (obs/prices.py:resumo_divergencia). Fica fora
+# do repositorio porque e saida de execucao, nao dado de projeto -- e porque
+# uma versao sintetica dele, vinda de ensaio com rede falsa, chegou a ser
+# comitada e parecia divergencia real.
+data/divergencia_*.csv
