@@ -195,6 +195,34 @@ decis monotônicos, sobrevivência à permutação e ao agrupamento por dia e
 cluster — **em janela posterior ao cutoff do modelo**. Até lá o estado é
 *implementado, não validado*, e `/api/status.scorer` devolve `validado: false`.
 
+## Orientação temporal x retorno — medido em 2026-10-04
+
+`scripts/orientacao_test.py`. **1.166 testes, 80 com n >= 120, zero sobrevive
+ao FDR** (q = 0,10). Sem correção, 3 de 80 com p < 0,05 contra **4,0 esperados
+por acaso** — o número bruto está abaixo do que o acaso produz.
+
+A hipótese de que notícia de PASSADO explica o movimento já ocorrido **não se
+confirma, e falha na direção contrária**: nas três orientações o IC da janela
+futuro é maior que o da janela passado.
+
+| orientação | IC janela passado | IC janela futuro |
+|---|---|---|
+| passado | −0,0064 | +0,0006 |
+| presente | +0,0100 | +0,0318 |
+| futuro | −0,0150 | +0,0451 |
+
+Melhor célula direcional: IC +0,0451, que pela conversão do projeto vale
+**51,4 acertos em 100** — 1,4 ponto acima do cara ou coroa, e não passa.
+
+**Por papel não é mensurável**: nenhum papel individual alcança n >= 120. Os
+IC95 do acerto por papel têm 25 a 30 pontos de largura e todos contêm a
+taxa-base.
+
+Volatilidade: o sinal **depende da granularidade** — positivo no diário
+(+0,0711, as três orientações), negativo no intradiário. Nenhum passa. Detalhe,
+tabelas por granularidade e as proteções do desenho em
+`docs/orientacao-medicao.md`.
+
 ## Métricas de notícia
 
 Para o canal de texto, medir adicionalmente:

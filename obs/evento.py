@@ -201,42 +201,45 @@ def classifica(texto: str, event_type_antigo: str | None = None) -> dict:
 #             legenda desenha a MESMA geometria do marcador, senao a legenda
 #             deixa de ser legenda.
 # `ordem`  -- ordem de exibicao na legenda, do mais frequente ao mais raro.
+# ATENCAO AO ACENTO: `rotulo` e `ajuda` vao DIRETO para a tela, nao sao
+# comentario. Mesma regra de obs/medidas.py. O resto do arquivo segue sem
+# acento porque e codigo e padrao de regex, que trabalham sobre texto
+# normalizado por `norm`.
 ICONES = {
     CORPORATIVO: {"rotulo": "Corporativo", "icone": "●", "forma": "direcional",
                   "ordem": 1,
-                  "ajuda": "Fato da empresa: resultado, provento, M&A, gestao. "
-                           "Mantem o marcador historico -- triangulo para cima "
-                           "ou para baixo pela direcao, circulo quando neutra."},
+                  "ajuda": "Fato da empresa: resultado, provento, M&A, gestão. "
+                           "Mantém o marcador histórico — triângulo para cima "
+                           "ou para baixo pela direção, círculo quando neutra."},
     MACRO: {"rotulo": "Macroeconômico", "icone": "▲", "forma": "triangulo_vazado",
             "ordem": 2,
-            "ajuda": "Sinal macro que chega ao papel pela cadeia de afetacao. "
-                     "O triangulo aponta pelo efeito NO PAPEL, nao pelo tom do "
-                     "texto: alta do petroleo e favoravel a PETR4 (beta +) e "
-                     "adversa a quem consome combustivel (beta -)."},
+            "ajuda": "Sinal macro que chega ao papel pela cadeia de afetação. "
+                     "Triângulo vazado, para não se confundir com o fato da "
+                     "própria empresa."},
     JUDICIAL: {"rotulo": "Judicial / regulatório", "icone": "§", "forma": "diamante",
                "ordem": 3,
-               "ajuda": "Acao judicial, liminar, recurso, decisao de agencia "
-                        "ou de orgao de controle."},
+               "ajuda": "Ação judicial, liminar, recurso, decisão de agência "
+                        "ou de órgão de controle."},
     LEGISLATIVO: {"rotulo": "Legislativo / política", "icone": "⚖", "forma": "bandeira",
                   "ordem": 4,
-                  "ajuda": "Projeto de lei, medida provisoria, consulta publica, "
-                           "tomada de subsidio, votacao."},
+                  "ajuda": "Projeto de lei, medida provisória, consulta pública, "
+                           "tomada de subsídio, votação."},
     CALENDARIO: {"rotulo": "Calendário contábil", "icone": "📅", "forma": "calendario",
                  "ordem": 5,
-                 "ajuda": "Data de divulgacao de resultado, fato relevante CVM, "
-                          "agenda contabil. E agenda, nao fato consumado."},
+                 "ajuda": "Data de divulgação de resultado, fato relevante CVM, "
+                          "agenda contábil. É agenda, não fato consumado."},
 }
 MARCAS_ORIENTACAO = {
     PASSADO: {"rotulo": "Passado", "marca": "←", "ordem": 1,
-              "ajuda": "Relata fato consumado. Deveria explicar movimento JA "
-                       "ocorrido, nao prever o proximo."},
+              "ajuda": "Relata fato consumado. Deveria explicar movimento JÁ "
+                       "ocorrido, não prever o próximo."},
     PRESENTE: {"rotulo": "Presente", "marca": "●", "ordem": 2,
-               "ajuda": "Fato em curso agora: negociacao, disputa, processo em "
-                        "tramitacao."},
+               "ajuda": "Fato em curso agora: negociação, disputa, processo em "
+                        "tramitação."},
     FUTURO: {"rotulo": "Futuro", "marca": "→", "ordem": 3,
-             "ajuda": "Guidance, projecao, risco prospectivo, processo ainda a "
-                      "decidir. E a marca de interesse para radar: o fato "
-                      "ainda nao aconteceu."},
+             "ajuda": "Guidance, projeção, risco prospectivo, processo ainda a "
+                      "decidir. É a marca de interesse para radar: o fato "
+                      "ainda não aconteceu."},
 }
 
 

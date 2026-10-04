@@ -149,7 +149,7 @@ def main(grupos=None, como_json=False):
         r = sonda(url)
         d = _data(r["corpo"], pad)
         atraso = f"{(hoje - d).days}d" if d else "—"
-        marca = "ok" if r["http"] == 200 else (r["erro"] or "?")
+
         print(f"{grupo:<12}{nome[:38]:<40}{r['http']:>5}{r['s']:>7.2f}"
               f"{r['bytes']/1024:>7.0f}{atraso:>9}  {obs[:42]}")
         if r["erro"]:

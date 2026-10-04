@@ -126,6 +126,32 @@ h1{margin:0;font-size:28px;letter-spacing:-.015em;line-height:1.1}
 .legend .lgt{font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);
   opacity:.8;margin-right:2px;font-weight:650}
 .legend .ct{font-weight:500;font-size:11.5px;opacity:.8}
+/* ---- painel "como ler" ---- */
+.comoler{border-top:1px solid var(--border);padding:0 14px 14px}
+.comoler>summary{cursor:pointer;padding:12px 0;font-size:12.5px;letter-spacing:.06em;
+  text-transform:uppercase;color:var(--muted);font-weight:650;list-style:none;
+  display:flex;align-items:center;gap:8px}
+.comoler>summary::-webkit-details-marker{display:none}
+.comoler>summary::before{content:"▸";font-size:11px;transition:transform .15s}
+.comoler[open]>summary::before{transform:rotate(90deg)}
+.comoler h3{font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);
+  margin:14px 0 8px;font-weight:650;opacity:.85}
+.comoler h3:first-of-type{margin-top:2px}
+.lgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(248px,1fr));gap:10px 18px}
+.lgi{display:flex;gap:9px;align-items:flex-start;font-size:12.5px;line-height:1.5}
+.lgi .gl{flex:0 0 26px;height:26px;display:flex;align-items:center;justify-content:center;
+  border:1px solid var(--border);border-radius:7px;background:var(--bg)}
+.lgi b{display:block;font-weight:650;color:var(--text)}
+.lgi span{color:var(--muted)}
+.comoler .nota{margin:12px 0 0;font-size:12px;line-height:1.6;color:var(--muted);
+  border-left:2px solid var(--border);padding-left:10px}
+/* AMOSTRAS fora do gráfico. As regras de marcador têm escopo `#chart`, então
+   não alcançam a legenda: sem isto as amostras caem no preenchimento padrão
+   do SVG (preto sólido) e o triângulo VAZADO do macro sai idêntico ao cheio
+   do corporativo — justamente a distinção que a legenda existe para mostrar.
+   `currentColor` deixa a cor ser escolhida por item, pelo style do <svg>. */
+.legend svg .mk,.comoler svg .mk{fill:currentColor;stroke:none}
+.legend svg .mk.vazado,.comoler svg .mk.vazado{fill:none;stroke:currentColor;stroke-width:2}
 #chart .bar.up{fill:var(--up)}#chart .bar.down{fill:var(--down)}#chart .bar.flat{fill:var(--flat)}
 #chart .dot{fill:var(--line);stroke:var(--panel);stroke-width:2}
 #chart .lbl{font-size:11px;fill:var(--muted);text-transform:uppercase;letter-spacing:.05em}
@@ -257,6 +283,10 @@ footer{margin-top:28px;font-size:12px;color:var(--muted);border-top:1px solid va
         <div class="tip" id="tip" hidden></div>
       </div>
       <dl class="stats" id="stats"></dl>
+      <details class="comoler" id="comoler" open>
+        <summary>Como ler o gráfico</summary>
+        <div id="comoler-corpo"></div>
+      </details>
     </section>
 
     <aside class="panel newscard" aria-labelledby="newsTitle">
@@ -723,6 +753,7 @@ function renderControls() {
   $("#filters").querySelectorAll("svg").forEach(s => { s.style.width = "11px"; s.style.height = "11px"; });
   $("#nsort").value = S.nsort;
   renderLegenda();
+  renderComoLer();
 }
 
 /* CONTAGEM para a legenda. Cada dimensao conta sobre o conjunto filtrado
@@ -743,8 +774,93 @@ function contaPor(dim) {
 /* A legenda DESENHA A MESMA GEOMETRIA do marcador, em miniatura. Legenda com
    glifo diferente do grafico deixa de ser legenda. */
 function amostra(forma) {
-  const g = glifo(forma, "up", 9, 9, 5.5).replace(/class="mk/, 'class="mk up');
-  return `<svg viewBox="0 0 18 18" width="13" height="13" aria-hidden="true" style="color:var(--flat)">${g} fill-opacity="1"/></svg>`;
+  const g = glifo(forma, "up", 9, 9, 5.5);
+  return `<svg viewBox="0 0 18 18" width="13" height="13" aria-hidden="true" style="color:var(--flat)">${g}/></svg>`;
+}
+
+/* ---------- painel "como ler o grafico" ----------
+   DIVISAO DE FONTE, de proposito:
+   - o que cada TIPO e cada TEMPO significam vem de /api/chart.legenda, ou
+     seja, de obs/evento.py. E semantica do dominio: se o back-end criar um
+     tipo novo, esta secao passa a explica-lo sem tocar aqui.
+   - o que COR, TAMANHO e HASTE significam fica aqui, porque e codificacao
+     visual -- decisao desta tela, nao do classificador.
+   Misturar os dois lugares foi o que fez a legenda antiga mentir: ela
+   descrevia tres simbolos quando o grafico ja desenhava cinco.            */
+function amostraGrande(forma, dir, cor) {
+  // "up" nas amostras de TIPO, e nao "flat": para `direcional` e
+  // `triangulo_vazado` o neutro e um circulo, e os dois sairiam identicos na
+  // legenda -- justamente a distincao que a legenda existe para mostrar.
+  const g = glifo(forma, dir, 11, 11, 7);
+  return `<svg viewBox="0 0 22 22" width="18" height="18" aria-hidden="true" style="color:${cor || "var(--flat)"}">${g}/></svg>`;
+}
+
+const VISUAL = [
+  ["Cor e sentido", [
+    [amostraGrande("direcional", "up", "var(--up)"),
+     "Verde, apontando para cima",
+     "O texto sugere efeito favorável à empresa."],
+    [amostraGrande("direcional", "down", "var(--down)"),
+     "Vermelho, apontando para baixo",
+     "O texto sugere efeito adverso à empresa."],
+    [amostraGrande("direcional", "flat"),
+     "Cinza, redondo",
+     "Nota perto de zero: a matéria cita a empresa sem implicação clara."],
+  ]],
+  ["Tamanho e posição", [
+    [`<svg viewBox="0 0 22 22" width="18" height="18" aria-hidden="true">
+        <circle cx="7" cy="11" r="3" fill="var(--flat)"/><circle cx="16" cy="11" r="6" fill="var(--flat)"/></svg>`,
+     "Tamanho = peso da notícia",
+     "Veículo × relevância × novidade × materialidade. A vigésima repetição do mesmo fato entra pequena."],
+    [`<svg viewBox="0 0 22 22" width="18" height="18" aria-hidden="true">
+        <line x1="11" y1="3" x2="11" y2="19" stroke="var(--flat)" stroke-width="1.2" stroke-dasharray="2 2"/></svg>`,
+     "Haste pontilhada",
+     "Liga o marcador ao preço do dia. Marcadores do mesmo dia empilham para não se cobrirem."],
+    [`<svg viewBox="0 0 22 22" width="18" height="18" aria-hidden="true">
+        <rect x="4" y="11" width="4" height="7" fill="var(--down)"/><rect x="10" y="4" width="4" height="7" fill="var(--up)"/>
+        <line x1="2" y1="11" x2="20" y2="11" stroke="var(--border)"/></svg>`,
+     "Faixa inferior",
+     "Pressão líquida do dia: média das notas ponderada pelo peso. Não é previsão."],
+  ]],
+];
+
+function renderComoLer() {
+  const el = document.getElementById("comoler-corpo");
+  if (!el) return;
+  let h = "";
+
+  h += `<h3>Tipo de evento — a forma do marcador</h3><div class="lgrid">`;
+  h += LEG.tipos.map(x => `<div class="lgi">
+      <span class="gl">${amostraGrande(x.forma, "up")}</span>
+      <span><b>${esc(x.icone || "")} ${esc(x.rotulo)}</b>${esc(x.ajuda || "")}</span>
+    </div>`).join("");
+  h += `</div>`;
+
+  h += `<h3>Tempo do conteúdo — a marca ao lado</h3><div class="lgrid">`;
+  h += LEG.orientacoes.map(x => `<div class="lgi">
+      <span class="gl" style="font-size:15px;font-weight:700;color:var(--muted)">${esc(x.marca)}</span>
+      <span><b>${esc(x.rotulo)}</b>${esc(x.ajuda || "")}</span>
+    </div>`).join("");
+  h += `</div>`;
+  h += `<p class="nota">Uma notícia pode ter <b>mais de uma marca de tempo</b>.
+    Decisão já proferida somada a recurso pendente é <b>← passado</b> e
+    <b>→ futuro</b> ao mesmo tempo: o fato está consumado e ainda pode mudar.</p>`;
+
+  for (const [titulo, itens] of VISUAL) {
+    h += `<h3>${esc(titulo)}</h3><div class="lgrid">`;
+    h += itens.map(([svg, nome, txt]) => `<div class="lgi">
+        <span class="gl">${svg}</span><span><b>${esc(nome)}</b>${esc(txt)}</span>
+      </div>`).join("");
+    h += `</div>`;
+  }
+
+  h += `<p class="nota"><b>O triângulo vazado aponta pelo efeito no papel, não pelo tom do texto.</b>
+    Alta do petróleo é favorável à Petrobras e adversa a quem consome combustível —
+    a mesma notícia aponta para lados opostos em papéis diferentes.</p>`;
+  h += `<p class="nota"><b>Nem o tipo nem o tempo entram no cálculo do sinal.</b>
+    Eles descrevem e filtram: clique na legenda acima para mostrar ou esconder cada um.
+    Errar a classificação polui a leitura da tela, não a medição.</p>`;
+  el.innerHTML = h;
 }
 
 function renderLegenda() {
