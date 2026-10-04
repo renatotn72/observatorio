@@ -42,13 +42,24 @@ CREATE INDEX IF NOT EXISTS ix_men_ticker ON mentions(ticker);
 CREATE TABLE IF NOT EXISTS scores (
   article_id INTEGER NOT NULL REFERENCES articles(id),
   ticker     TEXT NOT NULL,
-  scorer     TEXT NOT NULL,        -- lexicon | finbert | llm
+  scorer     TEXT NOT NULL,        -- lexicon | llm | ensemble
   s          REAL NOT NULL,        -- direcao -1..+1
   magnitude  REAL NOT NULL,        -- 0..1 materialidade
   event_type TEXT,                  -- legado: mantido para nao quebrar medicao
   tipo_evento TEXT,                 -- corporativo|macro|judicial|legislativo|calendario
   orientacao TEXT,                  -- conjunto ordenado: "futuro,passado"
   novelty    REAL NOT NULL,        -- 1.0 primeira reportagem, decai em repercussao
+  -- EXTRACAO ESTRUTURADA (preenchida so pelo scorer que LE o texto).
+  -- Em coluna, e nao enterrada no `raw`, por um motivo so: feature que nao da
+  -- para consultar nao da para medir. O ganho incremental do canal de texto
+  -- exige cruzar `ja_precificado` e `is_rumor` com retorno realizado, e isso
+  -- e um GROUP BY -- nao um json_extract em 50 mil linhas.
+  -- O lexico deixa as quatro em NULL, e esse NULL e informativo: e exatamente
+  -- o que contagem de palavras nao tem como responder.
+  papel_no_fato  TEXT,              -- beneficiada|prejudicada|neutra|apenas_citada
+  ja_precificado INTEGER,           -- 1 = rotina, etapa procedimental, retrospectiva
+  is_rumor       INTEGER,           -- 1 = boato, fonte anonima, especulacao
+  quote          TEXT,              -- trecho do texto que sustenta a nota
   raw        TEXT,
   PRIMARY KEY (article_id, ticker, scorer)
 );
@@ -68,6 +79,10 @@ CREATE TABLE IF NOT EXISTS signals (
   p_vol      REAL,
   vol_base   REAL,
   vol_calib  INTEGER NOT NULL DEFAULT 0,
+  -- QUAL LEITOR produziu este sinal. Sem a coluna, um backfill pontuado pelo
+  -- lexico e uma rodada ao vivo pontuada pelo LLM ficam indistinguiveis na
+  -- mesma tabela -- e o calibrador treina na mistura sem ninguem ver.
+  scorer     TEXT,
   PRIMARY KEY (ticker, asof_ts)
 );
 
@@ -95,6 +110,22 @@ CREATE TABLE IF NOT EXISTS calibrators (
   n          INTEGER NOT NULL,
   fitted_ts  INTEGER NOT NULL,
   metrics    TEXT
+);
+
+-- Cache das leituras do LLM. A chave inclui a VERSAO DO PROMPT: mudar o
+-- prompt muda a resposta, logo invalida o cache em vez de servir leitura
+-- velha com prompt novo.
+--
+-- POR QUE ISTO E ESTRUTURAL, E NAO OTIMIZACAO
+-- `limpar --aplicar` apaga os scores e repontua; `backfill --sem-baixar`
+-- reprocessa o banco inteiro. Com o lexico isso custava segundos. Com o LLM
+-- custaria a corpus inteira em chamadas, a cada vez -- e o operador deixaria
+-- de repontuar, que e a operacao que conserta regra errada.
+CREATE TABLE IF NOT EXISTS llm_cache (
+  chave     TEXT PRIMARY KEY,      -- sha256(versao_prompt|modelo|ticker|texto)
+  modelo    TEXT NOT NULL,
+  resposta  TEXT NOT NULL,         -- JSON cru devolvido pelo modelo
+  criado_ts INTEGER NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS alarm_events (
@@ -135,10 +166,17 @@ def _migra(con) -> list[str]:
     # proprio: `_migra` ja e chamada dentro de uma transacao aberta por init(),
     # e abrir outra aninhada levanta erro no sqlite3.
     cols = {r["name"] for r in con.execute("PRAGMA table_info(scores)")}
-    for nome, tipo in (("tipo_evento", "TEXT"), ("orientacao", "TEXT")):
+    for nome, tipo in (("tipo_evento", "TEXT"), ("orientacao", "TEXT"),
+                       # extracao estruturada do leitor de notica (obs/score.py)
+                       ("papel_no_fato", "TEXT"), ("ja_precificado", "INTEGER"),
+                       ("is_rumor", "INTEGER"), ("quote", "TEXT")):
         if nome not in cols:
             con.execute(f"ALTER TABLE scores ADD COLUMN {nome} {tipo}")
             feitas.append(f"scores.{nome}")
+    cols = {r["name"] for r in con.execute("PRAGMA table_info(signals)")}
+    if "scorer" not in cols:
+        con.execute("ALTER TABLE signals ADD COLUMN scorer TEXT")
+        feitas.append("signals.scorer")
     return feitas
 
 

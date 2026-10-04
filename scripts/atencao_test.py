@@ -13,9 +13,10 @@ esquemas de peso, na mesma amostra.
 AMBOS EXIGEM historico de noticia casado com retorno. Sem isso o script sai
 dizendo o que falta, em vez de inventar numero.
 """
+import os
 import sys
 
-sys.path.insert(0, "/mnt/nvmep2/home/rtnati/Downloads/projeto_final/observatorio")
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import numpy as np                                            # noqa: E402
 
 from obs import atencao, volatility as vol                    # noqa: E402

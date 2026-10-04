@@ -54,6 +54,11 @@ domains:
 # score.py:IDIOMAS_LEXICO barra, porque "perte record" (frances) casava com o
 # POS "record" e dava +0.60 a uma noticia de prejuizo. Eles servem ao scorer
 # `llm`, que le o idioma. Para valer no lexico, seria preciso lexico proprio.
+#
+# DESDE 4/10/2026 o leitor padrao e o `llm`, logo estes feeds passaram a
+# pontuar por padrao. MAS: se o proxy nao estiver autorizado, o sistema cai
+# para o lexico e estas materias voltam a ser PULADAS -- `obs score-estado`
+# mostra quantas ficaram pendentes. Feed que nao pontua nao e feed morto.
 rss:
   # --- internacionais (ingles) ---
   - https://feeds.bloomberg.com/markets/news.rss

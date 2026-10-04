@@ -3,16 +3,57 @@
 Todo scorer devolve o MESMO schema, para serem trocaveis e comparaveis:
     {s: -1..+1 direcao, magnitude: 0..1, event_type: str}
 
-`lexicon` e o baseline honesto: roda offline, sem dependencia, e e fraco --
-e justamente por isso serve de piso a ser batido. `llm` e o caminho do meu
-desenho anterior (LLM como SENSOR que preenche schema, nunca como oraculo
-que preve preco).
+QUEM LE A NOTICIA, DESDE 2026-10-04: o LLM. `SCORER_PADRAO = "llm"`.
+A troca nao e de gosto; os defeitos do lexico estao MEDIDOS neste arquivo:
+
+  - "ANP avanca para reduzir concentracao no mercado de gas APESAR DE
+    RESISTENCIA DA PETROBRAS" -> s = +0,350 para PETR4. Contagem de palavras
+    nao tem como perguntar qual e a POSICAO da empresa no fato.
+  - a mesma noticia de desastre da Vale: -0,70 em portugues, 0,00 em ingles
+    ("record" cancelava "loss"), +0,60 em frances ("perte record"). O lado
+    depende do idioma do jornal.
+  - "juros sobre o capital proprio" valia 0 e "JCP" valia +0,45: a mesma
+    noticia pontuava diferente conforme o jornal abreviasse.
+  - 44% dos eventos caem em `unclassified` (obs/evento.py).
+  - `ja_precificado` nao e preenchivel por lexico nenhum. Em 5 materias reais,
+    o lexico deu peso 1,12 ao conjunto e o julgamento estruturado deu 0,18 --
+    84% a menos -- porque 4 eram dividendo rotineiro, etapa procedimental ou
+    retrospectiva.
+
+Cada correcao acima foi uma regra nova empilhada sobre contagem de palavras
+(PHRASES, NEGATORS, HEDGES, ADVERSO/FAVORAVEL, IDIOMAS_LEXICO). O limite e
+estrutural: o lexico le TOM, e o alvo exige EFEITO SOBRE A EMPRESA.
+
+O QUE *NAO* MUDOU, E E O PONTO QUE SUSTENTA O PROJETO
+O LLM continua SENSOR, nunca oraculo (docs/decision-log.md). Ele le o texto e
+preenche schema de fatos; nao recebe pergunta de preco, nao recebe data e nao
+e consultado sobre desfecho. Trocar o leitor melhora a LEITURA; nao cria
+previsao de direcao, que segue reprovada em 6 de 6 testes (docs/metricas.md).
+
+`lexicon` permanece, com dois papeis dos quais nao se abre mao:
+  1. PISO AUDITAVEL. Deterministico, offline, reproduzivel em 2016 e em 2036.
+     E a referencia contra a qual o ganho do LLM e medido -- sem piso, "melhor"
+     e opiniao.
+  2. REDE. Sem proxy, sem autorizacao ou sem rede, o pipeline nao para: cai
+     para o lexico DIZENDO que caiu (ver `resolver`), e a coluna
+     `signals.scorer` grava quem leu.
+
+CONTAMINACAO -- a armadilha que decide onde o LLM pode e nao pode entrar
+Um modelo com cutoff SABE o que aconteceu com o papel. Lendo manchete de 2019
+ele pode estar lembrando do desfecho em vez de lendo o texto. Por isso:
+  - ao vivo (noticia de hoje, desfecho ainda nao existe): LLM, sem ressalva;
+  - no backfill de 10 anos: o padrao continua `lexicon` (obs/historico.py), e
+    pontuar historico com LLM exige --scorer llm explicito e vem com aviso;
+  - a validacao do canal de texto so vale em janela POSTERIOR ao cutoff.
 """
 from __future__ import annotations
+import hashlib
 import json
 import os
 import re
+import time
 
+from . import llm_client
 from .db import connect
 from .dedupe import novelty
 from .util import norm
@@ -252,71 +293,157 @@ Regras:
   Se nao conseguir sustentar isso com um trecho do texto, use "neutra"."""
 
 
+# --------------------------------------------------- infraestrutura do LLM ---
+# VERSAO DO PROMPT. Entra na chave do cache: mudar o prompt invalida as
+# leituras antigas em vez de servir resposta velha sob regra nova.
+PROMPT_VERSAO = "2026-10-04.1"
+LIMITE_CORPO = 4000          # caracteres do corpo enviados ao modelo
+TENTATIVAS = 3               # a chamada e idempotente (temperatura 0)
+ESPERA_S = (1.5, 4.0)        # recuo entre tentativas
+
+# Teto de chamadas por rodada. Existe porque a fila de pontuacao nao tem
+# tamanho conhecido: um `backfill-rss --paginas 150` enfileira milhares de
+# pares (artigo, ticker) e, sem teto, a primeira rodada gastaria a corpus
+# inteira em chamadas antes de alguem ver o custo. O que sobrar fica pendente
+# e entra na proxima rodada -- `run` so pontua par SEM score.
+MAX_CHAMADAS_PADRAO = int(os.environ.get("OBS_LLM_MAX_CHAMADAS", "400"))
+
+# Quantas falhas seguidas no inicio da rodada abortam tudo. Sem isso, proxy
+# derrubado = 400 chamadas perdidas e 400 linhas de erro no log.
+FALHAS_SEGUIDAS_ABORTA = 5
+
+# Contadores da ultima rodada. Modulo-level de proposito: `run` os imprime e
+# `score-estado` os le. Nao entram em nenhum calculo.
+CONTADORES = {"chamadas": 0, "cache": 0, "cluster": 0, "falhas": 0, "teto": 0}
+
+
+def _zera_contadores() -> None:
+    for k in CONTADORES:
+        CONTADORES[k] = 0
+
+
+def _chave_cache(ticker: str, title: str, body: str | None, modelo: str) -> str:
+    bruto = "|".join([PROMPT_VERSAO, modelo, (ticker or "").upper(),
+                      title or "", (body or "")[:LIMITE_CORPO]])
+    return hashlib.sha256(bruto.encode("utf-8")).hexdigest()
+
+
+def _cache_le(chave: str) -> dict | None:
+    try:
+        con = connect()
+        r = con.execute("SELECT resposta FROM llm_cache WHERE chave=?",
+                        (chave,)).fetchone()
+        con.close()
+    except Exception:                                        # noqa: BLE001
+        return None            # banco antigo sem a tabela: segue sem cache
+    if not r:
+        return None
+    try:
+        return json.loads(r["resposta"])
+    except Exception:                                        # noqa: BLE001
+        return None
+
+
+def _cache_grava(chave: str, modelo: str, obj: dict) -> None:
+    try:
+        con = connect()
+        with con:
+            con.execute("INSERT OR REPLACE INTO llm_cache VALUES (?,?,?,?)",
+                        (chave, modelo, json.dumps(obj, ensure_ascii=False),
+                         int(time.time())))
+        con.close()
+    except Exception:                                        # noqa: BLE001
+        pass                   # cache e conveniencia; falha nele nao para nada
+
+
 def _llm_para_score(obj: dict) -> dict:
     """Converte a resposta do LLM para o mesmo schema de score_lexicon."""
     s = max(-1.0, min(1.0, float(obj.get("s", 0.0))))
-    mag = max(0.0, min(1.0, float(obj.get("magnitude", 0.0))))
+    mag_bruta = max(0.0, min(1.0, float(obj.get("magnitude", 0.0))))
+    papel = (obj.get("papel_no_fato") or "").strip().lower() or None
+
+    # COERENCIA VERIFICADA, NAO PEDIDA. O prompt exige "prejudicada => s < 0",
+    # mas instrucao nao e garantia -- e este e justamente o erro que motivou a
+    # troca de leitor (o caso ANP/Petrobras). Entao o codigo confere e, quando
+    # o modelo se contradiz, obedece ao campo que o prompt manda decidir
+    # PRIMEIRO (a posicao no fato) e inverte a nota, registrando a
+    # contradicao. `incoerencia` e contavel: se for frequente, o prompt esta
+    # errado, e isso aparece num GROUP BY em vez de passar em silencio.
+    incoerencia = None
+    if papel == "prejudicada" and s > 0:
+        incoerencia, s = "prejudicada com s>0", -s
+    elif papel == "beneficiada" and s < 0:
+        incoerencia, s = "beneficiada com s<0", -s
+
+    mag = mag_bruta
     if obj.get("ja_precificado"):
         mag *= 0.25          # ja no preco: pesa pouco, mas nao zero
     if obj.get("is_rumor"):
         mag *= 0.45
+    if papel == "apenas_citada":
+        mag *= 0.30          # a empresa e contexto, nao parte do fato
+
+    raw = dict(obj)
+    raw["magnitude_bruta"] = round(mag_bruta, 4)
+    if incoerencia:
+        raw["incoerencia"] = incoerencia
     return {"s": round(s, 4), "magnitude": round(mag, 4),
             "event_type": obj.get("event_type", "outro"),
-            "raw": json.dumps(obj, ensure_ascii=False)}
+            "papel_no_fato": papel,
+            "ja_precificado": 1 if obj.get("ja_precificado") else 0,
+            "is_rumor": 1 if obj.get("is_rumor") else 0,
+            "quote": (obj.get("quote") or "")[:500] or None,
+            "raw": json.dumps(raw, ensure_ascii=False)}
 
 
-def score_llm(title: str, body: str | None = None, ticker: str = "") -> dict:
-    """Extracao estruturada por LLM. Exige OBS_LLM_API_KEY e OBS_LLM_URL.
+def score_llm(title: str, body: str | None = None, ticker: str = "",
+              usar_cache: bool = True) -> dict:
+    """Extracao estruturada por LLM: o leitor primario da notica.
 
-    CONTAMINACAO -- a armadilha que invalida backtest historico:
-        Um modelo treinado ate hoje SABE o que aconteceu com o papel. Se ele
-        conseguir inferir a data da materia, ele vaza o futuro e o seu
-        resultado historico nao vale nada. Por isso o prompt pede so fatos do
-        texto, proibe inferir data e nunca pede desfecho -- e por isso a
-        validacao final tem de ser em janela POSTERIOR ao cutoff do modelo.
+    Passa por `obs/llm_client.py`, e isso NAO e detalhe de estilo. A versao
+    anterior montava a propria chamada urllib e exigia so OBS_LLM_KEY e
+    OBS_LLM_URL -- ou seja, mandava o texto para fora sem consultar
+    OBS_ALLOW_EXTERNAL_LLM, a porta de autorizacao que o resto do projeto
+    respeita (docs/relatorios.md: "nenhum texto sai da maquina por padrao").
+    O cliente unico tambem fixa temperatura 0, sem o que duas rodadas sobre a
+    mesma materia dao notas diferentes e nenhuma medicao e reproduzivel.
+
+    Levanta RuntimeError quando nao ha leitura: o chamador decide se cai para
+    o lexico (`ensemble`) ou deixa o par pendente (`llm`).
     """
-    import urllib.request
+    modelo = os.environ.get("OBS_LLM_MODEL", "")
+    chave = _chave_cache(ticker, title, body, modelo)
+    if usar_cache:
+        em_cache = _cache_le(chave)
+        if em_cache is not None:
+            CONTADORES["cache"] += 1
+            return _llm_para_score(em_cache)
 
-    # OBS_LLM_KEY e o nome usado por obs/llm_client.py e pelo handoff.
-    # OBS_LLM_API_KEY fica aceito por compatibilidade com a versao anterior:
-    # ter dois nomes para a mesma variavel ja fez o scorer falhar em silencio.
-    key = os.environ.get("OBS_LLM_KEY") or os.environ.get("OBS_LLM_API_KEY")
-    url = os.environ.get("OBS_LLM_URL")
-    model = os.environ.get("OBS_LLM_MODEL", "")
-    if not key or not url:
+    ok, motivo = llm_client.enabled()
+    if not ok:
         raise RuntimeError(
-            "Defina OBS_LLM_KEY e OBS_LLM_URL (e OBS_LLM_MODEL) para usar "
-            "--scorer llm. Sem isso, use --scorer lexicon.")
+            f"LLM nao autorizado ou nao configurado: {motivo}. "
+            "Defina OBS_ALLOW_EXTERNAL_LLM=1, OBS_LLM_URL, OBS_LLM_KEY e "
+            "OBS_LLM_MODEL (scripts/iniciar.sh faz isso com o proxy local), "
+            "ou pontue com --scorer lexicon.")
 
     texto = f"Empresa: {ticker}\nTitulo: {title}"
     if body:
-        texto += f"\nTexto: {body[:4000]}"
+        texto += f"\nTexto: {body[:LIMITE_CORPO]}"
 
-    payload = json.dumps({
-        "model": model,
-        "max_tokens": 400,
-        "system": LLM_SYSTEM,
-        "messages": [{"role": "user", "content": LLM_SCHEMA_PROMPT + "\n\n" + texto}],
-    }).encode()
-    req = urllib.request.Request(
-        url, data=payload,
-        headers={"Content-Type": "application/json", "Authorization": f"Bearer {key}"})
-    try:
-        with urllib.request.urlopen(req, timeout=60) as r:
-            resp = json.loads(r.read())
-    except Exception as exc:                                   # noqa: BLE001
-        raise RuntimeError(f"chamada ao LLM falhou: {exc}") from exc
-
-    # aceita os dois formatos comuns de resposta
-    txt = ""
-    if isinstance(resp.get("content"), list) and resp["content"]:
-        txt = resp["content"][0].get("text", "")
-    elif resp.get("choices"):
-        txt = resp["choices"][0].get("message", {}).get("content", "")
-    m = re.search(r"\{.*\}", txt, re.S)
-    if not m:
-        raise RuntimeError(f"resposta do LLM sem JSON: {txt[:200]}")
-    return _llm_para_score(json.loads(m.group(0)))
+    erro = ""
+    for tentativa in range(TENTATIVAS):
+        r = llm_client.chat_json(LLM_SYSTEM, LLM_SCHEMA_PROMPT + "\n\n" + texto,
+                                 max_tokens=400)
+        CONTADORES["chamadas"] += 1
+        if r.get("ok") and isinstance(r.get("data"), dict):
+            obj = r["data"]
+            _cache_grava(chave, modelo, obj)
+            return _llm_para_score(obj)
+        erro = str(r.get("error") or "resposta sem JSON de objeto")
+        if tentativa < TENTATIVAS - 1:
+            time.sleep(ESPERA_S[min(tentativa, len(ESPERA_S) - 1)])
+    raise RuntimeError(f"chamada ao LLM falhou apos {TENTATIVAS} tentativas: {erro}")
 
 
 # --------------------------------------------------------------- ensemble ---
@@ -329,23 +456,28 @@ def score_ensemble(title: str, body: str | None = None, ticker: str = "") -> dic
     sinais correlacionados nao somam em quadratura.
 
     O que cada um faz melhor:
-      LLM     -- peso. So ele sabe que JCP de banco e rotina esperada e que
-                 leilao de sobras e etapa procedimental de algo ja anunciado.
-      lexico  -- cobertura e custo. Roda offline em toda materia; o LLM custa
-                 por chamada e nao escala para milhares de artigos por dia.
+      LLM     -- leitura. So ele sabe que JCP de banco e rotina esperada, que
+                 leilao de sobras e etapa procedimental de algo ja anunciado,
+                 e que "apesar da resistencia da Petrobras" poe a empresa do
+                 lado perdedor.
+      lexico  -- disponibilidade e custo. Roda offline em toda materia; o LLM
+                 custa por chamada e depende de proxy de pe.
 
-    Entao: o LLM manda no peso, o lexico cobre onde o LLM falha ou nao rodou.
+    Entao: o LLM manda, o lexico cobre onde o LLM falhou ou nao rodou.
 
     O TERCEIRO CAMPO e o que nao existia antes: `desacordo` = quanto o lexico
     grita mais alto que o LLM. Isso mede "parece noticia mas nao e" -- e um
     candidato a feature, principalmente para a cabeca de VOLATILIDADE, e nao
     foi medido ainda.
     """
-    lex = score_lexicon(title, body)
+    # COM o ticker. Sem ele, a perna do lexico perde a heuristica de posicao
+    # no fato e fica mais fraca aqui do que rodando sozinha.
+    lex = score_lexicon(title, body, ticker)
     try:
         llm = score_llm(title, body, ticker)
     except (RuntimeError, NotImplementedError) as exc:
-        lex["raw"] = json.dumps({"fallback": "lexicon", "motivo": str(exc)[:120]})
+        lex["raw"] = json.dumps({"fallback": "lexicon", "motivo": str(exc)[:160]},
+                                ensure_ascii=False)
         lex["desacordo"] = 0.0
         return lex
 
@@ -354,7 +486,10 @@ def score_ensemble(title: str, body: str | None = None, ticker: str = "") -> dic
     out = dict(llm)
     if peso_llm <= 1e-6 and peso_lex > 0.05:
         # o LLM nao viu nada e o lexico viu: mantem o lexico, com peso cortado
-        out = {**lex, "magnitude": round(lex["magnitude"] * 0.4, 4)}
+        out = {**lex, "magnitude": round(lex["magnitude"] * 0.4, 4),
+               "papel_no_fato": llm.get("papel_no_fato"),
+               "ja_precificado": llm.get("ja_precificado"),
+               "is_rumor": llm.get("is_rumor"), "quote": llm.get("quote")}
     out["desacordo"] = round(peso_lex - peso_llm, 4)
     out["raw"] = json.dumps({"lexico": lex, "llm": llm,
                              "peso_lex": round(peso_lex, 4),
@@ -363,6 +498,66 @@ def score_ensemble(title: str, body: str | None = None, ticker: str = "") -> dic
 
 
 SCORERS = {"lexicon": score_lexicon, "llm": score_llm, "ensemble": score_ensemble}
+# Scorers que dependem de rede/proxy. Os outros rodam sempre.
+PRECISAM_LLM = {"llm", "ensemble"}
+# O LEITOR PADRAO. Era "lexicon" ate 2026-10-04; ver o docstring do modulo.
+# Env var em vez de constante editada: a Central de Operacoes e o cron sobem o
+# mesmo codigo, e trocar leitor nao deveria exigir patch.
+SCORER_PADRAO = (os.environ.get("OBS_SCORER") or "llm").strip().lower()
+
+
+def resolver(scorer: str | None = None, verbose: bool = True) -> tuple[str, str]:
+    """Qual scorer vai rodar de fato, e por que.
+
+    DEGRADA, MAS NUNCA EM SILENCIO. Um painel que esvazia porque o proxy caiu
+    e pior que um painel que diz "lendo com o lexico porque o proxy caiu": o
+    primeiro parece "nao houve noticia", que e a conclusao errada mais comum
+    deste projeto (docs/como-usar.md, secao 6).
+    """
+    pedido = (scorer or SCORER_PADRAO).strip().lower()
+    if pedido not in SCORERS:
+        raise ValueError(f"scorer desconhecido: {pedido!r}; "
+                         f"use um de {sorted(SCORERS)}")
+    if pedido not in PRECISAM_LLM:
+        return pedido, "escolhido"
+    ok, motivo = llm_client.enabled()
+    if ok:
+        return pedido, "escolhido"
+    if verbose:
+        print(f"  [score] '{pedido}' indisponivel ({motivo}); "
+              f"lendo com 'lexicon' -- o piso auditavel, nao o produto")
+    return "lexicon", f"'{pedido}' indisponivel: {motivo}"
+
+
+def estado() -> dict:
+    """Quem le a noticia agora, com que cobertura. Alimenta /api/status."""
+    efetivo, motivo = resolver(verbose=False)
+    ok, motivo_llm = llm_client.enabled()
+    out = {"padrao": SCORER_PADRAO, "efetivo": efetivo, "motivo": motivo,
+           "llm_autorizado": ok, "llm_motivo": motivo_llm,
+           "modelo": os.environ.get("OBS_LLM_MODEL") or None,
+           "prompt_versao": PROMPT_VERSAO, "cobertura": {}, "cache": 0,
+           "ultima_rodada": dict(CONTADORES)}
+    try:
+        con = connect()
+        for r in con.execute("SELECT scorer, COUNT(*) n FROM scores "
+                             "GROUP BY scorer ORDER BY n DESC").fetchall():
+            out["cobertura"][r["scorer"]] = r["n"]
+        out["pendentes"] = con.execute(
+            """SELECT COUNT(*) FROM mentions m
+               WHERE m.ticker != '__none__' AND m.relevance >= 0.35
+                 AND NOT EXISTS (SELECT 1 FROM scores s
+                                 WHERE s.article_id=m.article_id
+                                   AND s.ticker=m.ticker AND s.scorer=?)""",
+            (efetivo,)).fetchone()[0]
+        try:
+            out["cache"] = con.execute("SELECT COUNT(*) FROM llm_cache").fetchone()[0]
+        except Exception:                                    # noqa: BLE001
+            out["cache"] = 0
+        con.close()
+    except Exception as exc:                                 # noqa: BLE001
+        out["erro"] = str(exc)[:200]
+    return out
 
 
 # Idiomas que o lexico de fato cobre. POS/NEG/PHRASES tem palavra em portugues
@@ -390,36 +585,133 @@ def _idioma_coberto(lang: str | None, scorer: str) -> bool:
     return not lg or lg in IDIOMAS_LEXICO
 
 
-def run(scorer: str = "lexicon", limit: int = 5000, min_relevance: float = 0.35) -> int:
-    """Pontua pares (artigo, ticker) ainda sem score para este scorer."""
+def _reuso_de_cluster(con, article_id: int, ticker: str, scorer: str,
+                      cluster_id: int | None) -> dict | None:
+    """Leitura ja feita de OUTRA materia do mesmo cluster e mesmo papel.
+
+    Nao e so economia: e o principio do projeto aplicado ao custo. A 20a
+    republicacao do mesmo fato nao e um fato novo -- "copia nao e voto"
+    (docs/psicologia.md). Mandar as 20 copias ao modelo paga 20 leituras para
+    receber a mesma leitura.
+
+    E NAO ha desconto de magnitude aqui: a repeticao ja e descontada uma vez,
+    em `novelty`, no peso da agregacao. Descontar de novo contaria duas vezes.
+    """
+    if cluster_id is None:
+        return None
+    r = con.execute(
+        """SELECT sc.s, sc.magnitude, sc.event_type, sc.papel_no_fato,
+                  sc.ja_precificado, sc.is_rumor, sc.quote, sc.raw, sc.article_id
+           FROM scores sc JOIN articles a ON a.id = sc.article_id
+           WHERE sc.scorer=? AND sc.ticker=? AND a.cluster_id=?
+             AND sc.article_id != ? LIMIT 1""",
+        (scorer, ticker, cluster_id, article_id)).fetchone()
+    if not r:
+        return None
+    try:
+        raw = json.loads(r["raw"] or "{}")
+    except Exception:                                        # noqa: BLE001
+        raw = {}
+    if not isinstance(raw, dict):
+        raw = {"original": raw}
+    raw["reuso_cluster"] = {"cluster_id": cluster_id, "lido_em": r["article_id"]}
+    return {"s": r["s"], "magnitude": r["magnitude"], "event_type": r["event_type"],
+            "papel_no_fato": r["papel_no_fato"], "ja_precificado": r["ja_precificado"],
+            "is_rumor": r["is_rumor"], "quote": r["quote"],
+            "raw": json.dumps(raw, ensure_ascii=False)}
+
+
+def run(scorer: str | None = None, limit: int = 5000, min_relevance: float = 0.35,
+        max_chamadas: int | None = None, verbose: bool = True) -> int:
+    """Pontua pares (artigo, ticker) ainda sem score para este scorer.
+
+    `scorer=None` resolve pelo padrao do projeto (`resolver`). Par que falha
+    fica PENDENTE, nao recebe nota de outro leitor: misturar leitores na mesma
+    coluna `scorer` destruiria a comparacao que justifica a troca. Quem quer
+    piso garantido pede `ensemble`, que cai para o lexico por materia e marca
+    o fallback no `raw`.
+    """
+    scorer, _motivo = resolver(scorer, verbose=verbose)
     fn = SCORERS[scorer]
+    usa_llm = scorer in PRECISAM_LLM
+    teto = (max_chamadas if max_chamadas is not None else MAX_CHAMADAS_PADRAO) \
+        if usa_llm else None
+    _zera_contadores()
+
     con = connect()
     rows = con.execute("""
-        SELECT m.article_id, m.ticker, m.relevance, a.title, a.body, a.lang
+        SELECT m.article_id, m.ticker, m.relevance, a.title, a.body, a.lang,
+               a.cluster_id
         FROM mentions m JOIN articles a ON a.id = m.article_id
         WHERE m.ticker != '__none__' AND m.relevance >= ?
           AND NOT EXISTS (SELECT 1 FROM scores s
                           WHERE s.article_id=m.article_id AND s.ticker=m.ticker AND s.scorer=?)
         ORDER BY a.published_ts DESC LIMIT ?""", (min_relevance, scorer, limit)).fetchall()
 
-    n = pulados = 0
-    with con:
-        for r in rows:
-            if not _idioma_coberto(r["lang"], scorer):
-                pulados += 1
+    n = pulados = falhas = 0
+    seguidas = 0
+    erro_ultimo = ""
+    for r in rows:
+        if not _idioma_coberto(r["lang"], scorer):
+            pulados += 1
+            continue
+        out = None
+        if usa_llm:
+            out = _reuso_de_cluster(con, r["article_id"], r["ticker"], scorer,
+                                    r["cluster_id"])
+            if out is not None:
+                CONTADORES["cluster"] += 1
+        if out is None:
+            if usa_llm and teto is not None and CONTADORES["chamadas"] >= teto:
+                CONTADORES["teto"] += 1
+                continue                 # fica pendente para a proxima rodada
+            try:
+                # TICKER SEMPRE. O lexico tambem o usa (`_posicao_no_fato`), e
+                # por meses esta chamada o omitia: a correcao do caso
+                # ANP/Petrobras existia no codigo e nunca rodava em producao.
+                out = fn(r["title"], r["body"], r["ticker"])
+            except Exception as exc:                         # noqa: BLE001
+                falhas += 1
+                seguidas += 1
+                erro_ultimo = str(exc)[:200]
+                if seguidas >= FALHAS_SEGUIDAS_ABORTA:
+                    print(f"  [score] ABORTADO: {seguidas} falhas seguidas. "
+                          f"Ultimo erro: {erro_ultimo}")
+                    break
                 continue
-            out = fn(r["title"], r["body"], r["ticker"]) \
-                if scorer in ("llm", "ensemble") else fn(r["title"], r["body"])
-            nov = novelty(con, r["article_id"])
+        seguidas = 0
+        nov = novelty(con, r["article_id"])
+        # COMMIT POR LINHA, nao um no fim da rodada. Com o lexico dava na
+        # mesma; com o LLM, cada linha ja foi PAGA -- abortar no meio e perder
+        # a transacao jogaria fora leitura comprada. O cache cobre a releitura,
+        # mas commit por linha e o que garante que a nota ja esta no banco.
+        with con:
             con.execute(
                 "INSERT OR REPLACE INTO scores"
-                "(article_id,ticker,scorer,s,magnitude,event_type,novelty,raw)"
-                " VALUES (?,?,?,?,?,?,?,?)",
+                "(article_id,ticker,scorer,s,magnitude,event_type,novelty,"
+                " papel_no_fato,ja_precificado,is_rumor,quote,raw)"
+                " VALUES (?,?,?,?,?,?,?,?,?,?,?,?)",
                 (r["article_id"], r["ticker"], scorer, out["s"], out["magnitude"],
-                 out["event_type"], nov, out.get("raw")))
-            n += 1
+                 out["event_type"], nov, out.get("papel_no_fato"),
+                 out.get("ja_precificado"), out.get("is_rumor"),
+                 out.get("quote"), out.get("raw")))
+        n += 1
     con.close()
-    if pulados:
-        print(f"  [score] {pulados} pulados por idioma fora do lexico "
-              f"(use --scorer llm para esses)")
+
+    CONTADORES["falhas"] = falhas
+    if verbose:
+        if pulados:
+            print(f"  [score] {pulados} pulados por idioma fora do lexico "
+                  f"(use --scorer llm para esses)")
+        if usa_llm:
+            print(f"  [score] leitor={scorer} chamadas={CONTADORES['chamadas']} "
+                  f"cache={CONTADORES['cache']} reuso_cluster={CONTADORES['cluster']} "
+                  f"falhas={falhas}")
+            if CONTADORES["teto"]:
+                print(f"  [score] {CONTADORES['teto']} pares deixados para a "
+                      f"proxima rodada (teto de {teto} chamadas; "
+                      f"OBS_LLM_MAX_CHAMADAS muda isso)")
+        if falhas:
+            print(f"  [score] {falhas} par(es) SEM nota -- ficam pendentes. "
+                  f"Ultimo erro: {erro_ultimo}")
     return n

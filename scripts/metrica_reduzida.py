@@ -6,9 +6,10 @@ A leitura unitaria sugeriu duas coisas:
 Aqui testa-se cada subconjunto e poe-se intervalo de confianca na precisao
 operacional, que e o numero que o usuario le como "acertos em 100".
 """
+import os
 import sys
 
-sys.path.insert(0, "/mnt/nvmep2/home/rtnati/Downloads/projeto_final/observatorio")
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import numpy as np                                            # noqa: E402
 
 from obs import volatility as vol                             # noqa: E402

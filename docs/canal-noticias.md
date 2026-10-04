@@ -118,9 +118,52 @@ Se texto completo, entidade, clusterização e materialidade não gerarem ganho 
 
 ## Ordem prática
 
-1. Coletar corpos e timestamps confiáveis.
-2. Rotular 3.000–10.000 artigos com schema estruturado e amostra humana de auditoria.
-3. Rodar baseline léxico.
-4. Rodar LLM somente como rotulador/extrator.
-5. Destilar para modelo menor ou regras auditáveis.
-6. Medir primeiro volatilidade e materialidade; só depois direção.
+| # | passo | estado em 2026-10-04 |
+|---|---|---|
+| 1 | coletar corpos e timestamps confiáveis | timestamps sim; **corpo ainda não** (GDELT só dá título) |
+| 2 | rotular 3.000–10.000 artigos com schema estruturado e amostra humana de auditoria | schema sim; **amostra humana não existe** |
+| 3 | rodar baseline léxico | feito — 778 pares no banco |
+| 4 | **rodar LLM como rotulador/extrator** | **implementado, não validado** |
+| 5 | destilar para modelo menor ou regras auditáveis | não iniciado |
+| 6 | medir primeiro volatilidade e materialidade; só depois direção | regra em vigor |
+
+### O ponto 4, em 2026-10-04
+
+O LLM é o leitor padrão da notícia (`obs/score.py: SCORER_PADRAO = "llm"`). O
+léxico fica como piso auditável e como rede quando não há proxy autorizado —
+caindo **com aviso**, nunca em silêncio. Ver `docs/parecer.md`, seção 4, para o
+porquê, e `docs/decision-log.md` para a decisão.
+
+A extração estruturada virou coluna em `scores`: `papel_no_fato`,
+`ja_precificado`, `is_rumor`, `quote`. É o que torna o ponto 4 mensurável —
+feature enterrada em JSON não entra num `GROUP BY` contra retorno realizado.
+
+### O que NÃO foi resolvido pela troca de leitor
+
+**O gabarito do ponto 2 continua faltando, e é ele que falta mais.** A medição
+que existia (`data/ouro_llm.log`: léxico 87,8 × LLM 53,9 em 115 casos) é
+**circular** — 93 dos 115 casos vêm de uma regra cujos cinco termos estão no
+dicionário `POS` do léxico, onde ele acerta 98,9 em 100; nas outras oito regras
+cai a 50,0. Dezesseis daqueles 93 são lista de recomendação, em que a empresa é
+apenas citada e o gabarito está errado para o alvo transversal. Detalhe e
+números em `docs/parecer.md`, seção 4.3, e no docstring de
+`scripts/ouro_llm.py`.
+
+O juiz válido é retorno realizado:
+
+```bash
+python3 scripts/evento_noticia.py --scorer lexicon --scorer llm
+```
+
+Compara os dois nas MESMAS células (papel, minuto), mantendo as células de
+força zero — é onde a cegueira de um leitor aparece. Precisa de n ≥ 120
+células; hoje há 77, logo o resultado é descritivo.
+
+### Contaminação: o limite de onde o LLM entra
+
+Ao vivo, o leitor é o LLM — a notícia é de hoje e o desfecho ainda não existe.
+No **backfill de 10 anos** o padrão continua o léxico: um modelo com cutoff
+conhece o desfecho das manchetes antigas, e é desse corpus que saem os rótulos
+que destravam a calibração. Pontuar histórico com LLM exige `--scorer llm`
+explícito e imprime aviso. Validação do canal de texto, só em janela posterior
+ao cutoff.

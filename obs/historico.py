@@ -106,11 +106,31 @@ def _dias_com_noticia(con, dias: int) -> list[str]:
     return sorted(pregoes & com_news)
 
 
-def reconstruir(dias: int = 365, scorer: str = "lexicon",
+# O historico e o unico lugar do projeto onde o lexico segue sendo o PADRAO,
+# e nao por economia. Um modelo com cutoff ja sabe o que aconteceu com o papel
+# depois da manchete de 2019: lendo 10 anos de titulo ele pode estar lembrando
+# do desfecho em vez de lendo o texto, e e justamente desse corpus que saem os
+# rotulos que destravam a calibracao. Acuracia alta obtida assim nao prova
+# previsao -- prova vazamento.
+AVISO_LLM_HISTORICO = (
+    "  [backfill] AVISO: pontuando HISTORICO com LLM. Um modelo com cutoff ja\n"
+    "  conhece o desfecho das materias antigas, entao o resultado NAO vale\n"
+    "  como evidencia de previsao -- so como amostra de auditoria de leitura.\n"
+    "  A validacao do canal de texto exige janela POSTERIOR ao cutoff\n"
+    "  (docs/validacao.md, docs/canal-noticias.md).")
+
+
+def reconstruir(dias: int = 365, scorer: str | None = None,
                 verbose: bool = True) -> int:
     """Grava um sinal por (papel, dia de pregao com noticia), com asof no
     fechamento daquele dia. Nao recalibra nada; so produz o insumo do rotulo."""
     con = connect()
+    # UM leitor para a serie inteira. Reconstruir metade da historia com um
+    # leitor e metade com outro produziria um `z` cuja escala muda no meio da
+    # amostra -- e o calibrador trataria a mudanca de leitor como sinal.
+    scorer, motivo = aggregate.escolher_scorer(con, scorer)
+    if verbose and motivo != "escolhido":
+        print(f"  [backfill] lendo com '{scorer}': {motivo}")
     try:
         from .label import abnormal_returns
         ab = abnormal_returns(con)
@@ -154,7 +174,7 @@ def reconstruir(dias: int = 365, scorer: str = "lexicon",
 
 
 def preparar(dias: int = 365, baixar: bool = True, horizonte: int = 1,
-             verbose: bool = True) -> dict:
+             verbose: bool = True, scorer: str = "lexicon") -> dict:
     """Cadeia inteira: backfill -> mencoes -> cluster -> score -> sinais -> rotulos.
 
     Nao chama `calibrate`: a decisao de abrir a porta fica com o usuario, que
@@ -172,11 +192,14 @@ def preparar(dias: int = 365, baixar: bool = True, horizonte: int = 1,
     # entraria com o mesmo peso da primeira reportagem.
     out["clusters"] = dedupe.cluster_historico(verbose=verbose)
     from . import score
-    out["pontuados"] = score.run(scorer="lexicon")
+    if scorer in score.PRECISAM_LLM and verbose:
+        print(AVISO_LLM_HISTORICO)
+    out["pontuados"] = score.run(scorer=scorer)
+    out["scorer"] = scorer
     if verbose:
         print(f"  mencoes={out['mencoes']} pontuados={out['pontuados']}")
         print("== 3. Reconstrucao dos sinais passados ==")
-    out["sinais"] = reconstruir(dias, verbose=verbose)
+    out["sinais"] = reconstruir(dias, scorer=scorer, verbose=verbose)
     if verbose:
         print("== 4. Rotulagem ==")
     out["rotulos"] = label.build(horizon_days=horizonte)

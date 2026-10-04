@@ -32,6 +32,27 @@ Retorna os alarmes registrados.
 ### `GET /api/status`
 Retorna saúde do pipeline, métricas e status das camadas.
 
+Inclui `scorer`, com quem lê a notícia agora:
+
+```json
+"scorer": {
+  "padrao": "llm",
+  "efetivo": "lexicon",
+  "motivo": "'llm' indisponivel: OBS_ALLOW_EXTERNAL_LLM=1 não autorizado",
+  "llm_autorizado": false,
+  "modelo": null,
+  "prompt_versao": "2026-10-04.1",
+  "cobertura": {"lexicon": 778},
+  "pendentes": 0,
+  "validado": false
+}
+```
+
+**Atenção:** `padrao` diferente de `efetivo` significa que o sistema degradou —
+o painel mostra o motivo colado ao cartão de notícias, não em nota de rodapé.
+`validado: false` é o estado correto do leitor novo: a troca é decisão de
+leitura, não evidência medida.
+
 ## Contrato de transparência
 
 Todo endpoint que devolve valor experimental deve expor:

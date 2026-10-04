@@ -17,9 +17,10 @@ Por isso a secao operacional reporta PRECISAO NO TOPO: dos dias que o sistema
 aponta como mais agitados, quantos de fato foram. E compara com a taxa-base,
 que e o que voce teria acertando no chute.
 """
+import os
 import sys
 
-sys.path.insert(0, "/mnt/nvmep2/home/rtnati/Downloads/projeto_final/observatorio")
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import bisect                                                 # noqa: E402
 import math                                                   # noqa: E402
 

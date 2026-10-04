@@ -16,7 +16,7 @@ Peso de cada noticia (a releitura moderna do seu TCC):
 from __future__ import annotations
 import math
 
-from . import config
+from . import config, score as score_mod
 from .calibrate import probabilities
 from .volatility import vol_probability
 from .db import connect
@@ -43,10 +43,50 @@ def source_weight(domain: str, src_cfg: dict) -> float:
     return float(src_cfg.get("domains", {}).get(domain, src_cfg.get("default_weight", 0.35)))
 
 
-def compute(ticker: str, scorer: str = "lexicon", asof: int | None = None,
+def escolher_scorer(con=None, scorer: str | None = None, asof: int | None = None,
+                    window_h: int = WINDOW_H) -> tuple[str, str]:
+    """Quem le a noticia nesta rodada, resolvendo DUAS perguntas distintas.
+
+    1. AUTORIZACAO: o leitor pedido esta disponivel? (obs/score.py:resolver)
+    2. COBERTURA: ele tem nota gravada na janela? Trocar o leitor padrao de
+       `lexicon` para `llm` em banco com 50 mil scores do lexico esvaziaria o
+       painel inteiro -- `aggregate` filtra por `sc.scorer=?` e nao acharia
+       linha nenhuma. O painel vazio se le como "nao houve noticia", que e o
+       erro de leitura mais caro deste projeto (docs/como-usar.md, secao 6).
+
+    Entao: se o leitor pedido nao tem nota na janela e o lexico tem, usa o
+    lexico e DIZ que usou (o motivo volta junto, vai para /api/status e para a
+    coluna signals.scorer). A escolha e UMA por rodada, nunca por papel:
+    `z` e `dispersion` sao comparados entre papeis, e misturar leitores na
+    mesma tela tornaria a comparacao sem sentido.
+    """
+    efetivo, motivo = score_mod.resolver(scorer, verbose=False)
+    proprio = con is None
+    con = con or connect()
+    try:
+        asof = asof or now_ts()
+        desde = asof - window_h * 3600
+        q = ("SELECT COUNT(*) FROM scores sc JOIN articles a ON a.id=sc.article_id"
+             " WHERE sc.scorer=? AND a.published_ts <= ? AND a.published_ts > ?")
+        n = con.execute(q, (efetivo, asof, desde)).fetchone()[0]
+        if n == 0 and efetivo != "lexicon":
+            n_lex = con.execute(q, ("lexicon", asof, desde)).fetchone()[0]
+            if n_lex > 0:
+                return "lexicon", (f"'{efetivo}' sem nota na janela de "
+                                   f"{window_h}h; {n_lex} do lexico")
+    except Exception:                                        # noqa: BLE001
+        pass
+    finally:
+        if proprio:
+            con.close()
+    return efetivo, motivo
+
+
+def compute(ticker: str, scorer: str | None = None, asof: int | None = None,
             window_h: int = WINDOW_H, ab: dict | None = None,
             drv_vol: dict | None = None, vol_cal: dict | None = None) -> dict:
     asof = asof or now_ts()
+    scorer = scorer or score_mod.resolver(verbose=False)[0]
     src_cfg = config.sources()
     con = connect()
 
@@ -145,7 +185,7 @@ def compute(ticker: str, scorer: str = "lexicon", asof: int | None = None,
     con.close()
 
     items.sort(key=lambda d: -d["w"])
-    return {"ticker": ticker, "asof_ts": asof, "z": round(z, 4),
+    return {"ticker": ticker, "asof_ts": asof, "z": round(z, 4), "scorer": scorer,
             "n_eff": round(den, 4), "dispersion": round(dispersion, 4),
             "n_articles": len(items), "items": items[:12],
             "n_roteadas": sum(1 for i in items if i.get("driver")),
@@ -153,10 +193,14 @@ def compute(ticker: str, scorer: str = "lexicon", asof: int | None = None,
             "surpresa_peso": round(surp_peso, 4), **probs, **vol}
 
 
-def run(scorer: str = "lexicon", asof: int | None = None) -> list[dict]:
+def run(scorer: str | None = None, asof: int | None = None,
+        verbose: bool = True) -> list[dict]:
     asof = asof or now_ts()
     out = []
     con = connect()
+    scorer, motivo_scorer = escolher_scorer(con, scorer, asof)
+    if verbose and motivo_scorer != "escolhido":
+        print(f"  [sinal] lendo com '{scorer}': {motivo_scorer}")
     # retornos anormais calculados UMA vez por rodada (ver vol_probability)
     try:
         from .label import abnormal_returns
@@ -173,12 +217,12 @@ def run(scorer: str = "lexicon", asof: int | None = None) -> list[dict]:
                 INSERT OR REPLACE INTO signals
                 (ticker,asof_ts,z,n_eff,dispersion,p_up,p_flat,p_down,
                  base_up,base_flat,base_down,calibrated,n_articles,
-                 p_vol,vol_base,vol_calib)
-                VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
+                 p_vol,vol_base,vol_calib,scorer)
+                VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
                 (sig["ticker"], sig["asof_ts"], sig["z"], sig["n_eff"], sig["dispersion"],
                  sig["p_up"], sig["p_flat"], sig["p_down"], sig["base_up"],
                  sig["base_flat"], sig["base_down"], sig["calibrated"], sig["n_articles"],
-                 sig.get("p_vol"), sig.get("vol_base"), sig.get("vol_calib", 0)))
+                 sig.get("p_vol"), sig.get("vol_base"), sig.get("vol_calib", 0), scorer))
             out.append(sig)
     con.close()
     faixas(out)          # agitacao sem calibrador -> faixa ordinal, nunca %

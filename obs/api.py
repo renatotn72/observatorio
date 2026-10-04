@@ -22,13 +22,16 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import parse_qs, urlparse
 
 from . import (aggregate, alarms as alarm_mod, config, contabil, drivers,
-               externo, medidas, notify, pergunta, reports, surpresa, ops)
+               externo, medidas, notify, pergunta, reports, surpresa, ops,
+               score as score_mod)
 from .config import ROOT
 from .db import connect
 from .dedupe import cluster_size
 from .util import iso
 
-SCORER = "lexicon"
+# Resolvido em serve(); None = decide na hora pelo padrao do projeto
+# (obs/score.py:resolver) e pela cobertura (aggregate.escolher_scorer).
+SCORER = None
 
 # O painel atualiza a cada 2 min e pode estar aberto em varias abas. Com uma
 # watchlist grande (centenas de papeis) recalcular tudo a cada GET e caro, e
@@ -42,8 +45,8 @@ def _signals():
     with _SIG_LOCK:
         if _SIG_CACHE["data"] is not None and time.time() - _SIG_CACHE["ts"] < SIGNALS_TTL_S:
             return _SIG_CACHE["data"]
-        sigs = aggregate.run(scorer=SCORER)
-        ev = alarm_mod.evaluate(sigs, scorer=SCORER)
+        sigs = aggregate.run(scorer=SCORER, verbose=False)
+        ev = alarm_mod.evaluate(sigs, scorer=_scorer_ativo())
         if ev:
             notify.deliver(ev)
         meta = config.tickers()
@@ -125,7 +128,7 @@ def _cadeia(tkr: str) -> dict | None:
 
 
 def _ticker(tkr: str, hid: str | None) -> dict:
-    d = aggregate.compute(tkr, scorer=SCORER)
+    d = aggregate.compute(tkr, scorer=_scorer_ativo())
     # faixa ordinal da agitacao e relativa a watchlist: vem do lote completo
     lote = {s["ticker"]: s for s in _signals()}
     if tkr in lote:
@@ -278,7 +281,7 @@ def _chart_diario(tkr: str, dias: int) -> dict:
         JOIN mentions m ON m.article_id=sc.article_id AND m.ticker=sc.ticker
         JOIN articles a ON a.id=sc.article_id
         WHERE sc.ticker=? AND sc.scorer=? AND a.published_ts>=?
-        ORDER BY a.published_ts""", (tkr, SCORER, since_ts)).fetchall()
+        ORDER BY a.published_ts""", (tkr, _scorer_ativo(), since_ts)).fetchall()
     news = []
     for r in rows:
         w = (aggregate.source_weight(r["domain"], src_cfg) * r["relevance"]
@@ -291,7 +294,7 @@ def _chart_diario(tkr: str, dias: int) -> dict:
     con.close()
     m = config.tickers().get(tkr, {}) or {}
     return {"ticker": tkr, "name": m.get("name", tkr), "sector": m.get("sector"),
-            "dias": dias, "scorer": SCORER, "prices": prices, "news": news,
+            "dias": dias, "scorer": _scorer_ativo(), "prices": prices, "news": news,
             # datas REAIS de divulgacao de resultado (protocolo na CVM), para
             # o grafico marcar. Diferente da data do IPCA, que e aproximada.
             "divulgacoes": contabil.calendario(tkr)}
@@ -304,6 +307,16 @@ def _alarm_list(limit=40):
         " ORDER BY ts DESC LIMIT ?", (limit,)).fetchall()
     con.close()
     return [{**dict(r), "when": iso(r["ts"])} for r in rows]
+
+
+def _scorer_ativo() -> str:
+    """O leitor que de fato responde a esta requisicao.
+
+    Nao e constante: o proxy pode ter caido depois do `serve`, e a cobertura
+    muda conforme a pontuacao avanca. Resolver por requisicao custa duas
+    contagens no SQLite e evita a tela vazia que se le como "nao ha noticia".
+    """
+    return aggregate.escolher_scorer(scorer=SCORER)[0]
 
 
 def _status():
@@ -341,6 +354,16 @@ def _status():
                       "calibrador": vol,
                       "como_calibrar": "python3 -m obs.cli calibrate-vol"}
     st["surpresa"] = surpresa.estado()
+    # QUEM LE A NOTICIA. Vai para a tela porque a troca de leitor muda o que
+    # `z` significa: a mesma manchete pontuada pelo lexico e pelo LLM nao da o
+    # mesmo numero, e o painel nao pode esconder qual dos dois produziu a
+    # coluna. `validado: False` e deliberado -- o ganho incremental do leitor
+    # novo ainda nao foi medido (scripts/ouro_llm.py).
+    st["scorer"] = {**score_mod.estado(), "validado": False,
+                    "nota": ("troca de leitor mede-se por ganho incremental "
+                             "fora da amostra; rode scripts/ouro_llm.py e "
+                             "scripts/evento_noticia.py antes de tratar o "
+                             "LLM como melhoria comprovada")}
     st["medidas"] = medidas.MEDIDAS
     st["horizontes"] = medidas.HORIZONTES
     # PORTAS POR CABECA. Sem isto o front escrevia o criterio a mao e errava:
@@ -513,7 +536,7 @@ class Handler(BaseHTTPRequestHandler):
             return self._json({"error": str(exc)}, 400)
 
 
-def serve(port: int = 8000, scorer: str = "lexicon"):
+def serve(port: int = 8000, scorer: str | None = None):
     global SCORER
     SCORER = scorer
     srv = ThreadingHTTPServer(("127.0.0.1", port), Handler)

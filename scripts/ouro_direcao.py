@@ -19,9 +19,10 @@ O que nao casa com regra nenhuma fica FORA do conjunto-ouro. Preencher a
 amostra com caso duvidoso rotulado no chute inflaria a acuracia das duas
 medicoes e esconderia a diferenca entre elas.
 """
+import os
 import sys
 
-sys.path.insert(0, "/mnt/nvmep2/home/rtnati/Downloads/projeto_final/observatorio")
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import re                                                     # noqa: E402
 
 from obs.db import connect                                    # noqa: E402

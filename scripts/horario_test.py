@@ -15,9 +15,10 @@ ALINHAMENTO: so barras dentro do pregao da B3, e retorno de barra para barra
 descartando buraco maior que 4h -- senao o gap de abertura entra disfarcado
 de movimento horario.
 """
+import os
 import sys
 
-sys.path.insert(0, "/mnt/nvmep2/home/rtnati/Downloads/projeto_final/observatorio")
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import math                                                   # noqa: E402
 import random                                                 # noqa: E402
 

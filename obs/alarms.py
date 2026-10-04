@@ -52,7 +52,26 @@ def _has_novelty(con, ticker: str, scorer: str, window_h: int = 36,
     return bool(row and row["c"] > 0)
 
 
-def evaluate(signals: list[dict], scorer: str = "lexicon") -> list[dict]:
+def evaluate(signals: list[dict], scorer: str | None = None) -> list[dict]:
+    """Avalia as portas e devolve o que disparou.
+
+    `scorer` identifica QUEM LEU, e isso nao e cosmetico: a porta de novidade
+    consulta `scores` filtrando por `sc.scorer=?`. Scorer errado -- ou None --
+    nao acha linha nenhuma, e ai TODO alarme e barrado em silencio, como se
+    nunca houvesse primeira reportagem.
+
+    A ordem de resolucao vai do mais confiavel ao mais geral:
+      1. o que o chamador pediu;
+      2. o que esta gravado no proprio sinal (`aggregate` carimba `scorer`) --
+         e a resposta certa, porque a porta tem de olhar as notas que
+         produziram aquele sinal, nao as do leitor da moda;
+      3. o padrao do projeto.
+    """
+    if not scorer:
+        scorer = next((s.get("scorer") for s in signals if s.get("scorer")), None)
+    if not scorer:
+        from . import score as _score
+        scorer = _score.resolver(verbose=False)[0]
     cfg = config.alarms()
     con = connect()
     fired = []

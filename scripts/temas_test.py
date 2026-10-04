@@ -25,9 +25,10 @@ NULO POR PERMUTACAO: embaralha os sinais entre os papeis, preservando quantos
 sao + e quantos sao -. Se o IC sobreviver a isso, nao era o sinal que
 importava.
 """
+import os
 import sys
 
-sys.path.insert(0, "/mnt/nvmep2/home/rtnati/Downloads/projeto_final/observatorio")
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import math                                                   # noqa: E402
 import random                                                 # noqa: E402
 import statistics as st                                       # noqa: E402

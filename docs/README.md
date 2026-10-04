@@ -1,6 +1,6 @@
 # Documentação do Observatório de Ações
 
-**Versão documental:** 1 de outubro de 2026  
+**Versão documental:** 4 de outubro de 2026  
 **Escopo:** arquitetura, fontes, validação, métricas, decisões, API, canal de notícias e camadas macro.
 
 ## Como ler esta documentação
@@ -16,6 +16,8 @@ A documentação separa quatro estados:
 
 ## Mapa de documentos
 
+- [Parecer técnico](parecer.md): leitura crítica do projeto inteiro, placar da
+  evidência e a decisão sobre quem lê a notícia (4 de outubro de 2026).
 - [Arquitetura](arquitetura.md): pipeline, armazenamento e agregação.
 - [Fontes de dados](fontes-de-dados.md): origem, papel e limitações.
 - [Validação](validacao.md): protocolo anti-vazamento e critérios de aceite.

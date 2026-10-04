@@ -10,9 +10,10 @@ Mede tres coisas:
   2. ganho sobre o chute, em pontos percentuais e em multiplo
   3. o ganho AGREGADO, que e a resposta a "quanto o sistema ajuda no total"
 """
+import os
 import sys
 
-sys.path.insert(0, "/mnt/nvmep2/home/rtnati/Downloads/projeto_final/observatorio")
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import math                                                   # noqa: E402
 
 import numpy as np                                            # noqa: E402

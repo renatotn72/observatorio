@@ -5,9 +5,10 @@ melhor e p-hacking: com seis tentativas independentes a p=0.05, a chance de
 alguma passar por acaso e ~26%. Entao a leitura correta e a tabela toda, com
 o alerta de multiplicidade embaixo.
 """
+import os
 import sys
 
-sys.path.insert(0, "/mnt/nvmep2/home/rtnati/Downloads/projeto_final/observatorio")
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from obs import assimetria as A                              # noqa: E402
 
 GRADE = [

@@ -28,6 +28,57 @@ e são 10 papéis mais as consultas roteadas. Rodando à mão você desiste no m
 conclui que não há notícia. Enfileire `refresh_news` na Central e deixe o worker
 levar — ele tem 30 min de folga por job.
 
+## 1.1 Quem lê a notícia (mudou em 4/10/2026)
+
+O leitor padrão é o **LLM**. Confira antes de concluir qualquer coisa do painel:
+
+```bash
+python3 -m obs.cli score-estado
+```
+
+```text
+leitor padrao   : llm
+leitor efetivo  : lexicon  ('llm' indisponivel: OBS_ALLOW_EXTERNAL_LLM=1 não autorizado)
+```
+
+Duas linhas, porque são duas coisas diferentes. **Efetivo** é quem leu de fato.
+Sem proxy autorizado o sistema cai para o léxico e **diz que caiu** — no
+terminal, em `/api/status` e no cartão "Notícias" do painel. Painel que esvazia
+em silêncio se lê como "não houve notícia", e essa é a conclusão errada mais
+cara deste projeto (seção 6).
+
+`scripts/iniciar.sh` já exporta as quatro variáveis quando sobe o proxy. À mão:
+
+```bash
+export OBS_ALLOW_EXTERNAL_LLM=1
+export OBS_LLM_URL="http://127.0.0.1:8100/v1/chat/completions"
+export OBS_LLM_KEY="local-proxy-client"
+export OBS_LLM_MODEL="sai-dev-gpt5"
+```
+
+Para fixar o léxico sem desligar o proxy: `export OBS_SCORER=lexicon`, ou
+`--scorer lexicon` no comando.
+
+### Custo, e por que ele não explode
+
+Cada matéria **inédita** vale uma chamada. Três mecanismos seguram o resto:
+
+| mecanismo | efeito |
+| --- | --- |
+| cache (`llm_cache`) | repontuar não paga releitura — e repontuar é rotina aqui (`limpar --aplicar`) |
+| reuso por cluster | a 20ª republicação não paga leitura nova; "cópia não é voto" |
+| teto por rodada | `OBS_LLM_MAX_CHAMADAS` (padrão 400); o resto fica pendente para a próxima |
+
+O que **não** muda de leitor: o `backfill`. Pontuar 10 anos de manchete com um
+modelo que já sabe o desfecho contamina o backtest, então ali o padrão continua
+o léxico e `--scorer llm` imprime aviso.
+
+### O que a troca de leitor NÃO faz
+
+Não cria previsão de direção. A direção foi reprovada em 6 de 6 testes, e o
+canal testado ali era o de drivers — sem texto. O leitor novo lê melhor; não
+adivinha melhor. Ver `docs/parecer.md`, seção 4.4.
+
 ## 2. O que já funciona hoje
 
 **Agitação** é a única cabeça calibrada: AUC 0,590 fora da amostra, 8 anos,
@@ -97,6 +148,7 @@ Na Central de Operações, ligue:
 | Job | Quando |
 | --- | --- |
 | Atualizar notícias | 15 min, dias úteis, horário de pregão |
+| Pontuar notícias | depois da coleta (mesmo grupo, então ele espera) |
 | Atualizar preços | após o fechamento |
 | Atualizar drivers | diário |
 | Descobrir documentos de RI | diário |
@@ -129,8 +181,8 @@ Três casos já medidos neste projeto:
 - A Reuters devolve **401**, não 403: o RSS público foi descontinuado e virou
   licença. Não é bloqueio anti-bot, não há o que contornar.
 
-E um caso pior que fonte vazia — **fonte que mente**. A mesma notícia de
-desastre pontuava:
+E um caso pior que fonte vazia — **fonte que mente**. Com o léxico, a mesma
+notícia de desastre pontuava:
 
 | idioma | nota |
 | --- | --- |
@@ -143,6 +195,11 @@ O francês inverte o sinal porque `perte record` casa com o `record` positivo do
 inglês. Idioma vizinho é pior que idioma distante: gera falso positivo em vez
 de silêncio. Por isso existe a porta `IDIOMAS_LEXICO` em `obs/score.py`, e por
 isso o idioma passou a ser lido do feed em vez de fixo no código.
+
+Este caso é uma das razões da troca de leitor: o LLM lê o idioma e não precisa
+dessa porta. Mas repare no que a porta protege — **com o léxico, matéria em
+idioma não coberto é pulada**, e `score-estado` mostra isso como pendente. Se o
+leitor efetivo caiu para o léxico, parte das matérias não entra.
 
 Antes de concluir que não há notícia, confira quantos artigos entraram:
 

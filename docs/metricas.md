@@ -134,6 +134,67 @@ No histórico de referência:
 
 Esses números não representam retorno líquido, pois custo, spread, impacto e janela de execução podem consumir a vantagem.
 
+## Léxico x LLM — medição pendente, e a que foi retirada (2026-10-04)
+
+O leitor padrão da notícia passou a ser o LLM. **O ganho não foi medido**, e a
+medição que existia não serve para a pergunta.
+
+### A que foi retirada de circulação
+
+`data/ouro_llm.log`, 115 casos de conjunto-ouro:
+
+| leitor | acertos | em 100 |
+|---|---|---|
+| léxico | 101 | 87,8 |
+| LLM | 62 | 53,9 |
+
+Gabarito **circular**. Medido sobre os mesmos 115 casos:
+
+| fatia | n | léxico |
+|---|---|---|
+| regra "provento ou recompra" — termos `dividendo`, `dividendos`, `jcp`, `proventos`, `recompra`, todos no `POS` do léxico | 93 (81%) | **98,9 em 100** |
+| as outras oito regras | 22 | **50,0 em 100** |
+
+Dezesseis dos 93 casos da fatia dominante são lista de recomendação ("5 ações
+para investir em outubro e embolsar dividendos"), em que a empresa é apenas
+citada e o gabarito +1 está errado para o alvo transversal. O LLM devolve ~0 e
+é contado como erro.
+
+Medir leitor de notícia contra gabarito de palavra-chave mede **concordância
+com o léxico**, não acerto.
+
+### Segundo sinal: o gabarito não aponta para o alvo
+
+Força do léxico (`s × magnitude`) contra retorno residual realizado nos minutos
+seguintes à publicação, células (papel, minuto) independentes:
+
+| janela | IC | p | n |
+|---|---|---|---|
+| 1 min | +0,0234 | 0,850 | 77 |
+| 5 min | −0,0996 | 0,373 | 77 |
+| 15 min | −0,0707 | 0,513 | 77 |
+| 30 min | +0,0600 | 0,612 | 77 |
+| 60 min | +0,0104 | 0,927 | 77 |
+
+**DESCRITIVO**: n = 77, abaixo do mínimo de 120 do próprio script. Mas 87,8 em
+100 no gabarito convivendo com IC indistinguível de zero contra preço é o
+retrato de um gabarito que não mede o que importa.
+
+### Como a pergunta se resolve
+
+```bash
+python3 scripts/evento_noticia.py --scorer lexicon --scorer llm
+```
+
+Mesmas células para os dois leitores, células de força zero mantidas (é onde a
+cegueira de um leitor aparece), retorno residual realizado como juiz.
+
+Critério de aceite, pelas portas de `docs/validacao.md`: ganho incremental de
+IC/AUC fora da amostra sobre o leitor atual, sem degradação de Brier skill,
+decis monotônicos, sobrevivência à permutação e ao agrupamento por dia e
+cluster — **em janela posterior ao cutoff do modelo**. Até lá o estado é
+*implementado, não validado*, e `/api/status.scorer` devolve `validado: false`.
+
 ## Métricas de notícia
 
 Para o canal de texto, medir adicionalmente:

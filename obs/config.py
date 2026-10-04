@@ -7,7 +7,12 @@ import yaml
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 CONFIG_DIR = ROOT / "config"
 DATA_DIR = ROOT / "data"
-DB_PATH = DATA_DIR / "observatorio.db"
+# OBS_DB existe para rodar contra banco ISOLADO (verificacao de caminho em
+# scripts/test_*.py). Sem ela, um teste que grava score ou job escreveria no
+# banco de medicao -- e dado de teste misturado com dado de medicao e
+# exatamente a categoria 4 de obs/limpeza.py.
+DB_PATH = (pathlib.Path(os.environ["OBS_DB"]).expanduser()
+           if os.environ.get("OBS_DB") else DATA_DIR / "observatorio.db")
 
 
 def _load(name: str) -> dict:

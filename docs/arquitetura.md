@@ -13,7 +13,7 @@ Fontes de notícias ─┐
                     ├─> ingestão ─> entidade/relevância ─> deduplicação
 Drivers de mercado ─┘                                      │
                                                            v
-                                         score estruturado / léxico
+                             leitura: LLM (padrão) | léxico (piso/rede)
                                                            │
                                cadeia de afetação ─> roteamento de consultas
                                                            │
@@ -39,11 +39,22 @@ Drivers de mercado ─┘                                      │
    - SimHash, Jaccard e impressão numérica agrupam repercussões.
    - O primeiro relato e confirmações independentes são mais informativos que republicações idênticas.
 
-4. **Score de notícia**
-   - `obs/score.py` produz sempre o mesmo schema:
+4. **Leitura da notícia** (quem pontua)
+   - `obs/score.py` produz sempre o mesmo schema, qualquer que seja o leitor:
      `s` (direção), `magnitude` e `event_type`.
-   - O baseline é léxico PT+EN, com negação, expressões de múltiplas palavras e desconto para rumor.
-   - O LLM, quando habilitado, é sensor de fatos estruturados; ele não deve prever preço.
+   - **Desde 2026-10-04 o leitor padrão é o LLM** (`SCORER_PADRAO = "llm"`,
+     sobrescrito por `OBS_SCORER`). Ele preenche também `papel_no_fato`,
+     `ja_precificado`, `is_rumor` e `quote`, que são colunas de `scores`.
+   - O **léxico** PT+EN continua, com dois papéis: piso auditável contra o qual
+     o ganho do LLM é medido, e rede quando não há proxy autorizado. A queda
+     para o léxico é sempre anunciada — terminal, `/api/status.scorer` e painel.
+   - O LLM é **sensor de fatos estruturados; não prevê preço**. O prompt proíbe
+     pedir data, preço ou desfecho (`docs/decision-log.md`).
+   - No **backfill histórico** o padrão permanece o léxico, por contaminação:
+     um modelo com cutoff conhece o desfecho da manchete antiga. Ver
+     `docs/canal-noticias.md`.
+   - Estado da evidência: **implementado, não validado**. O ganho de leitura
+     ainda não foi medido contra retorno realizado (`docs/parecer.md`, seção 4).
 
 5. **Cadeia de afetação**
    - `obs/drivers.py` estima exposição por regressão ridge usando somente dados anteriores ao ponto `asof`.

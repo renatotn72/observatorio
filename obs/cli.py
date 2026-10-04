@@ -11,6 +11,14 @@ from .config import tickers
 from .db import connect
 from .util import iso, now_ts
 
+SCORERS_CLI = ["lexicon", "llm", "ensemble"]
+AJUDA_SCORER = ("quem le a noticia; vazio = padrao do projeto (llm, ou "
+                "OBS_SCORER). Sem proxy autorizado, cai para lexicon dizendo "
+                "que caiu")
+AJUDA_HISTORICO = ("ler 10 anos de manchete com um modelo que ja sabe o "
+                   "desfecho contamina o backtest; use --scorer llm aqui "
+                   "somente para amostra de auditoria")
+
 
 def cmd_init(a):
     db.init(); print("banco inicializado")
@@ -21,18 +29,51 @@ def cmd_ingest(a):
     ingest.run(timespan=a.timespan, so_gdelt=getattr(a, "so_gdelt", False))
 
 
+def _pontuar(scorer=None):
+    """Liga mencoes, agrupa duplicatas e pontua. A ordem IMPORTA: `novelty` e
+    lida no momento em que o score e gravado, entao agrupar depois de pontuar
+    daria peso maximo a republicacao.
+
+    Existe como funcao porque `ingest-rss` e `pontuar` precisam da MESMA
+    sequencia, e porque o scorer tem de vir de um lugar so. Antes, cada ponto
+    do pipeline tinha "lexicon" escrito no codigo: pedir --scorer llm no
+    `cycle` nao mudava o que a rodada rapida de RSS gravava.
+    """
+    from . import score
+    men = entity.link_all()
+    dedupe.cluster()
+    pts = score.run(scorer=scorer)
+    return men, pts
+
+
 def cmd_ingest_rss(a):
     """So os feeds. Rapido de proposito: ~10s para os 24, logo pode rodar a
     cada minuto. E a unica via com chance de capturar reacao de minutos --
-    o GDELT exige 5,5s por consulta e nao cabe nessa cadencia."""
+    o GDELT exige 5,5s por consulta e nao cabe nessa cadencia.
+
+    CUSTO DO LEITOR NOVO: com `--scorer llm`, cada materia INEDITA vale uma
+    chamada. Repeticao nao paga (reuso por cluster) e repontuacao nao paga
+    (cache), mas numa cadencia de 1 minuto quem decide o teto e
+    OBS_LLM_MAX_CHAMADAS. Para fixar o lexico so aqui: --scorer lexicon.
+    """
     db.init()
-    from . import score
     rows = ingest.fetch_rss()
     novos = ingest.store(rows)
-    men = entity.link_all()
-    dedupe.cluster()
-    pts = score.run(scorer="lexicon")
+    men, pts = _pontuar(a.scorer)
     print(f"-> {len(rows)} coletados, {novos} novos, {men} mencoes, {pts} pontuados")
+
+
+def cmd_pontuar(a):
+    """Liga, agrupa e pontua o que ja esta no banco. Sem rede de noticia.
+
+    POR QUE E COMANDO PROPRIO: `ingest` (GDELT) coleta e nao pontua. Quem
+    pontuava o GDELT era, por acidente, a rodada de RSS -- ela chama
+    `link_all`/`score.run` sobre TODO o pendente. Com o job `refresh_rss`
+    desligado, a materia do GDELT entrava e nunca virava nota.
+    """
+    db.init()
+    men, pts = _pontuar(a.scorer)
+    print(f"-> {men} mencoes, {pts} pares pontuados")
 
 
 def cmd_intraday(a):
@@ -58,6 +99,25 @@ def cmd_score(a):
 def score_mod_run(scorer):
     from . import score
     return score.run(scorer=scorer)
+
+
+def cmd_score_estado(a):
+    """Quem le a noticia, com que autorizacao e com que cobertura."""
+    from . import score
+    e = score.estado()
+    print(f"leitor padrao   : {e['padrao']}")
+    print(f"leitor efetivo  : {e['efetivo']}  ({e['motivo']})")
+    print(f"LLM autorizado  : {'SIM' if e['llm_autorizado'] else 'NAO'} "
+          f"-- {e['llm_motivo']}")
+    print(f"modelo          : {e['modelo'] or '(nao definido)'}")
+    print(f"versao do prompt: {e['prompt_versao']}")
+    print(f"cache de leitura: {e['cache']} resposta(s)")
+    print("cobertura por leitor:")
+    for k, v in (e.get("cobertura") or {}).items():
+        print(f"  {k:<10} {v:>8} pares")
+    print(f"pendentes para '{e['efetivo']}': {e.get('pendentes')}")
+    if e.get("erro"):
+        print(f"ERRO: {e['erro']}")
 
 
 def cmd_prices(a):
@@ -90,7 +150,7 @@ def cmd_label(a):
 def cmd_backfill(a):
     db.init()
     r = historico.preparar(dias=a.dias, baixar=not a.sem_baixar,
-                           horizonte=a.horizon)
+                           horizonte=a.horizon, scorer=a.scorer)
     print(json.dumps(r, indent=2, ensure_ascii=False))
     if r["pronto_para_calibrar"]:
         print(f"\n{r['rotulos']} rotulos (minimo {historico.MIN_ROTULOS}). "
@@ -113,7 +173,9 @@ def cmd_backfill_rss(a):
         from . import score
         print(f"-> {entity.link_all()} mencoes")
         dedupe.cluster_historico(verbose=False)
-        print(f"-> {score.run(scorer='lexicon')} pontuados")
+        if a.scorer in score.PRECISAM_LLM:
+            print(historico.AVISO_LLM_HISTORICO)
+        print(f"-> {score.run(scorer=a.scorer)} pontuados")
         print("Agora: python3 -m obs.cli backfill --sem-baixar  (reconstroi e rotula)")
 
 
@@ -160,7 +222,7 @@ def cmd_limpar(a):
     if a.auditar:
         print(json.dumps(limpeza.auditar(), indent=2, ensure_ascii=False))
         return
-    r = limpeza.limpar(aplicar=a.aplicar, dias_log=a.dias_log)
+    r = limpeza.limpar(aplicar=a.aplicar, dias_log=a.dias_log, scorer=a.scorer)
     modo = "APLICADO" if a.aplicar else "SIMULACAO (nada foi alterado)"
     print(f"== {modo} ==")
     for x in r["acoes"]:
@@ -196,9 +258,8 @@ def cmd_alarms(a):
 def cmd_cycle(a):
     db.init()
     ingest.run(timespan=a.timespan)
-    print(f"-> {entity.link_all()} mencoes");  dedupe.cluster()
-    from . import score
-    print(f"-> {score.run(scorer=a.scorer)} scores")
+    men, pts = _pontuar(a.scorer)
+    print(f"-> {men} mencoes, {pts} scores")
     prices.sync(range_=a.range)
     sigs = aggregate.run(scorer=a.scorer)
     label.build(horizon_days=1)
@@ -373,19 +434,26 @@ def main(argv=None):
     s.add_argument("--timespan", default="1d")
     s.add_argument("--so-gdelt", action="store_true",
                    help="pula os feeds; use quando o RSS tiver cadencia propria")
-    add("ingest-rss", cmd_ingest_rss, help="so os feeds RSS (rapido, ~10s)")
+    s = add("ingest-rss", cmd_ingest_rss, help="so os feeds RSS (rapido, ~10s)")
+    s.add_argument("--scorer", default=None, choices=SCORERS_CLI, help=AJUDA_SCORER)
     s = add("intraday", cmd_intraday, help="barras intradiarias (1m/5m/1h)")
     s.add_argument("--intervalo", default="1m")
     s.add_argument("--range", default="5d")
     add("link", cmd_link, help="liga noticia -> ticker")
     add("cluster", cmd_cluster, help="agrupa quase-duplicatas")
     s = add("score", cmd_score, help="pontua noticias")
-    s.add_argument("--scorer", default="lexicon", choices=["lexicon", "llm"])
+    s.add_argument("--scorer", default=None, choices=SCORERS_CLI,
+                   help=AJUDA_SCORER)
+    add("score-estado", cmd_score_estado,
+        help="quem le a noticia agora, autorizacao e cobertura")
+    s = add("pontuar", cmd_pontuar,
+            help="liga, agrupa e pontua o que ja esta no banco (sem rede de noticia)")
+    s.add_argument("--scorer", default=None, choices=SCORERS_CLI, help=AJUDA_SCORER)
     s = add("prices", cmd_prices, help="sincroniza cotacoes")
     s.add_argument("--range", default="1mo")
     s.add_argument("--fonte", default="auto", choices=["auto", "brapi", "yahoo"])
     s = add("signals", cmd_signals, help="calcula sinal e probabilidades")
-    s.add_argument("--scorer", default="lexicon")
+    s.add_argument("--scorer", default=None, choices=SCORERS_CLI, help=AJUDA_SCORER)
     s = add("label", cmd_label, help="rotula com retorno anormal futuro")
     s.add_argument("--horizon", type=int, default=1)
     s = add("backfill-rss", cmd_backfill_rss,
@@ -394,6 +462,8 @@ def main(argv=None):
                    help="profundidade: ~10 itens por pagina, por feed")
     s.add_argument("--sem-processar", action="store_true",
                    help="so baixa; nao liga mencoes nem pontua")
+    s.add_argument("--scorer", default="lexicon", choices=SCORERS_CLI,
+                   help="PADRAO lexicon mesmo com o LLM ligado: " + AJUDA_HISTORICO)
     s = add("backfill", cmd_backfill,
             help="reconstroi historico de noticia -> sinais passados -> rotulos "
                  "(destrava a calibracao da direcao sem esperar meses)")
@@ -401,6 +471,8 @@ def main(argv=None):
     s.add_argument("--horizon", type=int, default=1)
     s.add_argument("--sem-baixar", action="store_true",
                    help="pula o download e so reprocessa o que ja esta no banco")
+    s.add_argument("--scorer", default="lexicon", choices=SCORERS_CLI,
+                   help="PADRAO lexicon mesmo com o LLM ligado: " + AJUDA_HISTORICO)
     s = add("assimetria", cmd_assimetria,
             help="beta de baixa x beta de alta: quem cai mais do que sobe")
     s.add_argument("--janela", type=int, default=252)
@@ -419,6 +491,8 @@ def main(argv=None):
     s.add_argument("--auditar", action="store_true",
                    help="so o diagnostico, sem propor acao")
     s.add_argument("--dias-log", type=int, default=7)
+    s.add_argument("--scorer", default=None, choices=SCORERS_CLI,
+                   help="qual leitor repontuar; vazio = o ativo")
     s = add("calibrate", cmd_calibrate, help="ajusta calibrador sinal->prob")
     s.add_argument("--horizon", default="1d")
     s.add_argument("--method", default="platt", choices=["platt", "isotonic"])
@@ -426,9 +500,10 @@ def main(argv=None):
             help="ajusta a cabeca de agitacao (logit walk-forward) e grava se passar na porta")
     s.add_argument("--simular", action="store_true", help="so mede, nao grava o calibrador")
     s = add("alarms", cmd_alarms, help="avalia e entrega alarmes")
-    s.add_argument("--scorer", default="lexicon")
+    s.add_argument("--scorer", default=None, choices=SCORERS_CLI, help=AJUDA_SCORER)
     s = add("cycle", cmd_cycle, help="pipeline completo (use no cron)")
-    s.add_argument("--scorer", default="lexicon"); s.add_argument("--timespan", default="1d")
+    s.add_argument("--scorer", default=None, choices=SCORERS_CLI, help=AJUDA_SCORER)
+    s.add_argument("--timespan", default="1d")
     s.add_argument("--range", default="1mo")
     s = add("surpresa", cmd_surpresa, help="consenso Focus vs realizado BCB")
     s.add_argument("--indicador", default="IPCA")
@@ -479,7 +554,8 @@ def main(argv=None):
                    help="jobs simultaneos de grupos distintos")
     add("status", cmd_status, help="diagnostico do banco")
     s = add("serve", cmd_serve, help="sobe o painel web")
-    s.add_argument("--port", type=int, default=8000); s.add_argument("--scorer", default="lexicon")
+    s.add_argument("--port", type=int, default=8000)
+    s.add_argument("--scorer", default=None, choices=SCORERS_CLI, help=AJUDA_SCORER)
     s = add("demo", cmd_demo, help="popula dados SINTETICOS para validar o encanamento")
     s.add_argument("--days", type=int, default=400)
 

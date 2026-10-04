@@ -107,6 +107,13 @@ JOBS={
  # previsao de minutos impossivel antes mesmo do modelo.
  "refresh_rss":{"label":"Atualizar RSS (rápido, 1 min)","schedule":True},
  "refresh_gdelt":{"label":"Atualizar GDELT (lento)","schedule":True},
+ # PONTUAR e passo proprio desde que o LLM virou o leitor padrao. Antes,
+ # quem pontuava era, por acidente, o job de RSS -- ele chama link_all e
+ # score.run sobre TODO o pendente, inclusive o que veio do GDELT. Com
+ # `refresh_rss` desligado, materia do GDELT entrava e nunca virava nota.
+ # Fica no grupo "noticia" de proposito: pontuar antes de coletar le fila
+ # velha, e o grupo e o que garante a ordem (ver GRUPOS).
+ "score_news":{"label":"Pontuar notícias (leitor ativo)","schedule":True},
  "collect_intraday":{"label":"Coletar barras de 1 minuto","schedule":True},
  # Profundidade controlavel pelo painel: ops_config.backfill_paginas.
  "backfill_rss":{"label":"Carregar histórico de notícias (RSS)","schedule":False},
@@ -193,6 +200,8 @@ def execute(job):
         return _run_cli(["ingest-rss"])
     if job=="refresh_gdelt":
         return _run_cli(["ingest","--timespan","1h","--so-gdelt"])
+    if job=="score_news":
+        return _run_cli(["pontuar"])
     if job=="collect_intraday":
         return _run_cli(["intraday","--intervalo",get_config("intraday_intervalo"),
                          "--range",get_config("intraday_range")])
@@ -231,6 +240,7 @@ GRUPOS = {
     "refresh_news": "noticia",
     "refresh_rss": "rss",          # grupo proprio: rapido, nao espera o GDELT
     "refresh_gdelt": "noticia",    # mesmo grupo do ingest completo: ambos usam a cota
+    "score_news": "noticia",       # depende do que a coleta acabou de gravar
     "collect_intraday": "mercado",
     "backfill_rss": "rss",
     "refresh_prices": "mercado", "refresh_drivers": "mercado",

@@ -634,6 +634,20 @@ function renderDirecao(){
 }
 
 /* --------------------------------------------------------------- fontes ---*/
+/* QUEM LEU A NOTÍCIA. Vai na tela porque a troca de leitor muda o que `z`
+   significa: a mesma manchete pontuada pelo léxico e pela leitura estruturada
+   não dá o mesmo número. E quando o leitor padrão cai para o léxico porque o
+   proxy está fora, isso é um fato operacional — não um detalhe de log. O texto
+   vem de /api/status.scorer; nada aqui é escrito à mão. */
+function leitorLinha(st){
+  const sc = st.scorer || {};
+  if (!sc.efetivo) return '';
+  const nome = sc.efetivo === 'lexicon' ? 'léxico'
+             : sc.efetivo === 'llm' ? 'leitura estruturada (LLM)' : sc.efetivo;
+  if (sc.efetivo !== sc.padrao) return `leitor: ${nome} — ${sc.motivo||''}`;
+  return `leitor: ${nome}` + (sc.validado ? '' : ' · ganho não medido');
+}
+
 function renderFontes(){
   const st = S.st || {}, sur = st.surpresa || {}, cad = st.cadeia || {};
   const cal = ((st.agitacao||{}).calibrador||{}).metrics || {};
@@ -641,7 +655,7 @@ function renderFontes(){
   const nSur = (sur.por_indicador||[]).reduce((a,b) => a + (b.n||0), 0);
   const F = [
     ['Preços diários', `${int(st.prices)} cotações\n${per}`, 'Agitação (toda ela) e a cadeia de afetação.', 'MEDIDO', 'selo-med'],
-    ['Notícias', `${int(st.articles)} matérias · ${int(st.mentions)} menções\n${int(st.scores)} pontuadas · ${int(st.labels)} rótulos D+1`, 'Tom z. Não alimenta a agitação e não vira probabilidade.', 'NÃO CALIBRADO', 'selo-nao'],
+    ['Notícias', `${int(st.articles)} matérias · ${int(st.mentions)} menções\n${int(st.scores)} pontuadas · ${int(st.labels)} rótulos D+1\n${leitorLinha(st)}`, 'Tom z. Não alimenta a agitação e não vira probabilidade.', 'NÃO CALIBRADO', 'selo-nao'],
     ['Focus / divulgações', `${int(nSur)} divulgações · ${(sur.por_indicador||[]).length} indicadores`, 'Surpresa macro, que entra no sinal mesmo reprovada.', 'REPROVADO', 'selo-rep'],
     ['Painel macro', `${int(cad.n_drivers)} drivers · janela de ${int(cad.janela)} pregões\nR² de ${nf(cad.r2_min,3)} a ${nf(cad.r2_max,3)}`, 'Cadeia de afetação e uma feature da agitação.', 'DESCRITIVO', 'selo-desc'],
   ];

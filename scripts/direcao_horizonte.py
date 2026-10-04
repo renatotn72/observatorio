@@ -9,9 +9,10 @@ Alvo acumulado: soma dos retornos anormais de D+1 ate D+h, classificada por
 K_SIGMA * sigma * sqrt(h) -- a escala do desvio cresce com a raiz do
 horizonte, senao h=20 classificaria quase tudo como movimento grande.
 """
+import os
 import sys
 
-sys.path.insert(0, "/mnt/nvmep2/home/rtnati/Downloads/projeto_final/observatorio")
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import math                                                   # noqa: E402
 import statistics as st                                       # noqa: E402
 

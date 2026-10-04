@@ -23,9 +23,10 @@ AS TRES DEFESAS CONTRA VAZAMENTO DE FUTURO
 O ALVO e o mesmo do resto do projeto: retorno ANORMAL (residuo transversal),
 classificado em alta/neutro/queda por K_SIGMA desvios do proprio papel.
 """
+import os
 import sys
 
-sys.path.insert(0, "/mnt/nvmep2/home/rtnati/Downloads/projeto_final/observatorio")
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import bisect                                                 # noqa: E402
 import math                                                   # noqa: E402
 import random                                                 # noqa: E402

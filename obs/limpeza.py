@@ -79,13 +79,21 @@ def _arquivos_vazios() -> list[str]:
             and not f.name.endswith(("-wal", "-shm"))]
 
 
-def limpar(aplicar: bool = False, dias_log: int = 7) -> dict:
+def limpar(aplicar: bool = False, dias_log: int = 7,
+           scorer: str | None = None) -> dict:
     """Corrige o que foi auditado. SIMULA por padrao.
 
     Ordem importa: agrupar antes de repontuar, porque `novelty` e lido no
     momento em que o score e gravado.
+
+    REPONTUA O LEITOR ATIVO, nao mais "lexicon" fixo. Com o LLM como leitor
+    padrao, repontuar o lexico deixaria intacto exatamente o conjunto de notas
+    que o painel usa. O cache de leitura (`llm_cache`) e o que mantem esta
+    operacao barata: materia ja lida nao e relida, mesmo depois do DELETE.
     """
-    feito: dict = {"aplicou": aplicar, "acoes": []}
+    from . import score as score_mod
+    scorer, motivo = score_mod.resolver(scorer, verbose=False)
+    feito: dict = {"aplicou": aplicar, "acoes": [], "scorer": scorer}
 
     def registra(acao, n, detalhe=""):
         feito["acoes"].append({"acao": acao, "n": n, "detalhe": detalhe})
@@ -106,20 +114,21 @@ def limpar(aplicar: bool = False, dias_log: int = 7) -> dict:
             registra("agrupar artigos sem cluster", sem,
                      "novelty=1.0 indevido da peso MAXIMO a eles")
 
-    # 2. repontuar: apaga os scores do lexico para que score.run recalcule
-    nsc = con.execute("SELECT COUNT(*) FROM scores WHERE scorer='lexicon'").fetchone()[0]
+    # 2. repontuar: apaga os scores do leitor ativo para que score.run recalcule
+    nsc = con.execute("SELECT COUNT(*) FROM scores WHERE scorer=?",
+                      (scorer,)).fetchone()[0]
     if nsc:
         if aplicar:
             with con:
-                con.execute("DELETE FROM scores WHERE scorer='lexicon'")
+                con.execute("DELETE FROM scores WHERE scorer=?", (scorer,))
             con.close()
             from . import score
-            novos = score.run(scorer="lexicon")
+            novos = score.run(scorer=scorer)
             con = connect()
-            registra("repontuar com o lexico atual", novos,
+            registra(f"repontuar com '{scorer}' atual", novos,
                      "score.run nao recalcula par que ja tem score")
         else:
-            registra("repontuar com o lexico atual", nsc,
+            registra(f"repontuar com '{scorer}' atual", nsc,
                      "score.run nao recalcula par que ja tem score")
 
     # 3. sinais: apaga para recalcular sob as regras atuais

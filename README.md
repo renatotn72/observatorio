@@ -93,7 +93,8 @@ entity.py        →  notícia → ticker, com filtro de relevância econômica
        ↓               (busca "Petrobras" traz matéria sobre futebol; relevance separa)
 dedupe.py        →  cluster de quase-duplicatas → POPULARIDADE e NOVIDADE
        ↓
-score.py         →  texto → {s, magnitude, event_type}   [lexicon | llm]
+score.py         →  texto → {s, magnitude, event_type}   [llm | ensemble | lexicon]
+       ↓               padrão: llm. Sem proxy, cai para lexicon DIZENDO que caiu
        ↓
 aggregate.py     →  w = veículo × relevância × novidade × materialidade × decaimento
        ↓               z = Σ(s·w)/Σw      n_eff = Σw
@@ -108,7 +109,7 @@ alarms.py        →  vantagem sobre taxa-base + portas + cooldown
 |---|---|
 | SimilarWeb → popularidade do jornal | peso por veículo, **aprendível** dos dados |
 | cluster de notícias ≈ popularidade | cluster = popularidade, **posição no cluster = novidade** |
-| LingPipe (descontinuado em 2011) | lexicon como piso, hook de LLM como sensor |
+| LingPipe (descontinuado em 2011) | **LLM como leitor** (4/10/2026); lexicon como piso auditável e rede |
 | tradução para inglês | desnecessária (e com embeddings, dispensável de vez) |
 | árvore sintática Stanford | removida: não contribuía para o alvo |
 | acurácia de 87% / 99% | IC, skill de Brier, monotonia por decil, custo |
@@ -163,6 +164,8 @@ Vale registrar, porque todos aparecem em qualquer reimplementação:
 | `MISSING_TOKEN` do brapi no 2º lote, OK no 1º | não é falta de auth nem limite de lote: é **cota** de símbolos por janela do tier gratuito. A mensagem engana e faz perder tempo procurando problema de autenticação |
 | metade dos tickers sem notícia | GDELT responde 429 pedindo **1 requisição a cada 5 s**; com 2,5 s metade volta vazia, e a mensagem de throttle em texto puro ainda aparecia como "json inválido" |
 | "juros sobre o capital próprio" pontuava 0, mas "JCP" pontuava | scorer por token não vê expressão de várias palavras — a mesma notícia valia coisas diferentes conforme o jornal abreviasse |
+| notícia em que a empresa é a parte **perdedora** pontuava positivo | o léxico soma o tom do texto e nunca pergunta a posição da empresa no fato. A heurística que corrige isso existia e **não era chamada**: `score.run()` omitia o ticker. +0,35 sem ticker, −0,35 com ele |
+| léxico 87,8 em 100 e LLM 53,9 no conjunto-ouro | **gabarito circular**: 93 dos 115 casos vêm de uma regra cujos termos estão no dicionário `POS` do léxico. Medir leitor contra gabarito de palavra-chave premia quem lê palavra-chave |
 | duas matérias do mesmo anúncio em clusters distintos | Jaccard não une paráfrase. Mitigado por **impressão digital numérica** (mesma cifra citada) |
 | cifra "R$ 3,8 bi" virando `8e9` | `norm()` apaga a vírgula decimal antes do regex. Extrair cifra do texto cru |
 | `OverflowError` no SQLite | SimHash de 64 bits estoura o `INTEGER` signed. Usar 63 |
@@ -176,7 +179,10 @@ Vale registrar, porque todos aparecem em qualquer reimplementação:
   ticker* permitiria limiar bem menor com a mesma precisão.
 - **Embeddings resolveriam de vez.** "corta guidance" e "reduz projeção" são a
   mesma história e o Jaccard dá 0,38.
-- **Lexicon é fraco de propósito.** É o piso a ser batido, não o produto.
+- **Lexicon é fraco de propósito.** É o piso a ser batido, não o produto. Desde
+  4/10/2026 o leitor padrão é o LLM, e o piso segue existindo para duas coisas:
+  medir o ganho contra algo reproduzível, e manter o pipeline de pé sem proxy.
+  **O ganho do leitor novo não foi medido** — ver `docs/parecer.md`, seção 4.
 - **O brapi gratuito não cobre 10 papéis.** Cota por janela, e só ~21 pregões
   de histórico — insuficiente para calibrar. Pegue um token gratuito em
   brapi.dev e defina `BRAPI_TOKEN`, ou troque a fonte de preços.
@@ -188,10 +194,16 @@ Vale registrar, porque todos aparecem em qualquer reimplementação:
 ## Caminho de upgrade
 
 1. corpo do artigo + embeddings multilíngues (clusterização e relevância melhores)
-2. LLM como extrator estruturado (`score.py:score_llm`) e medir ganho de IC
+2. ~~LLM como extrator estruturado~~ **feito em 4/10/2026** — é o leitor padrão,
+   com extração em coluna (`papel_no_fato`, `ja_precificado`, `is_rumor`,
+   `quote`). **Falta medir o ganho de IC**:
+   `scripts/evento_noticia.py --scorer lexicon --scorer llm`
 3. `fit-source-weights`: aprender quais veículos de fato antecedem o movimento
 4. intradiário 15 min + surpresa contra consenso em eventos agendados
 5. propagação em grafo (contágio setorial / cadeia de fornecedores)
+
+Parecer técnico do projeto, com o placar completo da evidência e a decisão sobre
+quem lê a notícia: [`docs/parecer.md`](docs/parecer.md).
 
 ---
 
